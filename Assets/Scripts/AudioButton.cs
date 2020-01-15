@@ -22,7 +22,8 @@ public class AudioButton : Button
         }
         catch (System.Exception exception)
         {
-            Debug.LogError(_SFX_NOT_PRESENT);
+            Debug.Log(exception, this);
+            Debug.LogError(_SFX_NOT_PRESENT, this);
         }
     }
 }

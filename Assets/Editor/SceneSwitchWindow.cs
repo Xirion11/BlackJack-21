@@ -6,6 +6,7 @@
 
 using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
@@ -49,9 +50,9 @@ public class SceneSwitchWindow : EditorWindow
                 var pressed = GUILayout.Button(i + ": " + sceneName, new GUIStyle(GUI.skin.GetStyle("Button")) { alignment = TextAnchor.MiddleLeft });
                 if (pressed)
                 {
-                    if (EditorApplication.SaveCurrentSceneIfUserWantsTo())
+                    if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                     {
-                        EditorApplication.OpenScene(scene.path);
+                        EditorSceneManager.OpenScene(scene.path);
                     }
                 }
             }

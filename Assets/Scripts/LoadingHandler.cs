@@ -7,7 +7,6 @@ using TMPro;
 public class LoadingHandler : MonoBehaviour
 {
     [SerializeField] Image img_Loading = null;
-    [SerializeField] GameObject languageSelection = null;
     [SerializeField] TextMeshProUGUI txtVersion;
 
     // Start is called before the first frame update
