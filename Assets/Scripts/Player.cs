@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-
+        m_hand = new List<Card>();
     }
 
     public void AddCard(Card newCard)
@@ -26,7 +26,12 @@ public class Player : MonoBehaviour
         UpdateHandValue();
     }
 
-    private string UpdateHandValue()
+    public Card GetCard(int index)
+    {
+        return m_hand[index];
+    }
+
+    public string UpdateHandValue()
     {
         m_handValue = CalculateHandValue();
         

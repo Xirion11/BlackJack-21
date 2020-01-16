@@ -89,7 +89,7 @@ public class DeckHandler : MonoBehaviour
     {
         Sprite result = null;
 
-        GetCardSprite(card.GetValue(), card.GetSuit());
+        result = GetCardSprite(card.GetValue(), card.GetSuit());
 
         return result;
     }

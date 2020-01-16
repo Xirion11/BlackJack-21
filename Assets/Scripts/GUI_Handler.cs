@@ -88,9 +88,16 @@ public class GUI_Handler : MonoBehaviour
 
     public void GUI_BetReady()
     {
-        BettingStation.DOScale(Vector3.zero, 0.2f);
-        lbl_PlayerBet.SetText(string.Format(playerBetTemplate, GameHandler.Instance.GetCurrentBet()));
-        PlayerBetContainer.SetActive(true);
+        if (GameHandler.Instance.GetCurrentBet() != 0)
+        {
+            BettingStation.DOScale(Vector3.zero, 0.2f);
+            lbl_PlayerBet.SetText(string.Format(playerBetTemplate, GameHandler.Instance.GetCurrentBet()));
+            PlayerBetContainer.SetActive(true);
+        }
+        else
+        {
+            //TODO: Negative feedback
+        }
     }
 
 }

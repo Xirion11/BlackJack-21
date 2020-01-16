@@ -5,6 +5,8 @@ using TMPro;
 
 public class GameHandler : MonoBehaviour
 {
+    [SerializeField] private Player m_player = null;
+    [SerializeField] private Dealer m_dealer = null;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_betStationBet = null;
     [SerializeField] private TextMeshProUGUI lbl_playerHandValue = null;
@@ -52,5 +54,15 @@ public class GameHandler : MonoBehaviour
     public int GetCurrentBet()
     {
         return m_currentBet;
+    }
+
+    public void UpdatePlayerHandValue()
+    {
+        lbl_playerHandValue.SetText(m_player.UpdateHandValue());
+    }
+
+    public void UpdateDealerHandValue()
+    {
+        lbl_dealerHandValue.SetText(m_dealer.UpdateHandValue());
     }
 }
