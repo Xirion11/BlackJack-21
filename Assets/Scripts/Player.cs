@@ -70,4 +70,9 @@ public class Player : MonoBehaviour
         return result;
     }
 
+    public bool IsHandBusted()
+    {
+        int handValue = CalculateHandValue();
+        return handValue > BLACKJACK;
+    }
 }

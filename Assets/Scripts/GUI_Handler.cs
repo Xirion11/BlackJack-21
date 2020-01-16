@@ -12,7 +12,6 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
-    [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
 
 
     [Header("Feedback Parameters")]
@@ -34,8 +33,6 @@ public class GUI_Handler : MonoBehaviour
         500,
         1000
     };
-
-    string playerBetTemplate = "Your Bet<br>${0}";
 
     public static GUI_Handler Instance { get; private set; }
 
@@ -93,7 +90,6 @@ public class GUI_Handler : MonoBehaviour
         {
             BettingStation.DOScale(Vector3.zero, 0.2f)
                 .OnComplete(() => GameHandler.Instance.OnBetsReady());
-            lbl_PlayerBet.SetText(string.Format(playerBetTemplate, GameHandler.Instance.GetCurrentBet()));
             PlayerBetContainer.SetActive(true);
         }
         else
@@ -110,5 +106,20 @@ public class GUI_Handler : MonoBehaviour
     public void GUI_HidePlayerActions()
     {
         PlayerActionsContainer.SetActive(false);
+    }
+
+    public void GUI_DoubleBet()
+    {
+        GameHandler.Instance.OnPlayerDoubled();
+    }
+
+    public void GUI_Hit()
+    {
+        GameHandler.Instance.OnPlayerHit();
+    }
+
+    public void GUI_Stand()
+    {
+        GameHandler.Instance.OnPlayerStand();
     }
 }

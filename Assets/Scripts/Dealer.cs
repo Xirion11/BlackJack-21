@@ -29,6 +29,7 @@ public class Dealer : MonoBehaviour
 
     const int BLACKJACK = 21;
     const int LETTER_VALUE = 10;
+    const int LIMIT_VALUE = 17;
 
     private void Start()
     {
@@ -41,6 +42,11 @@ public class Dealer : MonoBehaviour
         StartCoroutine(DealCardToDealer(0.4f));
         StartCoroutine(DealCardToPlayer(0.8f));
         StartCoroutine(DealCardToDealer(1.2f));
+    }
+
+    public void DealNewCardToPlayer()
+    {
+        StartCoroutine(DealCardToPlayer());
     }
 
     private void RestoreDeckTopCard()
@@ -68,6 +74,11 @@ public class Dealer : MonoBehaviour
         SFXHandler.Instance.PlayCardSound();
 
         currentPlayerCard += 1;
+
+        if (!m_isInitialDeal)
+        {
+            GameHandler.Instance.OnPlayerCardDrawn();
+        }
     }
 
     IEnumerator DealCardToDealer(float delay = 0f)
@@ -155,5 +166,29 @@ public class Dealer : MonoBehaviour
         }
 
         return result;
+    }
+
+    public void OnPlayerBusted()
+    {
+        //Reveal cards
+        ShowDealerCard(1);
+    }
+
+    public void DrawHand()
+    {
+        StartCoroutine(DrawHandRoutine());
+    }
+
+    IEnumerator DrawHandRoutine()
+    {
+        ShowDealerCard(1);
+
+        //Stay on 17, Draw to 16
+        while (m_handValue < LIMIT_VALUE)
+        {
+            StartCoroutine(DealCardToDealer());
+
+            yield return Yielders.WaitForSeconds(0.4f);
+        }
     }
 }
