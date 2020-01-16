@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 public class GameHandler : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class GameHandler : MonoBehaviour
 
     int m_currentBet = 0;
     int m_playerMoney = 0;
+    const int BLACKJACK = 21;
+    bool m_playerBlackjack = false;
+    bool m_dealerBlackjack = false;
     bool m_hasPlayerDoubled = false;
     string moneyTemplate = "${0}";
     string placeBetTemplate = "Place your bet: {0}";
@@ -65,9 +69,11 @@ public class GameHandler : MonoBehaviour
 
     public void OnBetsReady()
     {
+        m_playerBlackjack = false;
         InitializeElements();
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
+        GUI_Handler.Instance.HidePlayerBlackJack();
         m_dealer.DealInitialCards();
     }
 
@@ -81,7 +87,10 @@ public class GameHandler : MonoBehaviour
 
     public void UpdatePlayerHandValue()
     {
-        lbl_playerHandValue.SetText(m_player.UpdateHandValue());
+        if (!m_playerBlackjack)
+        {
+            lbl_playerHandValue.SetText(m_player.UpdateHandValue());
+        }
     }
 
     public void UpdateDealerHandValue()
@@ -91,10 +100,24 @@ public class GameHandler : MonoBehaviour
 
     public void OnInitialHandsReady()
     {
-        m_hasPlayerDoubled = false;
-        doubleAction.interactable = true;
-        //TODO: Splits ?
-        GUI_Handler.Instance.GUI_ShowPlayerActions();
+        if (!m_playerBlackjack)
+        {
+            m_hasPlayerDoubled = false;
+            doubleAction.interactable = true;
+            //TODO: Splits ?
+            GUI_Handler.Instance.GUI_ShowPlayerActions();
+        }
+        else
+        {
+            OnPlayerStand();
+        }
+    }
+
+    public void OnBlackJack()
+    {
+        m_playerBlackjack = true;
+        lbl_playerHandValue.SetText(string.Empty);
+        GUI_Handler.Instance.ShowPlayerBlackJack();
     }
 
     public void OnPlayerDoubled()
@@ -148,14 +171,34 @@ public class GameHandler : MonoBehaviour
         int playerHand = m_player.CalculateHandValue();
         int dealerHand = m_dealer.CalculateHandValue();
 
-        Debug.Log("Player Money: " + m_playerMoney, this);
-        if (m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted()))
+        if (m_playerBlackjack)
         {
-            int prize = m_currentBet + m_currentBet;
-            PlayerPrefsManager.IncreasePlayerMoney(prize);
+            playerHand = BLACKJACK;
+        }
+
+        if (m_dealerBlackjack)
+        {
+            dealerHand = BLACKJACK;
+        }
+
+        Debug.Log("Player Money: " + m_playerMoney, this);
+        if ((m_playerBlackjack && !m_dealerBlackjack) || m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted()))
+        {
+            float prize = m_currentBet;
+
+            if (m_playerBlackjack)
+            {
+                prize += m_currentBet * 1.5f;
+            }
+            else
+            {
+                prize += m_currentBet;
+            }
+
+            PlayerPrefsManager.IncreasePlayerMoney((int)prize);
             Debug.Log("Player win. Bet: " + prize + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
-        else if (m_player.IsHandBusted() || dealerHand > playerHand)
+        else if ((!m_playerBlackjack && m_dealerBlackjack) || m_player.IsHandBusted() || dealerHand > playerHand)
         {
             Debug.Log("Dealer win. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }

@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 
     string templateAceValue = "{0}/{1}";
 
+    const int BASEJACK = 11;
     const int BLACKJACK = 21;
     const int LETTER_VALUE = 10;
 
@@ -24,6 +25,13 @@ public class Player : MonoBehaviour
     {
         m_hand.Add(newCard);
         UpdateHandValue();
+
+        int handValue = CalculateHandValue();
+        if(handValue == BASEJACK && m_aceInHand)
+        {
+            //Player has blackjack!
+            GameHandler.Instance.OnBlackJack();
+        }
     }
 
     public Card GetCard(int index)

@@ -12,6 +12,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform RetryStation = null;
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
+    [SerializeField] private Transform PlayerBlackJackTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
 
 
@@ -52,6 +53,16 @@ public class GUI_Handler : MonoBehaviour
     {
         //BettingStation.SetActive(true);
         BettingStation.DOScale(Vector3.one, 0.2f);
+    }
+
+    public void ShowPlayerBlackJack()
+    {
+        PlayerBlackJackTransform.DOScale(Vector3.one, 0.2f);
+    }
+
+    public void HidePlayerBlackJack()
+    {
+        PlayerBlackJackTransform.DOScale(Vector3.zero, 0.2f);
     }
 
     public void GUI_IncreaseBet(int index)
