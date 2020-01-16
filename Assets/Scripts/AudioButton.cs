@@ -5,7 +5,6 @@
 
 public class AudioButton : Button
 {
-    public bool m_PositiveFeedback = true;
     const string _SFX_NOT_PRESENT = "SFX Handler is not present";
 
     protected override void Start()
@@ -18,7 +17,7 @@ public class AudioButton : Button
     {
         try
         {
-            SFXHandler.Instance.SoundsUIPlay(m_PositiveFeedback);
+            SFXHandler.Instance.PlayUISfx();
         }
         catch (System.Exception exception)
         {

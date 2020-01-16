@@ -7,7 +7,7 @@ public class SFXHandler : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource = null;
     [SerializeField] private AudioClip SFX_UI_Positive = null;
-    [SerializeField] private AudioClip SFX_UI_Negative = null;
+    [SerializeField] private AudioClip[] cardSounds = null;
     private Queue<AudioClip> AudioClipQueue;
 
     public static SFXHandler Instance { get; private set; }
@@ -42,18 +42,20 @@ public class SFXHandler : MonoBehaviour
         return PlayerPrefsManager.getIsAudioEnabled();
     }
 
-    public void SoundsUIPlay(bool positiveAudio)
+    public void PlayUISfx()
     {
         if (IsAudioEnabled())
         {
-            if (positiveAudio)
-            {
-                AudioClipQueue.Enqueue(SFX_UI_Positive);
-            }
-            else
-            {
-                AudioClipQueue.Enqueue(SFX_UI_Negative);
-            }
+            AudioClipQueue.Enqueue(SFX_UI_Positive);
+        }
+    }
+
+    public void PlayCardSound()
+    {
+        if (IsAudioEnabled())
+        {
+            int randomIndex = Random.Range(0, cardSounds.Length);
+            AudioClipQueue.Enqueue(cardSounds[randomIndex]);
         }
     }
 }
