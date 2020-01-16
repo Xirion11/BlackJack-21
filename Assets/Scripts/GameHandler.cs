@@ -7,6 +7,7 @@ public class GameHandler : MonoBehaviour
 {
     [SerializeField] private Player m_player = null;
     [SerializeField] private Dealer m_dealer = null;
+    [SerializeField] private AudioButton doubleAction;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_betStationBet = null;
     [SerializeField] private TextMeshProUGUI lbl_playerHandValue = null;
@@ -56,6 +57,11 @@ public class GameHandler : MonoBehaviour
         return m_currentBet;
     }
 
+    public void OnBetsReady()
+    {
+        m_dealer.DealInitialCards();
+    }
+
     public void UpdatePlayerHandValue()
     {
         lbl_playerHandValue.SetText(m_player.UpdateHandValue());
@@ -64,5 +70,12 @@ public class GameHandler : MonoBehaviour
     public void UpdateDealerHandValue()
     {
         lbl_dealerHandValue.SetText(m_dealer.UpdateHandValue());
+    }
+
+    public void OnInitialHandsReady()
+    {
+        doubleAction.interactable = true;
+        //TODO: Splits ?
+        GUI_Handler.Instance.GUI_ShowPlayerActions();
     }
 }

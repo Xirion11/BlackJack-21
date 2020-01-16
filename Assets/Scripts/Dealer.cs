@@ -34,8 +34,7 @@ public class Dealer : MonoBehaviour
     {
         m_hand = new List<Card>();
     }
-
-    [ContextMenu ("Deal Initial Cards")]
+    
     public void DealInitialCards()
     {
         StartCoroutine(DealCardToPlayer());
@@ -104,6 +103,7 @@ public class Dealer : MonoBehaviour
         if (index == 1 && m_isInitialDeal)
         {
             m_isInitialDeal = false;
+            GameHandler.Instance.OnInitialHandsReady();
         }
         else
         {

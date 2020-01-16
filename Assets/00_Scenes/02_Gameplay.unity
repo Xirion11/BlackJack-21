@@ -433,7 +433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &68942889
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1973,7 +1973,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &477747280
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3158,7 +3158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &674611531
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6727,7 +6727,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2013346650
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6821,6 +6821,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2075860993 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+    type: 3}
+  m_PrefabInstance: {fileID: 522533519139335101}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1369170bbfd62ba40a3ca44f2dab91bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2095138324
 GameObject:
   m_ObjectHideFlags: 0
@@ -7363,6 +7375,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
         type: 3}
+      propertyPath: DealerCardsImages.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
       propertyPath: m_player
       value: 
       objectReference: {fileID: 1349930199}
@@ -7616,6 +7638,101 @@ PrefabInstance:
       propertyPath: DealerCardsTransforms.Array.data[6]
       value: 
       objectReference: {fileID: 704624920}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 1783641124}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 375736197}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[2]
+      value: 
+      objectReference: {fileID: 205945523}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[3]
+      value: 
+      objectReference: {fileID: 1569637253}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[4]
+      value: 
+      objectReference: {fileID: 1467957508}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[5]
+      value: 
+      objectReference: {fileID: 1435656966}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: DealerCardsImages.Array.data[6]
+      value: 
+      objectReference: {fileID: 704624921}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 879925112}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 1071215529}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[2]
+      value: 
+      objectReference: {fileID: 607422910}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[3]
+      value: 
+      objectReference: {fileID: 1210846906}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[4]
+      value: 
+      objectReference: {fileID: 260811341}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[5]
+      value: 
+      objectReference: {fileID: 1738739262}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[6]
+      value: 
+      objectReference: {fileID: 1360026284}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[7]
+      value: 
+      objectReference: {fileID: 1283200244}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[8]
+      value: 
+      objectReference: {fileID: 1955598636}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[9]
+      value: 
+      objectReference: {fileID: 1068079781}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[10]
+      value: 
+      objectReference: {fileID: 113455839}
+    - target: {fileID: 522533520148807444, guid: b682b08b0f3fdb7499afb082b7bfa5db,
+        type: 3}
+      propertyPath: PlayerCardsImages.Array.data[11]
+      value: 
+      objectReference: {fileID: 1348086148}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b682b08b0f3fdb7499afb082b7bfa5db, type: 3}
 --- !u!1001 &1384835690025127590
@@ -7804,6 +7921,11 @@ PrefabInstance:
       propertyPath: lbl_PlayerBet
       value: 
       objectReference: {fileID: 1525230111}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerActionsContainer
+      value: 
+      objectReference: {fileID: 477747279}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb65e6f7cf5044143a456485e1d20e05, type: 3}
 --- !u!4 &1657495554838754149 stripped
@@ -7980,6 +8102,26 @@ PrefabInstance:
       propertyPath: lbl_betStationBet
       value: 
       objectReference: {fileID: 1137157833}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: m_player
+      value: 
+      objectReference: {fileID: 1349930199}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: m_dealer
+      value: 
+      objectReference: {fileID: 2075860993}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: doubleAction
+      value: 
+      objectReference: {fileID: 68942888}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: splitAction
+      value: 
+      objectReference: {fileID: 752343648}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58e1cb0431b788740ba68de77364dcc6, type: 3}
 --- !u!1001 &5308718109306565096

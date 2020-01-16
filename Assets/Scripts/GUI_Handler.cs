@@ -7,6 +7,7 @@ using DG.Tweening;
 public class GUI_Handler : MonoBehaviour
 {
     [SerializeField] private GameObject PlayerBetContainer = null;
+    [SerializeField] private GameObject PlayerActionsContainer = null;
     [SerializeField] private Transform BettingStation = null;
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
@@ -90,7 +91,8 @@ public class GUI_Handler : MonoBehaviour
     {
         if (GameHandler.Instance.GetCurrentBet() != 0)
         {
-            BettingStation.DOScale(Vector3.zero, 0.2f);
+            BettingStation.DOScale(Vector3.zero, 0.2f)
+                .OnComplete(() => GameHandler.Instance.OnBetsReady());
             lbl_PlayerBet.SetText(string.Format(playerBetTemplate, GameHandler.Instance.GetCurrentBet()));
             PlayerBetContainer.SetActive(true);
         }
@@ -100,4 +102,13 @@ public class GUI_Handler : MonoBehaviour
         }
     }
 
+    public void GUI_ShowPlayerActions()
+    {
+        PlayerActionsContainer.SetActive(true);
+    }
+
+    public void GUI_HidePlayerActions()
+    {
+        PlayerActionsContainer.SetActive(false);
+    }
 }
