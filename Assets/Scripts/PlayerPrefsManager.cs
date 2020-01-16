@@ -3,7 +3,7 @@
 public class PlayerPrefsManager
 {
     const string AUDIO_TOGGLE_KEY = "AUDIO_TOGGLE_KEY";
-    const string PLAYER_COINS_KEY = "PLAYER_COINS_KEY";
+    const string PLAYER_MONEY_KEY = "PLAYER_MONEY_KEY";
     
     public static bool getIsAudioEnabled()
     {
@@ -18,22 +18,29 @@ public class PlayerPrefsManager
         PlayerPrefs.Save();
     }
 
-    public static int getPlayerCoins()
+    public static int getPlayerMoney()
     {
-        return PlayerPrefs.GetInt(PLAYER_COINS_KEY, 0);
+        return PlayerPrefs.GetInt(PLAYER_MONEY_KEY, 1000);
     }
 
-    public static void setPlayerCoins(int value)
+    public static void setPlayerMoney(int value)
     {
-        PlayerPrefs.SetInt(PLAYER_COINS_KEY, value);
+        PlayerPrefs.SetInt(PLAYER_MONEY_KEY, value);
         PlayerPrefs.Save();
     }
 
-    public static void IncreasePlayerCoins(int increment)
+    public static void IncreasePlayerMoney(int increment)
     {
-        int newCoinsQuantity = getPlayerCoins();
+        int newCoinsQuantity = getPlayerMoney();
         newCoinsQuantity += increment;
-        setPlayerCoins(newCoinsQuantity);
+        setPlayerMoney(newCoinsQuantity);
+    }
+
+    public static void ReducePlayerMoney(int decrement)
+    {
+        int newCoinsQuantity = getPlayerMoney();
+        newCoinsQuantity -= decrement;
+        setPlayerMoney(newCoinsQuantity);
     }
 
 }

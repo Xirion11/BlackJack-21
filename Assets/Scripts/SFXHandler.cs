@@ -7,6 +7,7 @@ public class SFXHandler : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource = null;
     [SerializeField] private AudioClip SFX_UI_Positive = null;
+    [SerializeField] private AudioClip SFX_UI_Negative = null;
     [SerializeField] private AudioClip[] cardSounds = null;
     private Queue<AudioClip> AudioClipQueue;
 
@@ -47,6 +48,14 @@ public class SFXHandler : MonoBehaviour
         if (IsAudioEnabled())
         {
             AudioClipQueue.Enqueue(SFX_UI_Positive);
+        }
+    }
+
+    public void PlayNegativeUISfx()
+    {
+        if (IsAudioEnabled())
+        {
+            AudioClipQueue.Enqueue(SFX_UI_Negative);
         }
     }
 

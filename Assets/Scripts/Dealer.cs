@@ -5,7 +5,7 @@ using UnityEngine;
 public class Dealer : MonoBehaviour
 {
 
-    [SerializeField] Player m_player;
+    [SerializeField] Player m_player = null;
 
     [ContextMenu ("Deal Initial Cards")]
     public void DealInitialCards()

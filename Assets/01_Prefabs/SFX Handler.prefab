@@ -141,7 +141,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 5308718109813380509}
-  SFX_UI_Positive: {fileID: 0}
+  SFX_UI_Positive: {fileID: 8300000, guid: 6b9cabe66293cd447a0352239f97a475, type: 3}
+  SFX_UI_Negative: {fileID: 8300000, guid: fbbde93ef95afae4db4e8c15dde4bb24, type: 3}
   cardSounds:
   - {fileID: 8300000, guid: 98c93a8fbd0e9494babdb075be2165f9, type: 3}
   - {fileID: 8300000, guid: 59dbd5b3b5886ea469a9dd2930c3c68b, type: 3}
