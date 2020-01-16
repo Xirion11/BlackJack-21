@@ -52,8 +52,7 @@ public class DeckHandler : MonoBehaviour
     void Start()
     {
         Deck = new List<Card>();
-        FillDeck();
-        ShuffleDeck();
+        PrepareNewDeck();
     }
 
     //Fill with default deck
@@ -122,6 +121,11 @@ public class DeckHandler : MonoBehaviour
         return result;
     }
 
+    public void PrepareNewDeck()
+    {
+        FillDeck();
+        ShuffleDeck();
+    }
 }
 
 public static class IListExtensions

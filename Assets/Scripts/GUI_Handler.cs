@@ -9,6 +9,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private GameObject PlayerBetContainer = null;
     [SerializeField] private GameObject PlayerActionsContainer = null;
     [SerializeField] private Transform BettingStation = null;
+    [SerializeField] private Transform RetryStation = null;
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
@@ -108,6 +109,16 @@ public class GUI_Handler : MonoBehaviour
         PlayerActionsContainer.SetActive(false);
     }
 
+    public void GUI_ShowRetry()
+    {
+        RetryStation.DOScale(Vector3.one, 0.2f);
+    }
+
+    public void GUI_HideRetry()
+    {
+        RetryStation.DOScale(Vector3.zero, 0.2f);
+    }
+
     public void GUI_DoubleBet()
     {
         GameHandler.Instance.OnPlayerDoubled();
@@ -121,5 +132,16 @@ public class GUI_Handler : MonoBehaviour
     public void GUI_Stand()
     {
         GameHandler.Instance.OnPlayerStand();
+    }
+
+    public void GUI_Retry()
+    {
+        GUI_HideRetry();
+        GameHandler.Instance.OnRetry();
+    }
+
+    public void GUI_NoRetry()
+    {
+        GUI_HideRetry();
     }
 }

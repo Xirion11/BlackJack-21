@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         return valueString;
     }
 
-    private int CalculateHandValue()
+    public int CalculateHandValue()
     {
         int result = 0;
         int value = 0;
@@ -74,5 +74,11 @@ public class Player : MonoBehaviour
     {
         int handValue = CalculateHandValue();
         return handValue > BLACKJACK;
+    }
+
+    public void ClearHand()
+    {
+        m_aceInHand = false;
+        m_hand.Clear();
     }
 }

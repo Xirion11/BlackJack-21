@@ -6,17 +6,18 @@ using DG.Tweening;
 
 public class Dealer : MonoBehaviour
 {
-    [SerializeField] Player m_player = null;
+    [SerializeField] private Player m_player = null;
     [SerializeField] private List<Card> m_hand = null;
+    [SerializeField] private Sprite m_cardBack = null;
 
     [Header("Cards References")]
-    [SerializeField] Transform DeckTopCard;
-    [SerializeField] GameObject[] PlayerCardsObjects;
-    [SerializeField] GameObject[] DealerCardsObjects;
-    [SerializeField] Transform[] PlayerCardsTransforms;
-    [SerializeField] Transform[] DealerCardsTransforms;
-    [SerializeField] Image[] PlayerCardsImages;
-    [SerializeField] Image[] DealerCardsImages;
+    [SerializeField] private Transform DeckTopCard;
+    [SerializeField] private GameObject[] PlayerCardsObjects;
+    [SerializeField] private GameObject[] DealerCardsObjects;
+    [SerializeField] private Transform[] PlayerCardsTransforms;
+    [SerializeField] private Transform[] DealerCardsTransforms;
+    [SerializeField] private Image[] PlayerCardsImages;
+    [SerializeField] private Image[] DealerCardsImages;
 
     private int currentPlayerCard = 0;
     private int currentDealerCard = 0;
@@ -148,7 +149,7 @@ public class Dealer : MonoBehaviour
         return valueString;
     }
 
-    private int CalculateHandValue()
+    public int CalculateHandValue()
     {
         int result = 0;
         int value = 0;
@@ -190,5 +191,42 @@ public class Dealer : MonoBehaviour
 
             yield return Yielders.WaitForSeconds(0.4f);
         }
+
+        GameHandler.Instance.OnMatchEnded();
+    }
+
+    public void CleanTable()
+    {
+        m_player.ClearHand();
+        ClearHand();
+
+        for (int i = 0; i < PlayerCardsObjects.Length; i++)
+        {
+            PlayerCardsObjects[i].SetActive(false);
+            PlayerCardsTransforms[i].localScale = Vector3.zero;
+            PlayerCardsImages[i].sprite = m_cardBack;
+        }
+
+        for (int i = 0; i < DealerCardsObjects.Length; i++)
+        {
+            DealerCardsObjects[i].SetActive(false);
+            DealerCardsTransforms[i].localScale = Vector3.zero;
+            DealerCardsImages[i].sprite = m_cardBack;
+        }
+
+        m_isInitialDeal = true;
+        currentPlayerCard = 0;
+        currentDealerCard = 0;
+    }
+
+    public bool IsHandBusted()
+    {
+        int handValue = CalculateHandValue();
+        return handValue > BLACKJACK;
+    }
+
+    private void ClearHand()
+    {
+        m_hand.Clear();
     }
 }
