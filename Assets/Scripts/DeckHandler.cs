@@ -10,6 +10,7 @@ public class DeckHandler : MonoBehaviour
     [SerializeField] Sprite[] SpadeSprites = null;
     [SerializeField] Sprite[] DiamondSprites = null;
     [SerializeField] Card[] DefaultDeck = null;
+    [SerializeField] int separatorIndex = 0;
 
     [SerializeField] List<Card> Deck;
 
@@ -60,11 +61,14 @@ public class DeckHandler : MonoBehaviour
     {
         Deck.Clear();
         Deck.AddRange(DefaultDeck);
+        Deck.AddRange(DefaultDeck);
     }
 
     private void ShuffleDeck()
     {        
         Deck.Shuffle();
+        int randomOffset = Random.Range(-5, 6);
+        separatorIndex = DefaultDeck.Length + randomOffset;
     }
 
     public Card DrawCard()
@@ -75,6 +79,7 @@ public class DeckHandler : MonoBehaviour
         {
             result = Deck[0];
             Deck.RemoveAt(0);
+            separatorIndex -= 1;
         }
         else
         {
@@ -125,6 +130,15 @@ public class DeckHandler : MonoBehaviour
     {
         FillDeck();
         ShuffleDeck();
+    }
+
+    public bool IsCurrentDeckOver()
+    {
+        bool result = false;
+
+        result = separatorIndex <= 0;
+
+        return result;
     }
 }
 
