@@ -62,7 +62,7 @@ public class Dealer : MonoBehaviour
 
         m_isBlackJack = CheckForBlackJack();
 
-        if (m_isBlackJack)
+        if (m_isBlackJack && m_hand[0].value == DeckHandler.VALUES.ACE)
         {
             ShowDealerCard(1);
             GameHandler.Instance.OnDealerBlackJack();
@@ -226,12 +226,15 @@ public class Dealer : MonoBehaviour
     {
         ShowDealerCard(1);
 
-        //Stay on 17, Draw to 16
-        while (m_handValue < LIMIT_VALUE)
+        if (!m_isBlackJack)
         {
-            StartCoroutine(DealCardToDealer());
+            //Stay on 17, Draw to 16
+            while (m_handValue < LIMIT_VALUE)
+            {
+                StartCoroutine(DealCardToDealer());
 
-            yield return Yielders.WaitForSeconds(0.4f);
+                yield return Yielders.WaitForSeconds(0.4f);
+            }
         }
 
         GameHandler.Instance.OnMatchEnded();
