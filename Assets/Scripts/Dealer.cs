@@ -84,7 +84,7 @@ public class Dealer : MonoBehaviour
         DeckTopCard.localScale = Vector3.one;
     }
 
-    IEnumerator DealCardToPlayer(float delay = 0f)
+    IEnumerator DealCardToPlayer()
     {
         if(delay > 0f)
         {
@@ -111,7 +111,7 @@ public class Dealer : MonoBehaviour
         }
     }
 
-    IEnumerator DealCardToDealer(float delay = 0f)
+    IEnumerator DealCardToDealer()
     {
         if (delay > 0f)
         {
@@ -152,7 +152,7 @@ public class Dealer : MonoBehaviour
         }
     }
 
-    public void AddCard(Card newCard)
+    private void AddCard(Card newCard)
     {
         m_hand.Add(newCard);
         UpdateHandValue();

@@ -15,7 +15,6 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerBlackJackTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
 
-
     [Header("Feedback Parameters")]
     [SerializeField] private Vector3 bettingPunch;
     [SerializeField] private float bettingPunchDuration = 1f;
