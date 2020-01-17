@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
         if(handValue == BASEJACK && m_aceInHand)
         {
             //Player has blackjack!
-            GameHandler.Instance.OnBlackJack();
+            GameHandler.Instance.OnPlayerBlackJack();
         }
     }
 

@@ -25,9 +25,11 @@ public class Dealer : MonoBehaviour
     private int m_handValue = 0;
     private bool m_aceInHand = false;
     private bool m_isInitialDeal = true;
+    private bool m_isBlackJack = false;
 
     string templateAceValue = "{0}/{1}";
 
+    const int BASEJACK = 11;
     const int BLACKJACK = 21;
     const int LETTER_VALUE = 10;
     const int LIMIT_VALUE = 17;
@@ -39,10 +41,37 @@ public class Dealer : MonoBehaviour
     
     public void DealInitialCards()
     {
+        StartCoroutine(DealInitialCardsRoutine());
+    }
+
+    IEnumerator DealInitialCardsRoutine()
+    {
+        m_isBlackJack = false;
+
         StartCoroutine(DealCardToPlayer());
-        StartCoroutine(DealCardToDealer(0.4f));
-        StartCoroutine(DealCardToPlayer(0.8f));
-        StartCoroutine(DealCardToDealer(1.2f));
+        yield return Yielders.WaitForSeconds(0.4f);
+
+        StartCoroutine(DealCardToDealer());
+        yield return Yielders.WaitForSeconds(0.4f);
+
+        StartCoroutine(DealCardToPlayer());
+        yield return Yielders.WaitForSeconds(0.4f);
+
+        StartCoroutine(DealCardToDealer());
+        yield return Yielders.WaitForSeconds(0.4f);
+
+        m_isBlackJack = CheckForBlackJack();
+
+        if (m_isBlackJack)
+        {
+            ShowDealerCard(1);
+            GameHandler.Instance.OnDealerBlackJack();
+            GameHandler.Instance.OnMatchEnded();
+        }
+        else
+        {
+            GameHandler.Instance.OnInitialHandsReady();
+        }
     }
 
     public void DealNewCardToPlayer()
@@ -115,7 +144,6 @@ public class Dealer : MonoBehaviour
         if (index == 1 && m_isInitialDeal)
         {
             m_isInitialDeal = false;
-            GameHandler.Instance.OnInitialHandsReady();
         }
         else
         {
@@ -178,6 +206,20 @@ public class Dealer : MonoBehaviour
     public void DrawHand()
     {
         StartCoroutine(DrawHandRoutine());
+    }
+
+    private bool CheckForBlackJack()
+    {
+        bool result = false;
+
+        int handValue = CalculateHandValue();
+
+        if(handValue == BASEJACK && m_aceInHand)
+        {
+            result = true;
+        }
+
+        return result;
     }
 
     IEnumerator DrawHandRoutine()

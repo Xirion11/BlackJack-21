@@ -25,6 +25,7 @@ public class GameHandler : MonoBehaviour
     string moneyTemplate = "${0}";
     string placeBetTemplate = "Place your bet: {0}";
     string playerBetTemplate = "Your Bet<br>${0}";
+    string blackJack = "BlackJack";
 
     const int STARTING_MONEY = 1000;
 
@@ -70,6 +71,7 @@ public class GameHandler : MonoBehaviour
     public void OnBetsReady()
     {
         m_playerBlackjack = false;
+        m_dealerBlackjack = false;
         InitializeElements();
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
@@ -95,12 +97,15 @@ public class GameHandler : MonoBehaviour
 
     public void UpdateDealerHandValue()
     {
-        lbl_dealerHandValue.SetText(m_dealer.UpdateHandValue());
+        if (!m_dealerBlackjack)
+        {
+            lbl_dealerHandValue.SetText(m_dealer.UpdateHandValue());
+        }
     }
 
     public void OnInitialHandsReady()
     {
-        if (!m_playerBlackjack)
+        if (!m_playerBlackjack && !m_dealerBlackjack)
         {
             m_hasPlayerDoubled = false;
             doubleAction.interactable = true;
@@ -113,11 +118,17 @@ public class GameHandler : MonoBehaviour
         }
     }
 
-    public void OnBlackJack()
+    public void OnPlayerBlackJack()
     {
         m_playerBlackjack = true;
         lbl_playerHandValue.SetText(string.Empty);
         GUI_Handler.Instance.ShowPlayerBlackJack();
+    }
+
+    public void OnDealerBlackJack()
+    {
+        m_dealerBlackjack = true;
+        lbl_dealerHandValue.SetText(blackJack);
     }
 
     public void OnPlayerDoubled()
@@ -154,8 +165,11 @@ public class GameHandler : MonoBehaviour
             }
             else
             {
-                doubleAction.interactable = false;
-                GUI_Handler.Instance.GUI_ShowPlayerActions();
+                if (!m_dealerBlackjack)
+                {
+                    doubleAction.interactable = false;
+                    GUI_Handler.Instance.GUI_ShowPlayerActions();
+                }
             }
         }
     }
@@ -217,6 +231,13 @@ public class GameHandler : MonoBehaviour
         m_playerMoney = PlayerPrefsManager.getPlayerMoney();
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
+
+        StartCoroutine(ShowBetsOrRetry());
+    }
+
+    IEnumerator ShowBetsOrRetry()
+    {
+        yield return Yielders.WaitForSeconds(1);
 
         if (m_playerMoney > 0)
         {

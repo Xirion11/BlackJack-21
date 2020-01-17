@@ -9429,6 +9429,11 @@ PrefabInstance:
       propertyPath: RetryStation
       value: 
       objectReference: {fileID: 2108093561}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerBlackJackTransform
+      value: 
+      objectReference: {fileID: 869898562}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb65e6f7cf5044143a456485e1d20e05, type: 3}
 --- !u!4 &1657495554838754149 stripped
