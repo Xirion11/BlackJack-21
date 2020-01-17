@@ -228,12 +228,31 @@ public class Dealer : MonoBehaviour
 
         if (!m_isBlackJack)
         {
+            int handValue = m_handValue;
+
+            if (m_aceInHand)
+            {
+                handValue += 10;
+            }
+
             //Stay on 17, Draw to 16
-            while (m_handValue < LIMIT_VALUE)
+            while (handValue < LIMIT_VALUE)
             {
                 StartCoroutine(DealCardToDealer());
 
                 yield return Yielders.WaitForSeconds(0.4f);
+
+                handValue = m_handValue;
+
+                if (m_aceInHand)
+                {
+                    handValue += LETTER_VALUE;
+
+                    if(handValue > BLACKJACK)
+                    {
+                        handValue -= LETTER_VALUE;
+                    }
+                }
             }
         }
 
