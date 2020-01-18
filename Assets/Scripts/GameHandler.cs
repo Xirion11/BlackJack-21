@@ -31,6 +31,7 @@ public class GameHandler : MonoBehaviour
     const string shuffleTrigger = "Shuffle";
 
     const int STARTING_MONEY = 1000;
+    const int MINIMUM_BET = 5;
 
     public static GameHandler Instance { get; private set; }
 
@@ -237,7 +238,11 @@ public class GameHandler : MonoBehaviour
 
         if (m_deckHandler.IsCurrentDeckOver())
         {
-
+            //TODO: Animate shuffle
+            InitializeElements();
+            m_deckContainer.SetActive(false);
+            m_deckHandler.PrepareNewDeck();
+            PlayShuffleAnimation();
         }
         else
         {
@@ -249,7 +254,7 @@ public class GameHandler : MonoBehaviour
     {
         yield return Yielders.WaitForSeconds(1);
 
-        if (m_playerMoney > 0)
+        if (m_playerMoney >= MINIMUM_BET)
         {
             GUI_Handler.Instance.ShowBettingStation();
         }

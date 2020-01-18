@@ -108,12 +108,12 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DealCardToDealer()
     {
+        AddCard(DeckHandler.Instance.DrawCard());
         DeckTopCard.DOScale(Vector3.zero, 0.2f);
         yield return Yielders.WaitForSeconds(0.2f);
 
         int tmpIndex = currentDealerCard;
 
-        AddCard(DeckHandler.Instance.DrawCard());
         DealerCardsObjects[currentDealerCard].SetActive(true);
         DealerCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
             .OnComplete(() => ShowDealerCard(tmpIndex));
@@ -137,6 +137,7 @@ public class Dealer : MonoBehaviour
         }
         else
         {
+            UpdateHandValue();
             DealerCardsImages[index].sprite = DeckHandler.Instance.GetCardSprite(m_hand[index]);
             GameHandler.Instance.UpdateDealerHandValue();
         }
@@ -145,7 +146,6 @@ public class Dealer : MonoBehaviour
     private void AddCard(Card newCard)
     {
         m_hand.Add(newCard);
-        UpdateHandValue();
     }
 
     public string UpdateHandValue()

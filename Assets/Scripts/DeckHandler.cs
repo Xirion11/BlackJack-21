@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class DeckHandler : MonoBehaviour
 {
@@ -11,11 +12,13 @@ public class DeckHandler : MonoBehaviour
     [SerializeField] Sprite[] DiamondSprites = null;
     [SerializeField] Card[] DefaultDeck = null;
     [SerializeField] int separatorIndex = 0;
-
+    [SerializeField] GameObject Separator = null;
+    [SerializeField] Transform SeparatorTransform = null;
     [SerializeField] List<Card> Deck;
 
     const int MAX_SUITS = 4;
     const int MAX_VALUE = 13;
+    private Vector3 SeparatorPosition;
 
     public enum SUITS
     {
@@ -53,6 +56,7 @@ public class DeckHandler : MonoBehaviour
     void Start()
     {
         Deck = new List<Card>();
+        SeparatorPosition = SeparatorTransform.position;
         PrepareNewDeck();
     }
 
@@ -80,6 +84,11 @@ public class DeckHandler : MonoBehaviour
             result = Deck[0];
             Deck.RemoveAt(0);
             separatorIndex -= 1;
+            if(separatorIndex == 0)
+            {
+                Separator.SetActive(true);
+                SetSeparatorAside();
+            }
         }
         else
         {
@@ -128,8 +137,15 @@ public class DeckHandler : MonoBehaviour
 
     public void PrepareNewDeck()
     {
+        Separator.SetActive(false);
         FillDeck();
         ShuffleDeck();
+    }
+
+    public void SetSeparatorAside()
+    {
+        float newY = SeparatorTransform.position.y - 2f;
+        SeparatorTransform.DOMoveY(newY, 0.2f);
     }
 
     public bool IsCurrentDeckOver()

@@ -153,5 +153,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 26606e94bdc54ce44910ea5ecd54b734, type: 2}
   - {fileID: 11400000, guid: 757e0cc554636a1468dbcdc61157fef5, type: 2}
   - {fileID: 11400000, guid: be899dd40e00eb74d9d9760a428cd652, type: 2}
-  Separator: {fileID: 11400000, guid: 983e8c45b36815b4c8c54e6ddbfc4d05, type: 2}
+  separatorIndex: 0
+  Separator: {fileID: 0}
+  SeparatorTransform: {fileID: 0}
   Deck: []

@@ -6652,7 +6652,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 759.99994, y: 316.99997}
+  m_AnchoredPosition: {x: 760, y: 316.99997}
   m_SizeDelta: {x: 140, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1440610251
@@ -7870,7 +7870,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 759.99994, y: 316.99997}
+  m_AnchoredPosition: {x: 760, y: 316.99997}
   m_SizeDelta: {x: 140, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1613962455
@@ -9720,6 +9720,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1384835690066288470, guid: d64fd5d736838434ea80d6d4d9081fed,
+        type: 3}
+      propertyPath: Separator
+      value: 
+      objectReference: {fileID: 1613962453}
+    - target: {fileID: 1384835690066288470, guid: d64fd5d736838434ea80d6d4d9081fed,
+        type: 3}
+      propertyPath: SeparatorTransform
+      value: 
+      objectReference: {fileID: 1613962454}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d64fd5d736838434ea80d6d4d9081fed, type: 3}
 --- !u!1001 &1657495554838754148
