@@ -238,22 +238,22 @@ public class GameHandler : MonoBehaviour
 
         if (m_deckHandler.IsCurrentDeckOver())
         {
-            //TODO: Animate shuffle
-            InitializeElements();
-            m_deckContainer.SetActive(false);
-            m_deckHandler.PrepareNewDeck();
-            PlayShuffleAnimation();
+            StartCoroutine(ShuffleDeckRoutine());
         }
         else
         {
-            StartCoroutine(ShowBetsOrRetry());
+            StartCoroutine(ShowBetsOrRetryRoutine());
         }
     }
 
-    IEnumerator ShowBetsOrRetry()
+    IEnumerator ShowBetsOrRetryRoutine()
     {
         yield return Yielders.WaitForSeconds(1);
+        ShowBetsOrRetry();
+    }
 
+    private void ShowBetsOrRetry()
+    {
         if (m_playerMoney >= MINIMUM_BET)
         {
             GUI_Handler.Instance.ShowBettingStation();
@@ -291,8 +291,18 @@ public class GameHandler : MonoBehaviour
     public void OnShuffleComplete()
     {
         m_deckContainer.SetActive(true);
-        GUI_Handler.Instance.ShowBettingStation();
+        ShowBetsOrRetry();
         shuffleAnimator.ResetTrigger(shuffleTrigger);
+    }
+
+    IEnumerator ShuffleDeckRoutine()
+    {
+        yield return Yielders.WaitForSeconds(1f);
+
+        InitializeElements();
+        m_deckContainer.SetActive(false);
+        m_deckHandler.PrepareNewDeck();
+        PlayShuffleAnimation();
     }
 
     [ContextMenu("Give Money")]
