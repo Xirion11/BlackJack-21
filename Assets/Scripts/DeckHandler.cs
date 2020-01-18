@@ -86,6 +86,7 @@ public class DeckHandler : MonoBehaviour
             separatorIndex -= 1;
             if(separatorIndex == 0)
             {
+                GameHandler.Instance.OnSeparatorFound();
                 Separator.SetActive(true);
                 SetSeparatorAside();
             }
@@ -138,6 +139,7 @@ public class DeckHandler : MonoBehaviour
     public void PrepareNewDeck()
     {
         Separator.SetActive(false);
+        SeparatorTransform.position = SeparatorPosition;
         FillDeck();
         ShuffleDeck();
     }

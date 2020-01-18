@@ -10,6 +10,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private Dealer m_dealer = null;
     [SerializeField] private DeckHandler m_deckHandler = null;
     [SerializeField] private GameObject m_deckContainer = null;
+    [SerializeField] private GameObject m_shuffleDescription = null;
     [SerializeField] private Animator shuffleAnimator = null;
     [SerializeField] private AudioButton doubleAction;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
@@ -246,6 +247,11 @@ public class GameHandler : MonoBehaviour
         }
     }
 
+    public void OnSeparatorFound()
+    {
+        m_shuffleDescription.SetActive(true);
+    }
+
     IEnumerator ShowBetsOrRetryRoutine()
     {
         yield return Yielders.WaitForSeconds(1);
@@ -285,6 +291,7 @@ public class GameHandler : MonoBehaviour
 
     private void PlayShuffleAnimation()
     {
+        m_shuffleDescription.SetActive(false);
         shuffleAnimator.SetTrigger(shuffleTrigger);
     }
 
@@ -297,7 +304,7 @@ public class GameHandler : MonoBehaviour
 
     IEnumerator ShuffleDeckRoutine()
     {
-        yield return Yielders.WaitForSeconds(1f);
+        yield return Yielders.WaitForSeconds(2f);
 
         InitializeElements();
         m_deckContainer.SetActive(false);
