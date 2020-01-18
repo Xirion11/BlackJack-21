@@ -86,11 +86,6 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DealCardToPlayer()
     {
-        if(delay > 0f)
-        {
-            yield return Yielders.WaitForSeconds(delay);
-        }
-
         DeckTopCard.DOScale(Vector3.zero, 0.2f);
         yield return Yielders.WaitForSeconds(0.2f);
 
@@ -113,11 +108,6 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DealCardToDealer()
     {
-        if (delay > 0f)
-        {
-            yield return Yielders.WaitForSeconds(delay);
-        }
-
         DeckTopCard.DOScale(Vector3.zero, 0.2f);
         yield return Yielders.WaitForSeconds(0.2f);
 
