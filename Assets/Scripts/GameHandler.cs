@@ -15,6 +15,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private GameObject m_splitCardsContainer = null;
     [SerializeField] private GameObject m_splitValueContainer = null;
     [SerializeField] private GameObject m_splitBlackjackContainer = null;
+    [SerializeField] private GameObject m_splitBustedContainer = null;
     [SerializeField] private GameObject m_playerBetContainer = null;
     [SerializeField] private GameObject m_playerSplitBetContainer = null;
     [SerializeField] private GameObject m_playerBetDoubleContainer = null;
@@ -97,6 +98,7 @@ public class GameHandler : MonoBehaviour
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
         GUI_Handler.Instance.HidePlayerBlackJack();
+        GUI_Handler.Instance.HidePlayerBusted();
         m_dealer.DealInitialCards();
     }
 
@@ -110,6 +112,7 @@ public class GameHandler : MonoBehaviour
         m_splitCardsContainer.SetActive(false);
         m_splitValueContainer.SetActive(false);
         m_splitBlackjackContainer.SetActive(false);
+        m_splitBustedContainer.SetActive(false);
         m_playerBetContainer.SetActive(false);
         m_playerSplitBetContainer.SetActive(false);
         m_playerBetDoubleContainer.SetActive(false);
@@ -265,6 +268,7 @@ public class GameHandler : MonoBehaviour
             m_playerSplitBetContainer.SetActive(true);
             m_splitCardsContainer.SetActive(true);
             m_splitValueContainer.SetActive(true);
+            m_splitBustedContainer.SetActive(true);
             m_splitBlackjackContainer.SetActive(true);
             m_dealer.SplitHand();
         }
@@ -275,7 +279,7 @@ public class GameHandler : MonoBehaviour
         if (m_player.IsHandBusted(forSplitHand))
         {
             m_dealer.OnPlayerBusted();
-            //TODO: Show Busted Message
+            GUI_Handler.Instance.ShowPlayerBusted(forSplitHand);
         }
         else
         {
