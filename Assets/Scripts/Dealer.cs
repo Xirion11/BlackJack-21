@@ -245,24 +245,37 @@ public class Dealer : MonoBehaviour
 
     public string UpdateHandValue()
     {
-        m_handValue = CalculateHandValue();
+        m_handValue = CalculateHandValue(true);
 
-        string valueString = m_handValue.ToString();
+        string valueString = string.Empty;
 
         if (m_aceInHand)
         {
-            int aceHandValue = m_handValue + LETTER_VALUE;
+            m_handValue += 1;
 
-            if (aceHandValue <= BLACKJACK)
+            if (m_handValue + LETTER_VALUE <= BLACKJACK)
             {
-                valueString = string.Format(templateAceValue, m_handValue, aceHandValue);
+                int lowerLimit = m_handValue;
+                int higherLimit = m_handValue + LETTER_VALUE;
+
+                m_handValue += LETTER_VALUE;
+
+                valueString = string.Format(templateAceValue, lowerLimit, higherLimit);
             }
+            else
+            {
+                valueString = m_handValue.ToString();
+            }
+        }
+        else
+        {
+            valueString = m_handValue.ToString();
         }
 
         return valueString;
     }
 
-    public int CalculateHandValue()
+    public int CalculateHandValue(bool withoutAce = false)
     {
         int result = 0;
         int value = 0;
@@ -270,12 +283,31 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < m_hand.Count; i++)
         {
             value = m_hand[i].GetCardValue();
+
             result += value;
+
+            if (value == 1 && withoutAce)
+            {
+                result -= value;
+            }
 
             //If the value is an Ace update flag
             if (value == 1)
             {
                 m_aceInHand = true;
+            }
+        }
+
+        if (!withoutAce)
+        {
+            if (m_aceInHand)
+            {
+                result += LETTER_VALUE;
+
+                if (result > BLACKJACK)
+                {
+                    result -= LETTER_VALUE;
+                }
             }
         }
 
@@ -356,7 +388,7 @@ public class Dealer : MonoBehaviour
 
         int handValue = CalculateHandValue();
 
-        if(handValue == BASEJACK && m_aceInHand)
+        if(handValue == BLACKJACK && m_aceInHand && m_hand.Count == 2)
         {
             result = true;
         }
@@ -405,6 +437,7 @@ public class Dealer : MonoBehaviour
     {
         m_player.ClearHand();
         ClearHand();
+        m_aceInHand = false;
 
         for (int i = 0; i < PlayerCardsObjects.Length; i++)
         {
