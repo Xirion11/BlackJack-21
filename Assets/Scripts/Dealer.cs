@@ -435,6 +435,11 @@ public class Dealer : MonoBehaviour
         return handValue > BLACKJACK;
     }
 
+    public bool IsSplitHandActive()
+    {
+        return currentHand == SECOND;
+    }
+
     private void ClearHand()
     {
         m_hand.Clear();

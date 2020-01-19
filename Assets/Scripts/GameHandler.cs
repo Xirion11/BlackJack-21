@@ -172,6 +172,7 @@ public class GameHandler : MonoBehaviour
     public void OnPlayerDoubled()
     {
         GUI_Handler.Instance.GUI_HidePlayerActions();
+
         m_hasPlayerDoubled = true;
         m_playerMoney -= m_currentBet;
         m_currentBet += m_currentBet;
@@ -215,7 +216,7 @@ public class GameHandler : MonoBehaviour
             {
                 if (!m_dealerBlackjack)
                 {
-                    doubleAction.interactable = false;
+                    //doubleAction.interactable = false;
                     m_splitButton.SetActive(false);
                     GUI_Handler.Instance.GUI_ShowPlayerActions();
                 }
@@ -225,6 +226,8 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerStand()
     {
+        m_hasPlayerDoubled = false;
+        doubleAction.interactable = true; 
         GUI_Handler.Instance.GUI_HidePlayerActions();
         m_dealer.OnPlayerStand();
     }
