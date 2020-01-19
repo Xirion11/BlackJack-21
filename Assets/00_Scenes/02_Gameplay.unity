@@ -14294,7 +14294,7 @@ PrefabInstance:
         type: 3}
       propertyPath: lbl_PlayerBet
       value: 
-      objectReference: {fileID: 1525230111}
+      objectReference: {fileID: 1137157833}
     - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
         type: 3}
       propertyPath: PlayerActionsContainer
@@ -14325,6 +14325,11 @@ PrefabInstance:
       propertyPath: PlayerSplitBustedTransform
       value: 
       objectReference: {fileID: 1228176194}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerBetTransform
+      value: 
+      objectReference: {fileID: 1137157832}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb65e6f7cf5044143a456485e1d20e05, type: 3}
 --- !u!4 &1657495554838754149 stripped
