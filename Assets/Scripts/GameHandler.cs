@@ -117,6 +117,8 @@ public class GameHandler : MonoBehaviour
         m_playerSplitBetContainer.SetActive(false);
         m_playerBetDoubleContainer.SetActive(false);
         m_playerSplitBetDoubleContainer.SetActive(false);
+        GUI_Handler.Instance.HidePlayerBlackJack();
+        GUI_Handler.Instance.HidePlayerBusted();
     }
 
     public void UpdatePlayerHandValue(bool forSplitHand = false)
