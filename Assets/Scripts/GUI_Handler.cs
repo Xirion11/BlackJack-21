@@ -87,15 +87,20 @@ public class GUI_Handler : MonoBehaviour
         }
         else
         {
-            SFXHandler.Instance.PlayNegativeUISfx();
-
-            PlayerMoneyTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
-                .OnComplete(()=> PlayerMoneyTransform.DOMove(PlayerMoneyTransform.position, 0.2f));
-
-            lbl_PlayerMoney.DOColor(Color.red, negativePunchDuration)
-                .SetEase(Ease.Flash, 6f, 1f)
-                .OnComplete(()=> lbl_PlayerMoney.DOColor(Color.white, 0.2f));
+            PlayNegativeCashFeedback();
         }
+    }
+
+    public void PlayNegativeCashFeedback()
+    {
+        SFXHandler.Instance.PlayNegativeUISfx();
+
+        PlayerMoneyTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
+            .OnComplete(() => PlayerMoneyTransform.DOMove(PlayerMoneyTransform.position, 0.2f));
+
+        lbl_PlayerMoney.DOColor(Color.red, negativePunchDuration)
+            .SetEase(Ease.Flash, 6f, 1f)
+            .OnComplete(() => lbl_PlayerMoney.DOColor(Color.white, 0.2f));
     }
 
     public void GUI_ClearBet()

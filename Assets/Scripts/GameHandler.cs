@@ -186,44 +186,54 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerDoubled()
     {
-        GUI_Handler.Instance.GUI_HidePlayerActions();
+        int playerMoney = PlayerPrefsManager.getPlayerMoney();
+        int nextBet = m_currentBet + m_currentBet;
 
-        m_hasPlayerDoubled = true;
-
-        bool isSplitHandAvailable = m_dealer.IsSplitHandAvailable();
-
-        PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
-
-        if (isSplitHandAvailable)
+        if (nextBet > playerMoney)
         {
-            bool isSplitHandActive = m_dealer.IsSplitHandActive();
+            GUI_Handler.Instance.PlayNegativeCashFeedback();
+        }
+        else
+        {
+            GUI_Handler.Instance.GUI_HidePlayerActions();
 
-            if (isSplitHandActive)
+            m_hasPlayerDoubled = true;
+
+            bool isSplitHandAvailable = m_dealer.IsSplitHandAvailable();
+
+            PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
+
+            if (isSplitHandAvailable)
             {
-                m_playerMoney -= m_currentSplitBet;
-                m_currentSplitBet += m_currentSplitBet;
-                lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-                m_playerBetDoubleContainer.SetActive(true);
+                bool isSplitHandActive = m_dealer.IsSplitHandActive();
+
+                if (isSplitHandActive)
+                {
+                    m_playerMoney -= m_currentSplitBet;
+                    m_currentSplitBet += m_currentSplitBet;
+                    lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+                    m_playerBetDoubleContainer.SetActive(true);
+                }
+                else
+                {
+                    m_playerMoney -= m_currentBet;
+                    m_currentBet += m_currentBet;
+                    lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+                    m_playerSplitBetDoubleContainer.SetActive(true);
+                }
             }
             else
             {
                 m_playerMoney -= m_currentBet;
                 m_currentBet += m_currentBet;
-                lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                m_playerSplitBetDoubleContainer.SetActive(true);
+                lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+                m_playerBetDoubleContainer.SetActive(true);
             }
-        }
-        else
-        {
-            m_playerMoney -= m_currentBet;
-            m_currentBet += m_currentBet;
-            lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-            m_playerBetDoubleContainer.SetActive(true);
-        }
-        
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
 
-        OnPlayerHit();
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+
+            OnPlayerHit();
+        }
     }
 
     public void OnPlayerHit()
@@ -236,18 +246,28 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerSplit()
     {
-        m_playerMoney -= m_currentBet;
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
-        PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
-        m_currentSplitBet = m_currentBet;
-        GUI_Handler.Instance.GUI_HidePlayerActions();
-        m_splitButton.SetActive(false);
-        lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-        m_playerSplitBetContainer.SetActive(true);
-        m_splitCardsContainer.SetActive(true);
-        m_splitValueContainer.SetActive(true);
-        m_splitBlackjackContainer.SetActive(true);
-        m_dealer.SplitHand();
+        int playerMoney = PlayerPrefsManager.getPlayerMoney();
+        int nextBet = m_currentBet + m_currentBet;
+
+        if (nextBet > playerMoney)
+        {
+            GUI_Handler.Instance.PlayNegativeCashFeedback();
+        }
+        else
+        {
+            m_playerMoney -= m_currentBet;
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+            PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
+            m_currentSplitBet = m_currentBet;
+            GUI_Handler.Instance.GUI_HidePlayerActions();
+            m_splitButton.SetActive(false);
+            lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+            m_playerSplitBetContainer.SetActive(true);
+            m_splitCardsContainer.SetActive(true);
+            m_splitValueContainer.SetActive(true);
+            m_splitBlackjackContainer.SetActive(true);
+            m_dealer.SplitHand();
+        }
     }
 
     public void OnPlayerCardDrawn(bool forSplitHand = false)
