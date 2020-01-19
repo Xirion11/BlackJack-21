@@ -10,12 +10,14 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform BettingStation = null;
     [SerializeField] private Transform RetryStation = null;
     [SerializeField] private Transform PlayerMoneyTransform = null;
+    [SerializeField] private Transform PlayerBetTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
     [SerializeField] private Transform PlayerBlackJackTransform = null;
     [SerializeField] private Transform PlayerSplitBlackJackTransform = null;
     [SerializeField] private Transform PlayerBustedTransform = null;
     [SerializeField] private Transform PlayerSplitBustedTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
+    [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
 
     [Header("Feedback Parameters")]
     [SerializeField] private Vector3 bettingPunch;
@@ -123,6 +125,18 @@ public class GUI_Handler : MonoBehaviour
             .OnComplete(() => lbl_PlayerMoney.DOColor(Color.white, 0.2f));
     }
 
+    public void PlayInvalidBetFeedback()
+    {
+        SFXHandler.Instance.PlayNegativeUISfx();
+
+        PlayerBetTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
+            .OnComplete(() => PlayerBetTransform.DOMove(PlayerBetTransform.position, 0.2f));
+
+        lbl_PlayerBet.DOColor(Color.red, negativePunchDuration)
+            .SetEase(Ease.Flash, 6f, 1f)
+            .OnComplete(() => lbl_PlayerBet.DOColor(Color.white, 0.2f));
+    }
+
     public void GUI_ClearBet()
     {
         GameHandler.Instance.ClearCurrentBet();
@@ -137,7 +151,7 @@ public class GUI_Handler : MonoBehaviour
         }
         else
         {
-            //TODO: Negative feedback
+            PlayInvalidBetFeedback();
         }
     }
 
