@@ -54,8 +54,9 @@ public class GUI_Handler : MonoBehaviour
         BettingStation.DOScale(Vector3.one, 0.2f);
     }
 
-    public void ShowPlayerBlackJack()
+    public void ShowPlayerBlackJack(bool forSplitHand = false)
     {
+        //TODO: Adapt for 2 hands (Split)
         PlayerBlackJackTransform.DOScale(Vector3.one, 0.2f);
     }
 
@@ -137,6 +138,11 @@ public class GUI_Handler : MonoBehaviour
     public void GUI_Hit()
     {
         GameHandler.Instance.OnPlayerHit();
+    }
+
+    public void GUI_Split()
+    {
+        GameHandler.Instance.OnPlayerSplit();
     }
 
     public void GUI_Stand()

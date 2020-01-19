@@ -11,18 +11,23 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private DeckHandler m_deckHandler = null;
     [SerializeField] private GameObject m_deckContainer = null;
     [SerializeField] private GameObject m_shuffleDescription = null;
+    [SerializeField] private GameObject m_splitButton = null;
+    [SerializeField] private GameObject m_splitCardsContainer = null;
+    [SerializeField] private GameObject m_splitValueContainer = null;
+    [SerializeField] private GameObject m_splitBlackjackContainer = null;
     [SerializeField] private Animator shuffleAnimator = null;
     [SerializeField] private AudioButton doubleAction;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_betStationBet = null;
     [SerializeField] private TextMeshProUGUI lbl_playerHandValue = null;
+    [SerializeField] private TextMeshProUGUI lbl_playerSplitHandValue = null;
     [SerializeField] private TextMeshProUGUI lbl_dealerHandValue = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
 
     int m_currentBet = 0;
     int m_playerMoney = 0;
     const int BLACKJACK = 21;
-    bool m_playerBlackjack = false;
+    //bool m_playerBlackjack = false;
     bool m_dealerBlackjack = false;
     bool m_hasPlayerDoubled = false;
     const string moneyTemplate = "${0}";
@@ -75,7 +80,7 @@ public class GameHandler : MonoBehaviour
 
     public void OnBetsReady()
     {
-        m_playerBlackjack = false;
+        //m_playerBlackjack = false;
         m_dealerBlackjack = false;
         InitializeElements();
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
@@ -89,14 +94,28 @@ public class GameHandler : MonoBehaviour
         //Hide Player's and Dealer's cards
         m_dealer.CleanTable();
         lbl_playerHandValue.SetText(string.Empty);
+        lbl_playerSplitHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
+        m_splitCardsContainer.SetActive(false);
+        m_splitValueContainer.SetActive(false);
+        m_splitBlackjackContainer.SetActive(false);
     }
 
-    public void UpdatePlayerHandValue()
+    public void UpdatePlayerHandValue(bool forSplitHand = false)
     {
-        if (!m_playerBlackjack)
+        bool playerHasBlackJack = m_player.PlayerHasBlackJack(forSplitHand);
+
+        if (!playerHasBlackJack)
         {
-            lbl_playerHandValue.SetText(m_player.UpdateHandValue());
+            string value = m_player.UpdateHandValue(forSplitHand);
+            if (forSplitHand)
+            {
+                lbl_playerSplitHandValue.SetText(value);
+            }
+            else
+            {
+                lbl_playerHandValue.SetText(value);
+            }
         }
     }
 
@@ -110,11 +129,18 @@ public class GameHandler : MonoBehaviour
 
     public void OnInitialHandsReady()
     {
-        if (!m_playerBlackjack && !m_dealerBlackjack)
+        bool playerHasBlackJack = m_player.PlayerHasBlackJack();
+
+        if (!playerHasBlackJack && !m_dealerBlackjack)
         {
             m_hasPlayerDoubled = false;
             doubleAction.interactable = true;
-            //TODO: Splits ?
+
+            if (m_player.IsSplitAvailable())
+            {
+                m_splitButton.SetActive(true);
+            }
+
             GUI_Handler.Instance.GUI_ShowPlayerActions();
         }
         else
@@ -123,11 +149,18 @@ public class GameHandler : MonoBehaviour
         }
     }
 
-    public void OnPlayerBlackJack()
+    public void OnPlayerBlackJack(bool forSplitHand = false)
     {
-        m_playerBlackjack = true;
-        lbl_playerHandValue.SetText(string.Empty);
-        GUI_Handler.Instance.ShowPlayerBlackJack();
+        if (forSplitHand)
+        {
+            lbl_playerSplitHandValue.SetText(string.Empty);
+        }
+        else
+        {
+            lbl_playerHandValue.SetText(string.Empty);
+        }
+        
+        GUI_Handler.Instance.ShowPlayerBlackJack(forSplitHand);
     }
 
     public void OnDealerBlackJack()
@@ -151,16 +184,26 @@ public class GameHandler : MonoBehaviour
     {
         GUI_Handler.Instance.GUI_HidePlayerActions();
         doubleAction.interactable = false;
+        m_splitButton.SetActive(false);
         m_dealer.DealNewCardToPlayer();
     }
 
-    public void OnPlayerCardDrawn()
+    public void OnPlayerSplit()
     {
-        if (m_player.IsHandBusted())
+        GUI_Handler.Instance.GUI_HidePlayerActions();
+        m_splitButton.SetActive(false);
+        m_splitCardsContainer.SetActive(true);
+        m_splitValueContainer.SetActive(true);
+        m_splitBlackjackContainer.SetActive(true);
+        m_dealer.SplitHand();
+    }
+
+    public void OnPlayerCardDrawn(bool forSplitHand = false)
+    {
+        if (m_player.IsHandBusted(forSplitHand))
         {
             m_dealer.OnPlayerBusted();
             //TODO: Show Busted Message
-            OnMatchEnded();
         }
         else
         {
@@ -173,6 +216,7 @@ public class GameHandler : MonoBehaviour
                 if (!m_dealerBlackjack)
                 {
                     doubleAction.interactable = false;
+                    m_splitButton.SetActive(false);
                     GUI_Handler.Instance.GUI_ShowPlayerActions();
                 }
             }
@@ -182,15 +226,18 @@ public class GameHandler : MonoBehaviour
     public void OnPlayerStand()
     {
         GUI_Handler.Instance.GUI_HidePlayerActions();
-        m_dealer.DrawHand();
+        m_dealer.OnPlayerStand();
     }
 
     public void OnMatchEnded()
     {
         int playerHand = m_player.CalculateHandValue();
+        //TODO: Check if there is a split
         int dealerHand = m_dealer.CalculateHandValue();
 
-        if (m_playerBlackjack)
+        bool playerHasBlackJack = m_player.PlayerHasBlackJack();
+
+        if (playerHasBlackJack)
         {
             playerHand = BLACKJACK;
         }
@@ -201,11 +248,11 @@ public class GameHandler : MonoBehaviour
         }
 
         Debug.Log("Player Money: " + m_playerMoney, this);
-        if ((m_playerBlackjack && !m_dealerBlackjack) || m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted()))
+        if ((playerHasBlackJack && !m_dealerBlackjack) || m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted()))
         {
             float prize = m_currentBet;
 
-            if (m_playerBlackjack)
+            if (playerHasBlackJack)
             {
                 prize += m_currentBet * 1.5f;
             }
@@ -217,7 +264,7 @@ public class GameHandler : MonoBehaviour
             PlayerPrefsManager.IncreasePlayerMoney((int)prize);
             Debug.Log("Player win. Bet: " + prize + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
-        else if ((!m_playerBlackjack && m_dealerBlackjack) || m_player.IsHandBusted() || dealerHand > playerHand)
+        else if ((!playerHasBlackJack && m_dealerBlackjack) || m_player.IsHandBusted() || dealerHand > playerHand)
         {
             Debug.Log("Dealer win. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }

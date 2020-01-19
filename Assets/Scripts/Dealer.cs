@@ -19,13 +19,25 @@ public class Dealer : MonoBehaviour
     [SerializeField] private Image[] PlayerCardsImages;
     [SerializeField] private Image[] DealerCardsImages;
 
+    [Header("Split Hand")]
+    [SerializeField] private GameObject[] PlayerSplitCardsObjects;
+    [SerializeField] private Transform[] PlayerSplitCardsTransforms;
+    [SerializeField] private Image[] PlayerSplitCardsImages;
+    [SerializeField] private HorizontalLayoutGroup baseCardsLayout;
+    [SerializeField] private Image HandIndicatorImage;
+    [SerializeField] private RectTransform HandIndicatorTransform;
+    [SerializeField] private RectTransform HandIndicatorSecondPosition;
+
     private int currentPlayerCard = 0;
+    private int currentPlayerSplitCard = 0;
     private int currentDealerCard = 0;
+    private int currentHand = 0;
 
     private int m_handValue = 0;
     private bool m_aceInHand = false;
     private bool m_isInitialDeal = true;
     private bool m_isBlackJack = false;
+    private bool m_isSplitActive = false;
 
     string templateAceValue = "{0}/{1}";
 
@@ -33,10 +45,17 @@ public class Dealer : MonoBehaviour
     const int BLACKJACK = 21;
     const int LETTER_VALUE = 10;
     const int LIMIT_VALUE = 17;
+    const int FIRST = 0;
+    const int SECOND = 1;
+    private const int DEFAULT_SPACING = 10;
+    private const int SPLIT_SPACING = -90;
+
+    Vector3 InitialHandIndicatorPosition;
 
     private void Start()
     {
         m_hand = new List<Card>();
+        InitialHandIndicatorPosition = HandIndicatorTransform.position;
     }
     
     public void DealInitialCards()
@@ -76,7 +95,8 @@ public class Dealer : MonoBehaviour
 
     public void DealNewCardToPlayer()
     {
-        StartCoroutine(DealCardToPlayer());
+        bool isForSplitHand = currentHand == SECOND;
+        StartCoroutine(DealCardToPlayer(isForSplitHand));
     }
 
     private void RestoreDeckTopCard()
@@ -84,25 +104,44 @@ public class Dealer : MonoBehaviour
         DeckTopCard.localScale = Vector3.one;
     }
 
-    IEnumerator DealCardToPlayer()
+    IEnumerator DealCardToPlayer(bool forSplitHand = false)
     {
         DeckTopCard.DOScale(Vector3.zero, 0.2f);
         yield return Yielders.WaitForSeconds(0.2f);
 
-        int tmpIndex = currentPlayerCard;
+        int tmpIndex = forSplitHand ? currentPlayerSplitCard : currentPlayerCard;
 
-        m_player.AddCard(DeckHandler.Instance.DrawCard());
-        PlayerCardsObjects[currentPlayerCard].SetActive(true);
-        PlayerCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
-            .OnComplete(() => ShowPlayerCard(tmpIndex));
+        m_player.AddCard(DeckHandler.Instance.DrawCard(), forSplitHand);
+
+        if (forSplitHand)
+        {
+            PlayerSplitCardsObjects[tmpIndex].SetActive(true);
+            PlayerSplitCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
+                .OnComplete(() => ShowPlayerCard(tmpIndex, forSplitHand));
+            currentPlayerSplitCard += 1;
+        }
+        else
+        {
+            PlayerCardsObjects[tmpIndex].SetActive(true);
+            PlayerCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
+                .OnComplete(() => ShowPlayerCard(tmpIndex, forSplitHand));
+            currentPlayerCard += 1;
+        }
+
         RestoreDeckTopCard();        
         SFXHandler.Instance.PlayCardSound();
 
-        currentPlayerCard += 1;
-
         if (!m_isInitialDeal)
         {
-            GameHandler.Instance.OnPlayerCardDrawn();
+            if (currentHand == SECOND && m_player.PlayerHasBlackJack() && m_player.PlayerHasBlackJack(true))
+            {
+                DrawHand();
+            }
+            else
+            {
+                HandIndicatorImage.enabled = true;
+                GameHandler.Instance.OnPlayerCardDrawn(forSplitHand);
+            }            
         }
     }
 
@@ -123,10 +162,18 @@ public class Dealer : MonoBehaviour
         currentDealerCard += 1;
     }
 
-    private void ShowPlayerCard(int index)
+    private void ShowPlayerCard(int index, bool forSplitHand = false)
     {
-        PlayerCardsImages[index].sprite = DeckHandler.Instance.GetCardSprite(m_player.GetCard(index));
-        GameHandler.Instance.UpdatePlayerHandValue();
+        if (forSplitHand)
+        {
+            PlayerSplitCardsImages[index].sprite = DeckHandler.Instance.GetCardSprite(m_player.GetCard(index, forSplitHand));
+        }
+        else
+        {
+            PlayerCardsImages[index].sprite = DeckHandler.Instance.GetCardSprite(m_player.GetCard(index, forSplitHand));
+        }
+        
+        GameHandler.Instance.UpdatePlayerHandValue(forSplitHand);
     }
 
     private void ShowDealerCard(int index)
@@ -146,6 +193,39 @@ public class Dealer : MonoBehaviour
     private void AddCard(Card newCard)
     {
         m_hand.Add(newCard);
+    }
+
+    public void SplitHand()
+    {
+        StartCoroutine(SplitHandRoutine());
+    }
+
+    IEnumerator SplitHandRoutine()
+    {
+        m_player.SplitHand();
+        currentHand = SECOND;
+
+        PlayerCardsTransforms[SECOND].DOScale(Vector3.zero, 0.2f)
+                .OnComplete(() => PlayerCardsObjects[SECOND].SetActive(false));
+
+        yield return Yielders.WaitForSeconds(0.2f);
+
+        GameHandler.Instance.UpdatePlayerHandValue(false);
+        baseCardsLayout.spacing = SPLIT_SPACING;
+
+        PlayerSplitCardsObjects[FIRST].SetActive(true);
+        PlayerSplitCardsTransforms[FIRST].DOScale(Vector3.one, 0.2f)
+            .OnComplete(() => ShowPlayerCard(FIRST, true));
+
+        currentPlayerCard = 1;
+        currentPlayerSplitCard = 1;
+
+        yield return Yielders.WaitForSeconds(0.2f);
+
+        StartCoroutine(DealCardToPlayer(false));
+        yield return Yielders.WaitForSeconds(0.4f);
+
+        StartCoroutine(DealCardToPlayer(true));
     }
 
     public string UpdateHandValue()
@@ -189,8 +269,65 @@ public class Dealer : MonoBehaviour
 
     public void OnPlayerBusted()
     {
-        //Reveal cards
-        ShowDealerCard(1);
+        if (currentHand == SECOND) //Split Hand
+        {
+            currentHand = FIRST;
+
+            if (m_player.PlayerHasBlackJack())
+            {
+                ResetHandIndicator();
+                DrawHand();
+            }
+            else
+            {
+                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, 0.2f)
+                    .OnComplete(() => GUI_Handler.Instance.GUI_ShowPlayerActions());
+            }
+        }
+        else //Base Hand
+        {
+            ResetHandIndicator();
+
+            if (m_player.IsHandBusted(true))
+            {
+                ShowDealerCard(1);
+                GameHandler.Instance.OnMatchEnded();
+            }
+            else
+            {
+                DrawHand();
+            }
+        }
+    }
+
+    public void OnPlayerStand()
+    {
+        if (currentHand == SECOND) //Split Hand
+        {
+            currentHand = FIRST;
+
+            if (m_player.PlayerHasBlackJack())
+            {
+                ResetHandIndicator();
+                DrawHand();
+            }
+            else
+            {
+                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, 0.2f)
+                    .OnComplete(() => GUI_Handler.Instance.GUI_ShowPlayerActions());
+            }
+        }
+        else //Base Hand
+        {
+            ResetHandIndicator();
+            DrawHand();
+        }
+    }
+
+    private void ResetHandIndicator()
+    {
+        HandIndicatorImage.enabled = false;
+        HandIndicatorTransform.position = InitialHandIndicatorPosition;
     }
 
     public void DrawHand()
@@ -214,7 +351,7 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DrawHandRoutine()
     {
-        ShowDealerCard(1);
+        ShowDealerCard(SECOND);
 
         if (!m_isBlackJack)
         {
@@ -259,6 +396,10 @@ public class Dealer : MonoBehaviour
             PlayerCardsObjects[i].SetActive(false);
             PlayerCardsTransforms[i].localScale = Vector3.zero;
             PlayerCardsImages[i].sprite = m_cardBack;
+
+            PlayerSplitCardsObjects[i].SetActive(false);
+            PlayerSplitCardsTransforms[i].localScale = Vector3.zero;
+            PlayerSplitCardsImages[i].sprite = m_cardBack;
         }
 
         for (int i = 0; i < DealerCardsObjects.Length; i++)
@@ -268,8 +409,11 @@ public class Dealer : MonoBehaviour
             DealerCardsImages[i].sprite = m_cardBack;
         }
 
+        baseCardsLayout.spacing = DEFAULT_SPACING;
+
         m_isInitialDeal = true;
         currentPlayerCard = 0;
+        currentPlayerSplitCard = 0;
         currentDealerCard = 0;
     }
 
