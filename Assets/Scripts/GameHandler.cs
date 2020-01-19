@@ -190,16 +190,28 @@ public class GameHandler : MonoBehaviour
 
         m_hasPlayerDoubled = true;
 
-        bool isSplitHandActive = m_dealer.IsSplitHandActive();
+        bool isSplitHandAvailable = m_dealer.IsSplitHandAvailable();
 
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
 
-        if (isSplitHandActive)
+        if (isSplitHandAvailable)
         {
-            m_playerMoney -= m_currentSplitBet;
-            m_currentSplitBet += m_currentSplitBet;
-            lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-            m_playerSplitBetDoubleContainer.SetActive(true);            
+            bool isSplitHandActive = m_dealer.IsSplitHandActive();
+
+            if (isSplitHandActive)
+            {
+                m_playerMoney -= m_currentSplitBet;
+                m_currentSplitBet += m_currentSplitBet;
+                lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+                m_playerBetDoubleContainer.SetActive(true);
+            }
+            else
+            {
+                m_playerMoney -= m_currentBet;
+                m_currentBet += m_currentBet;
+                lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+                m_playerSplitBetDoubleContainer.SetActive(true);
+            }
         }
         else
         {
