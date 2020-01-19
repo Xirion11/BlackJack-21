@@ -268,6 +268,7 @@ public class Dealer : MonoBehaviour
     {
         int result = 0;
         int value = 0;
+        bool aceAlreadyExcluded = false;
 
         for (int i = 0; i < m_hand.Count; i++)
         {
@@ -275,9 +276,10 @@ public class Dealer : MonoBehaviour
 
             result += value;
 
-            if (value == 1 && withoutAce)
+            if (value == 1 && withoutAce && !aceAlreadyExcluded)
             {
                 result -= value;
+                aceAlreadyExcluded = true;
             }
 
             //If the value is an Ace update flag
@@ -405,17 +407,7 @@ public class Dealer : MonoBehaviour
 
                 yield return Yielders.WaitForSeconds(0.4f);
 
-                handValue = m_handValue;
-
-                if (m_aceInHand)
-                {
-                    handValue += LETTER_VALUE;
-
-                    if(handValue > BLACKJACK)
-                    {
-                        handValue -= LETTER_VALUE;
-                    }
-                }
+                handValue = CalculateHandValue();
             }
         }
 

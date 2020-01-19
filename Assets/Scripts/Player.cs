@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
         int result = 0;
         int value = 0;
         int length = forSplitHand ? m_splitHand.Count : m_hand.Count;
+        bool aceAlreadyExcluded = false;
 
         for (int i = 0; i < length; i++)
         {
@@ -118,9 +119,10 @@ public class Player : MonoBehaviour
 
             result += value;
 
-            if (value == 1 && withoutAce)
+            if (value == 1 && withoutAce && !aceAlreadyExcluded)
             {
                 result -= value;
+                aceAlreadyExcluded = true;
             }
 
             //If the value is an Ace update flag
