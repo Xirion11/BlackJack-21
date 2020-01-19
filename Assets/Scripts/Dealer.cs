@@ -255,22 +255,11 @@ public class Dealer : MonoBehaviour
 
             if (m_handValue + LETTER_VALUE <= BLACKJACK)
             {
-                int lowerLimit = m_handValue;
-                int higherLimit = m_handValue + LETTER_VALUE;
-
                 m_handValue += LETTER_VALUE;
+            }
+        }
 
-                valueString = string.Format(templateAceValue, lowerLimit, higherLimit);
-            }
-            else
-            {
-                valueString = m_handValue.ToString();
-            }
-        }
-        else
-        {
-            valueString = m_handValue.ToString();
-        }
+        valueString = m_handValue.ToString();
 
         return valueString;
     }
