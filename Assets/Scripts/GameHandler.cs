@@ -143,7 +143,7 @@ public class GameHandler : MonoBehaviour
     {
         if (!m_dealerBlackjack)
         {
-            lbl_dealerHandValue.SetText(m_dealer.UpdateHandValue());
+            lbl_dealerHandValue.SetText(m_dealer.CalculateHandValue().ToString());
         }
     }
 

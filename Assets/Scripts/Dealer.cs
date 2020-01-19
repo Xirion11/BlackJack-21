@@ -326,9 +326,9 @@ public class Dealer : MonoBehaviour
         {
             ResetHandIndicator();
 
-            if (m_player.IsHandBusted(true))
+            if (m_player.IsHandBusted())
             {
-                ShowDealerCard(1);
+                ShowDealerCard(SECOND);
                 GameHandler.Instance.OnMatchEnded();
             }
             else
@@ -397,7 +397,12 @@ public class Dealer : MonoBehaviour
 
             if (m_aceInHand)
             {
-                handValue += 10;
+                handValue += LETTER_VALUE;
+
+                if(handValue > BLACKJACK)
+                {
+                    handValue -= LETTER_VALUE;
+                }
             }
 
             //Stay on 17, Draw to 16
@@ -405,7 +410,7 @@ public class Dealer : MonoBehaviour
             {
                 StartCoroutine(DealCardToDealer());
 
-                yield return Yielders.WaitForSeconds(0.4f);
+                yield return Yielders.WaitForSeconds(0.5f);
 
                 handValue = CalculateHandValue();
             }
@@ -444,6 +449,7 @@ public class Dealer : MonoBehaviour
         currentPlayerCard = 0;
         currentPlayerSplitCard = 0;
         currentDealerCard = 0;
+        currentHand = FIRST;
     }
 
     public bool IsHandBusted()
