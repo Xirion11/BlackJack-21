@@ -70,26 +70,36 @@ public class Player : MonoBehaviour
 
     public string UpdateHandValue(bool forSplitHand = false)
     {
-        int handValue = CalculateHandValue(forSplitHand);
+        int handValueWithoutAce = CalculateHandValue(forSplitHand, true);
 
         bool aceInHand = IsAceInHand(forSplitHand);
 
-        string valueString = handValue.ToString();
+        string valueString = string.Empty;
 
         if (aceInHand)
         {
-            int aceHandValue = handValue + LETTER_VALUE;
+            int aceHandValue = handValueWithoutAce + 1;
 
-            if (aceHandValue <= BLACKJACK)
+            if (aceHandValue + LETTER_VALUE <= BLACKJACK)
             {
-                valueString = string.Format(templateAceValue, handValue, aceHandValue);
+                int lowerLimit = aceHandValue;
+                int higherLimit = aceHandValue + LETTER_VALUE;
+                valueString = string.Format(templateAceValue, lowerLimit, higherLimit);
             }
+            else
+            {
+                valueString = aceHandValue.ToString();
+            }
+        }
+        else
+        {
+            valueString = handValueWithoutAce.ToString();
         }
 
         return valueString;
     }
 
-    public int CalculateHandValue(bool forSplitHand = false)
+    public int CalculateHandValue(bool forSplitHand = false, bool withoutAce = false)
     {
         int result = 0;
         int value = 0;
@@ -108,6 +118,11 @@ public class Player : MonoBehaviour
 
             result += value;
 
+            if (value == 1 && withoutAce)
+            {
+                result -= value;
+            }
+
             //If the value is an Ace update flag
             if(value == 1)
             {
@@ -118,6 +133,19 @@ public class Player : MonoBehaviour
                 else
                 {
                     m_aceInHand = true;
+                }
+            }
+        }
+
+        if (!withoutAce)
+        {
+            if ((forSplitHand && m_aceInSplitHand) || !forSplitHand && m_aceInHand)
+            {
+                result += LETTER_VALUE;
+
+                if (result > BLACKJACK)
+                {
+                    result -= LETTER_VALUE;
                 }
             }
         }
@@ -153,12 +181,11 @@ public class Player : MonoBehaviour
     public bool PlayerHasBlackJack(bool forSplitHand = false)
     {
         bool result = false;
-
         int handValue = CalculateHandValue(forSplitHand);
-
         bool aceInHand = IsAceInHand(forSplitHand);
+        int cardsInHand = forSplitHand ? m_splitHand.Count : m_hand.Count;
 
-        result = handValue == BASEJACK && aceInHand;
+        result = handValue == BLACKJACK && aceInHand && cardsInHand == 2;
 
         return result;
     }

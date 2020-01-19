@@ -151,7 +151,10 @@ public class Dealer : MonoBehaviour
             }
             else 
             {
-                HandIndicatorImage.enabled = true;
+                if (m_player.HasPlayerSplitted())
+                {
+                    HandIndicatorImage.enabled = true;
+                }
                 GameHandler.Instance.OnPlayerCardDrawn(forSplitHand);
             }            
         }
