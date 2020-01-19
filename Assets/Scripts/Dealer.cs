@@ -135,9 +135,21 @@ public class Dealer : MonoBehaviour
         {
             if (currentHand == SECOND && m_player.PlayerHasBlackJack() && m_player.PlayerHasBlackJack(true))
             {
+                GUI_Handler.Instance.GUI_HidePlayerActions();
+                ResetHandIndicator();
                 DrawHand();
             }
-            else
+            else if (currentHand == SECOND && m_player.PlayerHasBlackJack(true))
+            {
+                currentHand = FIRST;
+
+                HandIndicatorTransform.position = HandIndicatorSecondPosition.position;
+
+                HandIndicatorImage.enabled = true;
+                
+                GUI_Handler.Instance.GUI_ShowPlayerActions();
+            }
+            else 
             {
                 HandIndicatorImage.enabled = true;
                 GameHandler.Instance.OnPlayerCardDrawn(forSplitHand);

@@ -13,6 +13,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
     [SerializeField] private Transform PlayerBlackJackTransform = null;
+    [SerializeField] private Transform PlayerSplitBlackJackTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
 
     [Header("Feedback Parameters")]
@@ -56,13 +57,20 @@ public class GUI_Handler : MonoBehaviour
 
     public void ShowPlayerBlackJack(bool forSplitHand = false)
     {
-        //TODO: Adapt for 2 hands (Split)
-        PlayerBlackJackTransform.DOScale(Vector3.one, 0.2f);
+        if (forSplitHand)
+        {
+            PlayerSplitBlackJackTransform.DOScale(Vector3.one, 0.2f);
+        }
+        else
+        {
+            PlayerBlackJackTransform.DOScale(Vector3.one, 0.2f);
+        }
     }
 
     public void HidePlayerBlackJack()
     {
         PlayerBlackJackTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerSplitBlackJackTransform.DOScale(Vector3.zero, 0.2f);
     }
 
     public void GUI_IncreaseBet(int index)
