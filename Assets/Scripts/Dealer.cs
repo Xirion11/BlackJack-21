@@ -440,6 +440,11 @@ public class Dealer : MonoBehaviour
         return currentHand == SECOND;
     }
 
+    public bool IsSplitHandAvailable()
+    {
+        return m_player.HasPlayerSplitted();
+    }
+
     private void ClearHand()
     {
         m_hand.Clear();

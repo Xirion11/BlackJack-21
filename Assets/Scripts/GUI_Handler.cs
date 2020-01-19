@@ -6,7 +6,6 @@ using DG.Tweening;
 
 public class GUI_Handler : MonoBehaviour
 {
-    [SerializeField] private GameObject PlayerBetContainer = null;
     [SerializeField] private GameObject PlayerActionsContainer = null;
     [SerializeField] private Transform BettingStation = null;
     [SerializeField] private Transform RetryStation = null;
@@ -110,7 +109,6 @@ public class GUI_Handler : MonoBehaviour
         {
             BettingStation.DOScale(Vector3.zero, 0.2f)
                 .OnComplete(() => GameHandler.Instance.OnBetsReady());
-            PlayerBetContainer.SetActive(true);
         }
         else
         {

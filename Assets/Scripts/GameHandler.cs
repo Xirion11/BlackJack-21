@@ -15,6 +15,10 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private GameObject m_splitCardsContainer = null;
     [SerializeField] private GameObject m_splitValueContainer = null;
     [SerializeField] private GameObject m_splitBlackjackContainer = null;
+    [SerializeField] private GameObject m_playerBetContainer = null;
+    [SerializeField] private GameObject m_playerSplitBetContainer = null;
+    [SerializeField] private GameObject m_playerBetDoubleContainer = null;
+    [SerializeField] private GameObject m_playerSplitBetDoubleContainer = null;
     [SerializeField] private Animator shuffleAnimator = null;
     [SerializeField] private AudioButton doubleAction;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
@@ -23,8 +27,10 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_playerSplitHandValue = null;
     [SerializeField] private TextMeshProUGUI lbl_dealerHandValue = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
+    [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
 
     int m_currentBet = 0;
+    int m_currentSplitBet = 0;
     int m_playerMoney = 0;
     const int BLACKJACK = 21;
     //bool m_playerBlackjack = false;
@@ -78,11 +84,16 @@ public class GameHandler : MonoBehaviour
         return m_currentBet;
     }
 
+    public int GetCurrentSplitBet()
+    {
+        return m_currentSplitBet;
+    }
+
     public void OnBetsReady()
     {
-        //m_playerBlackjack = false;
         m_dealerBlackjack = false;
         InitializeElements();
+        m_playerBetContainer.SetActive(true);
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
         GUI_Handler.Instance.HidePlayerBlackJack();
@@ -99,6 +110,10 @@ public class GameHandler : MonoBehaviour
         m_splitCardsContainer.SetActive(false);
         m_splitValueContainer.SetActive(false);
         m_splitBlackjackContainer.SetActive(false);
+        m_playerBetContainer.SetActive(false);
+        m_playerSplitBetContainer.SetActive(false);
+        m_playerBetDoubleContainer.SetActive(false);
+        m_playerSplitBetDoubleContainer.SetActive(false);
     }
 
     public void UpdatePlayerHandValue(bool forSplitHand = false)
@@ -174,10 +189,28 @@ public class GameHandler : MonoBehaviour
         GUI_Handler.Instance.GUI_HidePlayerActions();
 
         m_hasPlayerDoubled = true;
-        m_playerMoney -= m_currentBet;
-        m_currentBet += m_currentBet;
+
+        bool isSplitHandActive = m_dealer.IsSplitHandActive();
+
+        PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
+
+        if (isSplitHandActive)
+        {
+            m_playerMoney -= m_currentSplitBet;
+            m_currentSplitBet += m_currentSplitBet;
+            lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+            m_playerSplitBetDoubleContainer.SetActive(true);            
+        }
+        else
+        {
+            m_playerMoney -= m_currentBet;
+            m_currentBet += m_currentBet;
+            lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+            m_playerBetDoubleContainer.SetActive(true);
+        }
+        
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
-        lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+
         OnPlayerHit();
     }
 
@@ -191,8 +224,14 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerSplit()
     {
+        m_playerMoney -= m_currentBet;
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
+        m_currentSplitBet = m_currentBet;
         GUI_Handler.Instance.GUI_HidePlayerActions();
         m_splitButton.SetActive(false);
+        lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+        m_playerSplitBetContainer.SetActive(true);
         m_splitCardsContainer.SetActive(true);
         m_splitValueContainer.SetActive(true);
         m_splitBlackjackContainer.SetActive(true);
@@ -234,12 +273,37 @@ public class GameHandler : MonoBehaviour
 
     public void OnMatchEnded()
     {
-        int playerHand = m_player.CalculateHandValue();
-        //TODO: Check if there is a split
-        int dealerHand = m_dealer.CalculateHandValue();
+        int dealerCardValue = m_dealer.CalculateHandValue();
 
-        bool playerHasBlackJack = m_player.PlayerHasBlackJack();
+        CalculateReward(m_player.CalculateHandValue(), dealerCardValue, m_player.PlayerHasBlackJack());
 
+        if (m_dealer.IsSplitHandAvailable())
+        {
+            CalculateReward(m_player.CalculateHandValue(true), dealerCardValue, m_player.PlayerHasBlackJack(true));
+        }
+
+        m_currentBet = 0;
+        m_currentSplitBet = 0;
+
+        //TODO: Show Loser/Winner
+        //TODO: Fade bet container
+
+        m_playerMoney = PlayerPrefsManager.getPlayerMoney();
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
+
+        if (m_deckHandler.IsCurrentDeckOver())
+        {
+            StartCoroutine(ShuffleDeckRoutine());
+        }
+        else
+        {
+            StartCoroutine(ShowBetsOrRetryRoutine());
+        }
+    }
+
+    private void CalculateReward(int playerHand, int dealerHand, bool playerHasBlackJack)
+    {
         if (playerHasBlackJack)
         {
             playerHand = BLACKJACK;
@@ -275,25 +339,6 @@ public class GameHandler : MonoBehaviour
         {
             PlayerPrefsManager.IncreasePlayerMoney(m_currentBet);
             Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
-        }
-
-        m_currentBet = 0;
-
-        //TODO: Update player money label
-        //TODO: Show Loser/Winner
-        //TODO: Fade bet container
-
-        m_playerMoney = PlayerPrefsManager.getPlayerMoney();
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
-        lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
-
-        if (m_deckHandler.IsCurrentDeckOver())
-        {
-            StartCoroutine(ShuffleDeckRoutine());
-        }
-        else
-        {
-            StartCoroutine(ShowBetsOrRetryRoutine());
         }
     }
 
@@ -365,6 +410,6 @@ public class GameHandler : MonoBehaviour
     [ContextMenu("Give Money")]
     public void CHEAT_GiveMoney()
     {
-        PlayerPrefsManager.setPlayerMoney(5);
+        PlayerPrefsManager.setPlayerMoney(1000);
     }
 }

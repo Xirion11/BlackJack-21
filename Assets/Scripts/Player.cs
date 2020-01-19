@@ -176,4 +176,9 @@ public class Player : MonoBehaviour
         m_hand.Clear();
         m_splitHand.Clear();
     }
+
+    public bool HasPlayerSplitted()
+    {
+        return m_splitHand.Count > 0;
+    }
 }
