@@ -5,7 +5,6 @@ using DG.Tweening;
 
 public class DeckHandler : MonoBehaviour
 {
-    [SerializeField] Sprite CardBack = null;
     [SerializeField] Sprite[] ClubSprites = null;
     [SerializeField] Sprite[] HeartSprites = null;
     [SerializeField] Sprite[] SpadeSprites = null;

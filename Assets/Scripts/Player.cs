@@ -8,18 +8,10 @@ public class Player : MonoBehaviour
     [SerializeField] private List<Card> m_hand = null;
     [SerializeField] private List<Card> m_splitHand = null;
 
-    private int m_handValue = 0;
-    private int m_splitHandValue = 0;
     private bool m_aceInHand = false;
     private bool m_aceInSplitHand = false;
 
     string templateAceValue = "{0}/{1}";
-
-    const int BASEJACK = 11;
-    const int BLACKJACK = 21;
-    const int LETTER_VALUE = 10;
-    const int FIRST_CARD = 0;
-    const int SECOND_CARD = 1;
 
     private void Start()
     {
@@ -48,8 +40,8 @@ public class Player : MonoBehaviour
 
     public void SplitHand()
     {
-        m_splitHand.Add(m_hand[SECOND_CARD]);
-        m_hand.RemoveAt(SECOND_CARD);
+        m_splitHand.Add(m_hand[Constants.SECOND_CARD]);
+        m_hand.RemoveAt(Constants.SECOND_CARD);
     }
 
     public Card GetCard(int index, bool forSplitHand = false)
@@ -80,10 +72,10 @@ public class Player : MonoBehaviour
         {
             int aceHandValue = handValueWithoutAce + 1;
 
-            if (aceHandValue + LETTER_VALUE <= BLACKJACK)
+            if (aceHandValue + Constants.LETTER_VALUE <= Constants.BLACKJACK)
             {
                 int lowerLimit = aceHandValue;
-                int higherLimit = aceHandValue + LETTER_VALUE;
+                int higherLimit = aceHandValue + Constants.LETTER_VALUE;
                 valueString = string.Format(templateAceValue, lowerLimit, higherLimit);
             }
             else
@@ -143,11 +135,11 @@ public class Player : MonoBehaviour
         {
             if ((forSplitHand && m_aceInSplitHand) || !forSplitHand && m_aceInHand)
             {
-                result += LETTER_VALUE;
+                result += Constants.LETTER_VALUE;
 
-                if (result > BLACKJACK)
+                if (result > Constants.BLACKJACK)
                 {
-                    result -= LETTER_VALUE;
+                    result -= Constants.LETTER_VALUE;
                 }
             }
         }
@@ -187,7 +179,7 @@ public class Player : MonoBehaviour
         bool aceInHand = IsAceInHand(forSplitHand);
         int cardsInHand = forSplitHand ? m_splitHand.Count : m_hand.Count;
 
-        result = handValue == BLACKJACK && aceInHand && cardsInHand == 2;
+        result = handValue == Constants.BLACKJACK && aceInHand && cardsInHand == 2;
 
         return result;
     }
@@ -195,7 +187,7 @@ public class Player : MonoBehaviour
     public bool IsHandBusted(bool forSplitHand = false)
     {
         int handValue = CalculateHandValue(forSplitHand);
-        return handValue > BLACKJACK;
+        return handValue > Constants.BLACKJACK;
     }
 
     public void ClearHand()

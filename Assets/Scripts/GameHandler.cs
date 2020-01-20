@@ -24,7 +24,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private GameObject m_splitLoseContainer = null;
     [SerializeField] private Transform m_playerRewardTransform = null;
     [SerializeField] private Animator shuffleAnimator = null;
-    [SerializeField] private AudioButton doubleAction;
+    [SerializeField] private AudioButton doubleAction = null;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_betStationBet = null;
     [SerializeField] private TextMeshProUGUI lbl_playerHandValue = null;
@@ -37,7 +37,6 @@ public class GameHandler : MonoBehaviour
     float m_currentBet = 0;
     float m_currentSplitBet = 0;
     float m_playerMoney = 0;
-    const int BLACKJACK = 21;
     bool m_dealerBlackjack = false;
     bool m_hasPlayerDoubled = false;
     const string moneyTemplate = "${0}";
@@ -46,9 +45,6 @@ public class GameHandler : MonoBehaviour
     const string blackJack = "BlackJack";
     const string shuffleTrigger = "Shuffle";
     const string rewardTemplate = "+${0}";
-
-    const float STARTING_MONEY = 1000f;
-    const float MINIMUM_BET = 5f;
 
     public static GameHandler Instance { get; private set; }
 
@@ -398,12 +394,12 @@ public class GameHandler : MonoBehaviour
 
         if (playerHasBlackJack)
         {
-            playerHand = BLACKJACK;
+            playerHand = Constants.BLACKJACK;
         }
 
         if (m_dealerBlackjack)
         {
-            dealerHand = BLACKJACK;
+            dealerHand = Constants.BLACKJACK;
         }
 
         Debug.Log("Player Money: " + m_playerMoney, this);
@@ -456,7 +452,7 @@ public class GameHandler : MonoBehaviour
 
     private void ShowBetsOrRetry()
     {
-        if (m_playerMoney >= MINIMUM_BET)
+        if (m_playerMoney >= Constants.MINIMUM_BET)
         {
             GUI_Handler.Instance.ShowBettingStation();
         }
@@ -475,8 +471,8 @@ public class GameHandler : MonoBehaviour
 
     public void OnRetry()
     {
-        PlayerPrefsManager.setPlayerMoney(STARTING_MONEY);
-        m_playerMoney = STARTING_MONEY;
+        PlayerPrefsManager.setPlayerMoney(Constants.STARTING_MONEY);
+        m_playerMoney = Constants.STARTING_MONEY;
         InitializeElements();
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));

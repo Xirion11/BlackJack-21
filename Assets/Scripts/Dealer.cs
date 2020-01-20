@@ -11,22 +11,22 @@ public class Dealer : MonoBehaviour
     [SerializeField] private Sprite m_cardBack = null;
 
     [Header("Cards References")]
-    [SerializeField] private Transform DeckTopCard;
-    [SerializeField] private GameObject[] PlayerCardsObjects;
-    [SerializeField] private GameObject[] DealerCardsObjects;
-    [SerializeField] private Transform[] PlayerCardsTransforms;
-    [SerializeField] private Transform[] DealerCardsTransforms;
-    [SerializeField] private Image[] PlayerCardsImages;
-    [SerializeField] private Image[] DealerCardsImages;
+    [SerializeField] private Transform DeckTopCard = null;
+    [SerializeField] private GameObject[] PlayerCardsObjects = null;
+    [SerializeField] private GameObject[] DealerCardsObjects = null;
+    [SerializeField] private Transform[] PlayerCardsTransforms = null;
+    [SerializeField] private Transform[] DealerCardsTransforms = null;
+    [SerializeField] private Image[] PlayerCardsImages = null;
+    [SerializeField] private Image[] DealerCardsImages = null;
 
     [Header("Split Hand")]
-    [SerializeField] private GameObject[] PlayerSplitCardsObjects;
-    [SerializeField] private Transform[] PlayerSplitCardsTransforms;
-    [SerializeField] private Image[] PlayerSplitCardsImages;
-    [SerializeField] private HorizontalLayoutGroup baseCardsLayout;
-    [SerializeField] private Image HandIndicatorImage;
-    [SerializeField] private RectTransform HandIndicatorTransform;
-    [SerializeField] private RectTransform HandIndicatorSecondPosition;
+    [SerializeField] private GameObject[] PlayerSplitCardsObjects = null;
+    [SerializeField] private Transform[] PlayerSplitCardsTransforms = null;
+    [SerializeField] private Image[] PlayerSplitCardsImages = null;
+    [SerializeField] private HorizontalLayoutGroup baseCardsLayout = null;
+    [SerializeField] private Image HandIndicatorImage = null;
+    [SerializeField] private RectTransform HandIndicatorTransform = null;
+    [SerializeField] private RectTransform HandIndicatorSecondPosition = null;
 
     private int currentPlayerCard = 0;
     private int currentPlayerSplitCard = 0;
@@ -37,11 +37,7 @@ public class Dealer : MonoBehaviour
     private bool m_aceInHand = false;
     private bool m_isInitialDeal = true;
     private bool m_isBlackJack = false;
-
-    const int BASEJACK = 11;
-    const int BLACKJACK = 21;
-    const int LETTER_VALUE = 10;
-    const int LIMIT_VALUE = 17;
+        
     const int FIRST = 0;
     const int SECOND = 1;
     private const int DEFAULT_SPACING = 10;
@@ -250,9 +246,9 @@ public class Dealer : MonoBehaviour
         {
             m_handValue += 1;
 
-            if (m_handValue + LETTER_VALUE <= BLACKJACK)
+            if (m_handValue + Constants.LETTER_VALUE <= Constants.BLACKJACK)
             {
-                m_handValue += LETTER_VALUE;
+                m_handValue += Constants.LETTER_VALUE;
             }
         }
 
@@ -290,11 +286,11 @@ public class Dealer : MonoBehaviour
         {
             if (m_aceInHand)
             {
-                result += LETTER_VALUE;
+                result += Constants.LETTER_VALUE;
 
-                if (result > BLACKJACK)
+                if (result > Constants.BLACKJACK)
                 {
-                    result -= LETTER_VALUE;
+                    result -= Constants.LETTER_VALUE;
                 }
             }
         }
@@ -384,7 +380,7 @@ public class Dealer : MonoBehaviour
 
         int handValue = CalculateHandValue();
 
-        if(handValue == BLACKJACK && m_aceInHand && m_hand.Count == 2)
+        if(handValue == Constants.BLACKJACK && m_aceInHand && m_hand.Count == 2)
         {
             result = true;
         }
@@ -402,16 +398,16 @@ public class Dealer : MonoBehaviour
 
             if (m_aceInHand)
             {
-                handValue += LETTER_VALUE;
+                handValue += Constants.LETTER_VALUE;
 
-                if(handValue > BLACKJACK)
+                if(handValue > Constants.BLACKJACK)
                 {
-                    handValue -= LETTER_VALUE;
+                    handValue -= Constants.LETTER_VALUE;
                 }
             }
 
             //Stay on 17, Draw to 16
-            while (handValue < LIMIT_VALUE)
+            while (handValue < Constants.DEALER_LIMIT)
             {
                 StartCoroutine(DealCardToDealer());
 
@@ -420,7 +416,7 @@ public class Dealer : MonoBehaviour
                 handValue = CalculateHandValue();
             }
 
-            if(handValue > BLACKJACK)
+            if(handValue > Constants.BLACKJACK)
             {
                 GUI_Handler.Instance.ShowDealerBusted();
             }
@@ -467,7 +463,7 @@ public class Dealer : MonoBehaviour
     public bool IsHandBusted()
     {
         int handValue = CalculateHandValue();
-        return handValue > BLACKJACK;
+        return handValue > Constants.BLACKJACK;
     }
 
     public bool IsSplitHandActive()
