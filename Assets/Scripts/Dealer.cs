@@ -37,9 +37,6 @@ public class Dealer : MonoBehaviour
     private bool m_aceInHand = false;
     private bool m_isInitialDeal = true;
     private bool m_isBlackJack = false;
-    private bool m_isSplitActive = false;
-
-    string templateAceValue = "{0}/{1}";
 
     const int BASEJACK = 11;
     const int BLACKJACK = 21;
@@ -428,7 +425,6 @@ public class Dealer : MonoBehaviour
     {
         m_player.ClearHand();
         ClearHand();
-        m_aceInHand = false;
 
         for (int i = 0; i < PlayerCardsObjects.Length; i++)
         {
@@ -450,7 +446,10 @@ public class Dealer : MonoBehaviour
 
         baseCardsLayout.spacing = DEFAULT_SPACING;
 
+        m_handValue = 0;
+        m_aceInHand = false;
         m_isInitialDeal = true;
+        m_isBlackJack = false;
         currentPlayerCard = 0;
         currentPlayerSplitCard = 0;
         currentDealerCard = 0;

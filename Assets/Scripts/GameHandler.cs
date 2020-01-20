@@ -22,6 +22,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private GameObject m_playerSplitBetDoubleContainer = null;
     [SerializeField] private GameObject m_splitWinContainer = null;
     [SerializeField] private GameObject m_splitLoseContainer = null;
+    [SerializeField] private Transform m_playerRewardTransform = null;
     [SerializeField] private Animator shuffleAnimator = null;
     [SerializeField] private AudioButton doubleAction;
     [SerializeField] private TextMeshProUGUI lbl_playerMoney = null;
@@ -31,12 +32,12 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_dealerHandValue = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
+    [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
 
-    int m_currentBet = 0;
-    int m_currentSplitBet = 0;
-    int m_playerMoney = 0;
+    float m_currentBet = 0;
+    float m_currentSplitBet = 0;
+    float m_playerMoney = 0;
     const int BLACKJACK = 21;
-    //bool m_playerBlackjack = false;
     bool m_dealerBlackjack = false;
     bool m_hasPlayerDoubled = false;
     const string moneyTemplate = "${0}";
@@ -44,9 +45,10 @@ public class GameHandler : MonoBehaviour
     const string playerBetTemplate = "Your Bet<br>${0}";
     const string blackJack = "BlackJack";
     const string shuffleTrigger = "Shuffle";
+    const string rewardTemplate = "+${0}";
 
-    const int STARTING_MONEY = 1000;
-    const int MINIMUM_BET = 5;
+    const float STARTING_MONEY = 1000f;
+    const float MINIMUM_BET = 5f;
 
     public static GameHandler Instance { get; private set; }
 
@@ -59,41 +61,42 @@ public class GameHandler : MonoBehaviour
     void Start()
     {
         m_playerMoney = PlayerPrefsManager.getPlayerMoney();
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
         PlayShuffleAnimation();
     }
 
-    public void IncreaseCurrentBet(int increment)
+    public void IncreaseCurrentBet(float increment)
     {
         m_currentBet += increment;
         m_playerMoney -= increment;
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
     }
 
     public void ClearCurrentBet()
     {
         m_playerMoney += m_currentBet;
-        m_currentBet = 0;
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        m_currentBet = 0f;
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
     }
 
-    public int GetCurrentBet()
+    public float GetCurrentBet()
     {
         return m_currentBet;
     }
 
-    public int GetCurrentSplitBet()
+    public float GetCurrentSplitBet()
     {
         return m_currentSplitBet;
     }
 
     public void OnBetsReady()
     {
+        //m_lastBet = m_currentBet;
         m_dealerBlackjack = false;
         InitializeElements();
         m_playerBetContainer.SetActive(true);
@@ -110,6 +113,11 @@ public class GameHandler : MonoBehaviour
     private void InitializeElements()
     {
         //Hide Player's and Dealer's cards
+        //m_currentBet = 0;
+        //m_currentSplitBet = 0;
+        //m_dealerBlackjack = false;
+        //m_hasPlayerDoubled = false;
+
         m_dealer.CleanTable();
         lbl_playerHandValue.SetText(string.Empty);
         lbl_playerSplitHandValue.SetText(string.Empty);
@@ -201,8 +209,8 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerDoubled()
     {
-        int playerMoney = PlayerPrefsManager.getPlayerMoney();
-        int nextBet = m_currentBet + m_currentBet;
+        float playerMoney = PlayerPrefsManager.getPlayerMoney();
+        float nextBet = m_currentBet + m_currentBet;
 
         if (nextBet > playerMoney)
         {
@@ -245,7 +253,7 @@ public class GameHandler : MonoBehaviour
                 m_playerBetDoubleContainer.SetActive(true);
             }
 
-            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
 
             OnPlayerHit();
         }
@@ -261,8 +269,8 @@ public class GameHandler : MonoBehaviour
 
     public void OnPlayerSplit()
     {
-        int playerMoney = PlayerPrefsManager.getPlayerMoney();
-        int nextBet = m_currentBet + m_currentBet;
+        float playerMoney = PlayerPrefsManager.getPlayerMoney();
+        float nextBet = m_currentBet + m_currentBet;
 
         if (nextBet > playerMoney)
         {
@@ -271,7 +279,7 @@ public class GameHandler : MonoBehaviour
         else
         {
             m_playerMoney -= m_currentBet;
-            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
             PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
             m_currentSplitBet = m_currentBet;
             GUI_Handler.Instance.GUI_HidePlayerActions();
@@ -323,24 +331,55 @@ public class GameHandler : MonoBehaviour
 
     public void OnMatchEnded()
     {
+        float prize = 0;
         int dealerCardValue = m_dealer.CalculateHandValue();
 
-        CalculateReward(m_player.CalculateHandValue(), dealerCardValue, m_player.PlayerHasBlackJack(), false);
+        prize += CalculateReward(m_player.CalculateHandValue(), dealerCardValue, m_player.PlayerHasBlackJack(), false);
 
         if (m_dealer.IsSplitHandAvailable())
         {
-            CalculateReward(m_player.CalculateHandValue(true), dealerCardValue, m_player.PlayerHasBlackJack(true), true);
+            prize += CalculateReward(m_player.CalculateHandValue(true), dealerCardValue, m_player.PlayerHasBlackJack(true), true);
         }
 
+        //m_currentBet = m_lastBet;
         m_currentBet = 0;
         m_currentSplitBet = 0;
 
-        //TODO: Show Loser/Winner
         //TODO: Fade bet container
 
-        m_playerMoney = PlayerPrefsManager.getPlayerMoney();
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
-        lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
+        
+        lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
+
+        StartCoroutine(GiveRewardCoroutine(prize));
+    }
+
+    IEnumerator GiveRewardCoroutine(float prize)
+    {
+        if (prize > 0)
+        {
+            float increments = prize / 10f;
+            float targetMoney = m_playerMoney + prize;
+
+            lbl_PlayerReward.SetText(string.Format(rewardTemplate, prize.ToString("F2")));
+            m_playerRewardTransform.DOScale(Vector3.one, 0.2f);
+
+            yield return Yielders.WaitForSeconds(0.7f);
+
+            PlayerPrefsManager.IncreasePlayerMoney(prize);
+
+            while (m_playerMoney != targetMoney)
+            {
+                m_playerMoney += increments;
+                prize -= increments;
+                lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
+                lbl_PlayerReward.SetText(string.Format(rewardTemplate, prize.ToString("F2")));
+                yield return Yielders.WaitForSeconds(0.05f);
+            }
+
+            //yield return Yielders.WaitForSeconds(0.5f);
+        }
+
+        m_playerRewardTransform.DOScale(Vector3.zero, 0.2f);
 
         if (m_deckHandler.IsCurrentDeckOver())
         {
@@ -352,8 +391,10 @@ public class GameHandler : MonoBehaviour
         }
     }
 
-    private void CalculateReward(int playerHand, int dealerHand, bool playerHasBlackJack, bool forSplitHand)
+    private float CalculateReward(int playerHand, int dealerHand, bool playerHasBlackJack, bool forSplitHand)
     {
+        float prize = 0f;
+
         if (playerHasBlackJack)
         {
             playerHand = BLACKJACK;
@@ -367,7 +408,7 @@ public class GameHandler : MonoBehaviour
         Debug.Log("Player Money: " + m_playerMoney, this);
         if ((playerHasBlackJack && !m_dealerBlackjack) || m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted(forSplitHand)))
         {
-            float prize = m_currentBet;
+            prize = m_currentBet;
 
             if (playerHasBlackJack)
             {
@@ -380,7 +421,7 @@ public class GameHandler : MonoBehaviour
 
             GUI_Handler.Instance.ShowPlayerWin(forSplitHand);
 
-            PlayerPrefsManager.IncreasePlayerMoney((int)prize);
+            //PlayerPrefsManager.IncreasePlayerMoney(prize);
             Debug.Log("Player win. Bet: " + prize + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
         else if ((!playerHasBlackJack && m_dealerBlackjack) || m_player.IsHandBusted(forSplitHand) || dealerHand > playerHand)
@@ -397,6 +438,8 @@ public class GameHandler : MonoBehaviour
             PlayerPrefsManager.IncreasePlayerMoney(m_currentBet);
             Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
+
+        return prize;
     }
 
     public void OnSeparatorFound()
@@ -434,7 +477,7 @@ public class GameHandler : MonoBehaviour
         PlayerPrefsManager.setPlayerMoney(STARTING_MONEY);
         m_playerMoney = STARTING_MONEY;
         InitializeElements();
-        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney));
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString("F2")));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         m_deckHandler.PrepareNewDeck();

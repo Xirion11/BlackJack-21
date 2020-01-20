@@ -18,27 +18,27 @@ public class PlayerPrefsManager
         PlayerPrefs.Save();
     }
 
-    public static int getPlayerMoney()
+    public static float getPlayerMoney()
     {
-        return PlayerPrefs.GetInt(PLAYER_MONEY_KEY, 1000);
+        return PlayerPrefs.GetFloat(PLAYER_MONEY_KEY, 1000f);
     }
 
-    public static void setPlayerMoney(int value)
+    public static void setPlayerMoney(float value)
     {
-        PlayerPrefs.SetInt(PLAYER_MONEY_KEY, value);
+        PlayerPrefs.SetFloat(PLAYER_MONEY_KEY, value);
         PlayerPrefs.Save();
     }
 
-    public static void IncreasePlayerMoney(int increment)
+    public static void IncreasePlayerMoney(float increment)
     {
-        int newCoinsQuantity = getPlayerMoney();
+        float newCoinsQuantity = getPlayerMoney();
         newCoinsQuantity += increment;
         setPlayerMoney(newCoinsQuantity);
     }
 
-    public static void ReducePlayerMoney(int decrement)
+    public static void ReducePlayerMoney(float decrement)
     {
-        int newCoinsQuantity = getPlayerMoney();
+        float newCoinsQuantity = getPlayerMoney();
         newCoinsQuantity -= decrement;
         setPlayerMoney(newCoinsQuantity);
     }

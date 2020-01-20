@@ -34,14 +34,14 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private int negativePunchVibrato = 1;
     [SerializeField] private float negativePunchElasticity = 1f;
 
-    int[] bettingValues =
+    float[] bettingValues =
     { 
-        5,
-        10,
-        50,
-        100,
-        500,
-        1000
+        5f,
+        10f,
+        50f,
+        100f,
+        500f,
+        1000f
     };
 
     public static GUI_Handler Instance { get; private set; }
@@ -150,8 +150,8 @@ public class GUI_Handler : MonoBehaviour
         bettingChipsTransform[index].DOPunchScale(bettingPunch, bettingPunchDuration, bettingPunchVibrato, bettingPunchElasticity)
             .OnComplete(() => bettingChipsTransform[index].DOScale(Vector3.one, 0.2f));
 
-        int playerMoney = PlayerPrefsManager.getPlayerMoney();
-        int nextBet = GameHandler.Instance.GetCurrentBet() + bettingValues[index];
+        float playerMoney = PlayerPrefsManager.getPlayerMoney();
+        float nextBet = GameHandler.Instance.GetCurrentBet() + bettingValues[index];
 
         if (nextBet <= playerMoney)
         {
