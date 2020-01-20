@@ -43,7 +43,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -143,6 +143,8 @@ MonoBehaviour:
   audioSource: {fileID: 5308718109813380509}
   SFX_UI_Positive: {fileID: 8300000, guid: 6b9cabe66293cd447a0352239f97a475, type: 3}
   SFX_UI_Negative: {fileID: 8300000, guid: fbbde93ef95afae4db4e8c15dde4bb24, type: 3}
+  SFX_PlayChips: {fileID: 8300000, guid: 1fbbd00980059f946a094b24f67bce6e, type: 3}
+  SFX_RewardChips: {fileID: 8300000, guid: 1a87e01986eeabe4ebf7874d9b2ee8b8, type: 3}
   cardSounds:
   - {fileID: 8300000, guid: 98c93a8fbd0e9494babdb075be2165f9, type: 3}
   - {fileID: 8300000, guid: 59dbd5b3b5886ea469a9dd2930c3c68b, type: 3}

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -8,6 +7,8 @@ public class SFXHandler : MonoBehaviour
     [SerializeField] private AudioSource audioSource = null;
     [SerializeField] private AudioClip SFX_UI_Positive = null;
     [SerializeField] private AudioClip SFX_UI_Negative = null;
+    [SerializeField] private AudioClip SFX_PlayChips = null;
+    [SerializeField] private AudioClip SFX_RewardChips = null;
     [SerializeField] private AudioClip[] cardSounds = null;
     private Queue<AudioClip> AudioClipQueue;
 
@@ -56,6 +57,22 @@ public class SFXHandler : MonoBehaviour
         if (IsAudioEnabled())
         {
             AudioClipQueue.Enqueue(SFX_UI_Negative);
+        }
+    }
+
+    public void PlayPlaceChipsSfx()
+    {
+        if (IsAudioEnabled())
+        {
+            AudioClipQueue.Enqueue(SFX_PlayChips);
+        }
+    }
+
+    public void PlayRewardChipsSfx()
+    {
+        if (IsAudioEnabled())
+        {
+            AudioClipQueue.Enqueue(SFX_RewardChips);
         }
     }
 

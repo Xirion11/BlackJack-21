@@ -97,6 +97,7 @@ public class GameHandler : MonoBehaviour
         //m_lastBet = m_currentBet;
         m_dealerBlackjack = false;
         InitializeElements();
+        SFXHandler.Instance.PlayPlaceChipsSfx();
         m_playerBetContainer.SetActive(true);
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
@@ -226,6 +227,8 @@ public class GameHandler : MonoBehaviour
 
             PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
 
+            SFXHandler.Instance.PlayPlaceChipsSfx();
+
             if (isSplitHandAvailable)
             {
                 bool isSplitHandActive = m_dealer.IsSplitHandActive();
@@ -284,6 +287,7 @@ public class GameHandler : MonoBehaviour
             GUI_Handler.Instance.GUI_HidePlayerActions();
             m_splitButton.SetActive(false);
             lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
+            SFXHandler.Instance.PlayPlaceChipsSfx();
             m_playerSplitBetContainer.SetActive(true);
             m_splitCardsContainer.SetActive(true);
             m_splitValueContainer.SetActive(true);
@@ -365,7 +369,9 @@ public class GameHandler : MonoBehaviour
             lbl_PlayerReward.SetText(string.Format(rewardTemplate, prize.ToString(TwoDecimalsFormat)));
             m_playerRewardTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
 
-            yield return Yielders.WaitForSeconds(Constants.SECOND_DELAY);
+            SFXHandler.Instance.PlayRewardChipsSfx();
+
+            yield return Yielders.WaitForSeconds(Constants.SECOND_DELAY);            
 
             PlayerPrefsManager.IncreasePlayerMoney(prize);
 
@@ -425,7 +431,7 @@ public class GameHandler : MonoBehaviour
         }
         else if ((!playerHasBlackJack && m_dealerBlackjack) || m_player.IsHandBusted(forSplitHand) || dealerHand > playerHand)
         {
-            if (!m_player.IsHandBusted())
+            if (!m_player.IsHandBusted(forSplitHand))
             {
                 GUI_Handler.Instance.ShowPlayerLose(forSplitHand);
             }
