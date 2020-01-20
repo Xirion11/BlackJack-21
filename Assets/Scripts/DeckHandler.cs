@@ -5,18 +5,20 @@ using DG.Tweening;
 
 public class DeckHandler : MonoBehaviour
 {
-    [SerializeField] Sprite[] ClubSprites = null;
-    [SerializeField] Sprite[] HeartSprites = null;
-    [SerializeField] Sprite[] SpadeSprites = null;
-    [SerializeField] Sprite[] DiamondSprites = null;
-    [SerializeField] Card[] DefaultDeck = null;
-    [SerializeField] int separatorIndex = 0;
-    [SerializeField] GameObject Separator = null;
-    [SerializeField] Transform SeparatorTransform = null;
-    [SerializeField] List<Card> Deck;
+    [SerializeField] private Sprite[] ClubSprites = null;
+    [SerializeField] private Sprite[] HeartSprites = null;
+    [SerializeField] private Sprite[] SpadeSprites = null;
+    [SerializeField] private Sprite[] DiamondSprites = null;
+    [SerializeField] private Card[] DefaultDeck = null;
+    [SerializeField] private int separatorIndex = 0;
+    [SerializeField] private GameObject Separator = null;
+    [SerializeField] private Transform SeparatorTransform = null;
+    [SerializeField] private List<Card> Deck;
 
-    const int MAX_SUITS = 4;
-    const int MAX_VALUE = 13;
+    private const int MAX_SUITS = 4;
+    private const int MAX_VALUE = 13;
+    private const int MIN_OFFSET = -5;
+    private const int MAX_OFFSET = 6;
     private Vector3 SeparatorPosition;
 
     public enum SUITS
@@ -70,7 +72,7 @@ public class DeckHandler : MonoBehaviour
     private void ShuffleDeck()
     {        
         Deck.Shuffle();
-        int randomOffset = Random.Range(-5, 6);
+        int randomOffset = Random.Range(MIN_OFFSET, MAX_OFFSET);
         separatorIndex = DefaultDeck.Length + randomOffset;
     }
 
@@ -145,8 +147,9 @@ public class DeckHandler : MonoBehaviour
 
     public void SetSeparatorAside()
     {
-        float newY = SeparatorTransform.position.y - 2f;
-        SeparatorTransform.DOMoveY(newY, 0.2f);
+        const float separatorOffset = 2f;
+        float newY = SeparatorTransform.position.y - separatorOffset;
+        SeparatorTransform.DOMoveY(newY, Constants.QUICK_DELAY);
     }
 
     public bool IsCurrentDeckOver()

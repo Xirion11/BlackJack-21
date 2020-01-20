@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -11,7 +10,7 @@ public class Player : MonoBehaviour
     private bool m_aceInHand = false;
     private bool m_aceInSplitHand = false;
 
-    string templateAceValue = "{0}/{1}";
+    private string templateAceValue = "{0}/{1}";
 
     private void Start()
     {
@@ -70,7 +69,7 @@ public class Player : MonoBehaviour
 
         if (aceInHand)
         {
-            int aceHandValue = handValueWithoutAce + 1;
+            int aceHandValue = handValueWithoutAce + Constants.ACE_MIN_VALUE;
 
             if (aceHandValue + Constants.LETTER_VALUE <= Constants.BLACKJACK)
             {
@@ -118,7 +117,7 @@ public class Player : MonoBehaviour
             }
 
             //If the value is an Ace update flag
-            if(value == 1)
+            if(value == Constants.ACE_MIN_VALUE)
             {
                 if (forSplitHand)
                 {
@@ -167,7 +166,7 @@ public class Player : MonoBehaviour
     {
         bool result = false;
 
-        result = (m_hand[0].GetCardValue() == m_hand[1].GetCardValue()) && m_splitHand.Count == 0;
+        result = (m_hand[Constants.FIRST_CARD].GetCardValue() == m_hand[Constants.SECOND_CARD].GetCardValue()) && m_splitHand.Count == 0;
 
         return result;
     }

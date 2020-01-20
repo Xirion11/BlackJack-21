@@ -20,7 +20,7 @@ public class PlayerPrefsManager
 
     public static float getPlayerMoney()
     {
-        return PlayerPrefs.GetFloat(PLAYER_MONEY_KEY, 1000f);
+        return PlayerPrefs.GetFloat(PLAYER_MONEY_KEY, Constants.STARTING_MONEY);
     }
 
     public static void setPlayerMoney(float value)

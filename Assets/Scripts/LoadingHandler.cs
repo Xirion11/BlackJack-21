@@ -20,12 +20,16 @@ public class LoadingHandler : MonoBehaviour
         int gameSceneIndex = 1;
         float progress = 0f;
 
-        yield return new WaitForSeconds(0.5f);
+        const float HalfSecond = 0.5f;
+        const float LoaderIncrements = 0.9f;
+
+        yield return new WaitForSeconds(HalfSecond);
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(gameSceneIndex);
         while (!operation.isDone)
         {
-            progress = Mathf.Clamp01(operation.progress / 0.9f);
+            
+            progress = Mathf.Clamp01(operation.progress / LoaderIncrements);
             img_Loading.fillAmount = progress;
             yield return Yielders.EndOfFrame;
         }

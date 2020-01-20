@@ -37,13 +37,14 @@ public class Dealer : MonoBehaviour
     private bool m_aceInHand = false;
     private bool m_isInitialDeal = true;
     private bool m_isBlackJack = false;
-        
-    const int FIRST = 0;
-    const int SECOND = 1;
+
+    private const int BASE_HAND = 0;
+    private const int SPLIT_HAND = 1;
     private const int DEFAULT_SPACING = 10;
     private const int SPLIT_SPACING = -90;
+    private const float LONGER_DELAY = 0.5f;
 
-    Vector3 InitialHandIndicatorPosition;
+    private Vector3 InitialHandIndicatorPosition;
 
     private void Start()
     {
@@ -61,22 +62,22 @@ public class Dealer : MonoBehaviour
         m_isBlackJack = false;
 
         StartCoroutine(DealCardToPlayer());
-        yield return Yielders.WaitForSeconds(0.4f);
+        yield return Yielders.WaitForSeconds(Constants.MID_DELAY);
 
         StartCoroutine(DealCardToDealer());
-        yield return Yielders.WaitForSeconds(0.4f);
+        yield return Yielders.WaitForSeconds(Constants.MID_DELAY);
 
         StartCoroutine(DealCardToPlayer());
-        yield return Yielders.WaitForSeconds(0.4f);
+        yield return Yielders.WaitForSeconds(Constants.MID_DELAY);
 
         StartCoroutine(DealCardToDealer());
-        yield return Yielders.WaitForSeconds(0.4f);
+        yield return Yielders.WaitForSeconds(Constants.MID_DELAY);
 
         m_isBlackJack = CheckForBlackJack();
 
-        if (m_isBlackJack && m_hand[0].value == DeckHandler.VALUES.ACE)
+        if (m_isBlackJack && m_hand[Constants.FIRST_CARD].value == DeckHandler.VALUES.ACE)
         {
-            ShowDealerCard(1);
+            ShowDealerCard(Constants.SECOND_CARD);
             GameHandler.Instance.OnDealerBlackJack();
             GameHandler.Instance.OnMatchEnded();
         }
@@ -88,7 +89,7 @@ public class Dealer : MonoBehaviour
 
     public void DealNewCardToPlayer()
     {
-        bool isForSplitHand = currentHand == SECOND;
+        bool isForSplitHand = currentHand == SPLIT_HAND;
         StartCoroutine(DealCardToPlayer(isForSplitHand));
     }
 
@@ -99,8 +100,8 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DealCardToPlayer(bool forSplitHand = false)
     {
-        DeckTopCard.DOScale(Vector3.zero, 0.2f);
-        yield return Yielders.WaitForSeconds(0.2f);
+        DeckTopCard.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        yield return Yielders.WaitForSeconds(Constants.QUICK_DELAY);
 
         int tmpIndex = forSplitHand ? currentPlayerSplitCard : currentPlayerCard;
 
@@ -109,14 +110,14 @@ public class Dealer : MonoBehaviour
         if (forSplitHand)
         {
             PlayerSplitCardsObjects[tmpIndex].SetActive(true);
-            PlayerSplitCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
+            PlayerSplitCardsTransforms[tmpIndex].DOScale(Vector3.one, Constants.QUICK_DELAY)
                 .OnComplete(() => ShowPlayerCard(tmpIndex, forSplitHand));
             currentPlayerSplitCard += 1;
         }
         else
         {
             PlayerCardsObjects[tmpIndex].SetActive(true);
-            PlayerCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
+            PlayerCardsTransforms[tmpIndex].DOScale(Vector3.one, Constants.QUICK_DELAY)
                 .OnComplete(() => ShowPlayerCard(tmpIndex, forSplitHand));
             currentPlayerCard += 1;
         }
@@ -126,15 +127,15 @@ public class Dealer : MonoBehaviour
 
         if (!m_isInitialDeal)
         {
-            if (currentHand == SECOND && m_player.PlayerHasBlackJack() && m_player.PlayerHasBlackJack(true))
+            if (currentHand == SPLIT_HAND && m_player.PlayerHasBlackJack() && m_player.PlayerHasBlackJack(true))
             {
                 GUI_Handler.Instance.GUI_HidePlayerActions();
                 ResetHandIndicator();
                 DrawHand();
             }
-            else if (currentHand == SECOND && m_player.PlayerHasBlackJack(true))
+            else if (currentHand == SPLIT_HAND && m_player.PlayerHasBlackJack(true))
             {
-                currentHand = FIRST;
+                currentHand = BASE_HAND;
 
                 HandIndicatorTransform.position = HandIndicatorSecondPosition.position;
 
@@ -156,13 +157,13 @@ public class Dealer : MonoBehaviour
     IEnumerator DealCardToDealer()
     {
         AddCard(DeckHandler.Instance.DrawCard());
-        DeckTopCard.DOScale(Vector3.zero, 0.2f);
-        yield return Yielders.WaitForSeconds(0.2f);
+        DeckTopCard.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        yield return Yielders.WaitForSeconds(Constants.QUICK_DELAY);
 
         int tmpIndex = currentDealerCard;
 
         DealerCardsObjects[currentDealerCard].SetActive(true);
-        DealerCardsTransforms[tmpIndex].DOScale(Vector3.one, 0.2f)
+        DealerCardsTransforms[tmpIndex].DOScale(Vector3.one, Constants.QUICK_DELAY)
             .OnComplete(() => ShowDealerCard(tmpIndex));
         RestoreDeckTopCard();
         SFXHandler.Instance.PlayCardSound();
@@ -186,7 +187,7 @@ public class Dealer : MonoBehaviour
 
     private void ShowDealerCard(int index)
     {
-        if (index == 1 && m_isInitialDeal)
+        if (index == Constants.SECOND_CARD && m_isInitialDeal)
         {
             m_isInitialDeal = false;
         }
@@ -211,27 +212,27 @@ public class Dealer : MonoBehaviour
     IEnumerator SplitHandRoutine()
     {
         m_player.SplitHand();
-        currentHand = SECOND;
+        currentHand = SPLIT_HAND;
 
-        PlayerCardsTransforms[SECOND].DOScale(Vector3.zero, 0.2f)
-                .OnComplete(() => PlayerCardsObjects[SECOND].SetActive(false));
+        PlayerCardsTransforms[SPLIT_HAND].DOScale(Vector3.zero, Constants.QUICK_DELAY)
+                .OnComplete(() => PlayerCardsObjects[SPLIT_HAND].SetActive(false));
 
-        yield return Yielders.WaitForSeconds(0.2f);
+        yield return Yielders.WaitForSeconds(Constants.QUICK_DELAY);
 
         GameHandler.Instance.UpdatePlayerHandValue(false);
         baseCardsLayout.spacing = SPLIT_SPACING;
 
-        PlayerSplitCardsObjects[FIRST].SetActive(true);
-        PlayerSplitCardsTransforms[FIRST].DOScale(Vector3.one, 0.2f)
-            .OnComplete(() => ShowPlayerCard(FIRST, true));
+        PlayerSplitCardsObjects[BASE_HAND].SetActive(true);
+        PlayerSplitCardsTransforms[BASE_HAND].DOScale(Vector3.one, Constants.QUICK_DELAY)
+            .OnComplete(() => ShowPlayerCard(BASE_HAND, true));
 
-        currentPlayerCard = 1;
-        currentPlayerSplitCard = 1;
+        currentPlayerCard = Constants.SECOND_CARD;
+        currentPlayerSplitCard = Constants.SECOND_CARD;
 
-        yield return Yielders.WaitForSeconds(0.2f);
+        yield return Yielders.WaitForSeconds(Constants.QUICK_DELAY);
 
         StartCoroutine(DealCardToPlayer(false));
-        yield return Yielders.WaitForSeconds(0.4f);
+        yield return Yielders.WaitForSeconds(Constants.MID_DELAY);
 
         StartCoroutine(DealCardToPlayer(true));
     }
@@ -244,7 +245,7 @@ public class Dealer : MonoBehaviour
 
         if (m_aceInHand)
         {
-            m_handValue += 1;
+            m_handValue += Constants.ACE_MIN_VALUE;
 
             if (m_handValue + Constants.LETTER_VALUE <= Constants.BLACKJACK)
             {
@@ -276,7 +277,7 @@ public class Dealer : MonoBehaviour
             }
 
             //If the value is an Ace update flag
-            if (value == 1)
+            if (value == Constants.ACE_MIN_VALUE)
             {
                 m_aceInHand = true;
             }
@@ -300,9 +301,9 @@ public class Dealer : MonoBehaviour
 
     public void OnPlayerBusted()
     {
-        if (currentHand == SECOND) //Split Hand
+        if (currentHand == SPLIT_HAND) //Split Hand
         {
-            currentHand = FIRST;
+            currentHand = BASE_HAND;
 
             if (m_player.PlayerHasBlackJack())
             {
@@ -311,7 +312,7 @@ public class Dealer : MonoBehaviour
             }
             else
             {
-                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, 0.2f)
+                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, Constants.QUICK_DELAY)
                     .OnComplete(() => GUI_Handler.Instance.GUI_ShowPlayerActions());
             }
         }
@@ -323,7 +324,7 @@ public class Dealer : MonoBehaviour
             {
                 if (m_player.IsHandBusted(true))
                 {
-                    ShowDealerCard(SECOND);
+                    ShowDealerCard(SPLIT_HAND);
                     GameHandler.Instance.OnMatchEnded();
                 }
                 else
@@ -333,7 +334,7 @@ public class Dealer : MonoBehaviour
             }
             else
             {
-                ShowDealerCard(SECOND);
+                ShowDealerCard(SPLIT_HAND);
                 GameHandler.Instance.OnMatchEnded();
             }
         }
@@ -341,9 +342,9 @@ public class Dealer : MonoBehaviour
 
     public void OnPlayerStand()
     {
-        if (currentHand == SECOND) //Split Hand
+        if (currentHand == SPLIT_HAND) //Split Hand
         {
-            currentHand = FIRST;
+            currentHand = BASE_HAND;
 
             if (m_player.PlayerHasBlackJack())
             {
@@ -352,7 +353,7 @@ public class Dealer : MonoBehaviour
             }
             else
             {
-                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, 0.2f)
+                HandIndicatorTransform.DOMoveX(HandIndicatorSecondPosition.position.x, Constants.QUICK_DELAY)
                     .OnComplete(() => GUI_Handler.Instance.GUI_ShowPlayerActions());
             }
         }
@@ -390,7 +391,7 @@ public class Dealer : MonoBehaviour
 
     IEnumerator DrawHandRoutine()
     {
-        ShowDealerCard(SECOND);
+        ShowDealerCard(SPLIT_HAND);
 
         if (!m_isBlackJack)
         {
@@ -411,7 +412,7 @@ public class Dealer : MonoBehaviour
             {
                 StartCoroutine(DealCardToDealer());
 
-                yield return Yielders.WaitForSeconds(0.5f);
+                yield return Yielders.WaitForSeconds(LONGER_DELAY);
 
                 handValue = CalculateHandValue();
             }
@@ -457,7 +458,7 @@ public class Dealer : MonoBehaviour
         currentPlayerCard = 0;
         currentPlayerSplitCard = 0;
         currentDealerCard = 0;
-        currentHand = FIRST;
+        currentHand = BASE_HAND;
     }
 
     public bool IsHandBusted()
@@ -468,7 +469,7 @@ public class Dealer : MonoBehaviour
 
     public bool IsSplitHandActive()
     {
-        return currentHand == SECOND;
+        return currentHand == SPLIT_HAND;
     }
 
     public bool IsSplitHandAvailable()

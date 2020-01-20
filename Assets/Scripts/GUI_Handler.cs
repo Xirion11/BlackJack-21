@@ -34,7 +34,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private int negativePunchVibrato = 1;
     [SerializeField] private float negativePunchElasticity = 1f;
 
-    float[] bettingValues =
+    private float[] bettingValues =
     { 
         5f,
         10f,
@@ -53,96 +53,95 @@ public class GUI_Handler : MonoBehaviour
     
     public void ShowBettingStation()
     {
-        //BettingStation.SetActive(true);
-        BettingStation.DOScale(Vector3.one, 0.2f);
+        BettingStation.DOScale(Vector3.one, Constants.QUICK_DELAY);
     }
 
     public void ShowPlayerBlackJack(bool forSplitHand = false)
     {
         if (forSplitHand)
         {
-            PlayerSplitBlackJackTransform.DOScale(Vector3.one, 0.2f);
+            PlayerSplitBlackJackTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
         else
         {
-            PlayerBlackJackTransform.DOScale(Vector3.one, 0.2f);
+            PlayerBlackJackTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
     }
 
     public void HidePlayerBlackJack()
     {
-        PlayerBlackJackTransform.DOScale(Vector3.zero, 0.2f);
-        PlayerSplitBlackJackTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerBlackJackTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        PlayerSplitBlackJackTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void ShowDealerBusted()
     {
-        DealerBustedTransform.DOScale(Vector3.one, 0.2f);
+        DealerBustedTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
     }
 
     public void HideDealerBusted()
     {
-        DealerBustedTransform.DOScale(Vector3.zero, 0.2f);
+        DealerBustedTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void ShowPlayerBusted(bool forSplitHand = false)
     {
         if (forSplitHand)
         {
-            PlayerSplitBustedTransform.DOScale(Vector3.one, 0.2f);
+            PlayerSplitBustedTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
         else
         {
-            PlayerBustedTransform.DOScale(Vector3.one, 0.2f);
+            PlayerBustedTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
     }
 
     public void HidePlayerBusted()
     {
-        PlayerBustedTransform.DOScale(Vector3.zero, 0.2f);
-        PlayerSplitBustedTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerBustedTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        PlayerSplitBustedTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void ShowPlayerWin(bool forSplitHand = false)
     {
         if (forSplitHand)
         {
-            PlayerSplitWinTransform.DOScale(Vector3.one, 0.2f);
+            PlayerSplitWinTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
         else
         {
-            PlayerWinTransform.DOScale(Vector3.one, 0.2f);
+            PlayerWinTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
     }
 
     public void HidePlayerWin(bool forSplitHand = false)
     {
-        PlayerSplitWinTransform.DOScale(Vector3.zero, 0.2f);
-        PlayerWinTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerSplitWinTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        PlayerWinTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void ShowPlayerLose(bool forSplitHand = false)
     {
         if (forSplitHand)
         {
-            PlayerSplitLoseTransform.DOScale(Vector3.one, 0.2f);
+            PlayerSplitLoseTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
         else
         {
-            PlayerLoseTransform.DOScale(Vector3.one, 0.2f);
+            PlayerLoseTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
         }
     }
 
     public void HidePlayerLose(bool forSplitHand = false)
     {
-        PlayerSplitLoseTransform.DOScale(Vector3.zero, 0.2f);
-        PlayerLoseTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerSplitLoseTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        PlayerLoseTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void GUI_IncreaseBet(int index)
     {
         bettingChipsTransform[index].DOPunchScale(bettingPunch, bettingPunchDuration, bettingPunchVibrato, bettingPunchElasticity)
-            .OnComplete(() => bettingChipsTransform[index].DOScale(Vector3.one, 0.2f));
+            .OnComplete(() => bettingChipsTransform[index].DOScale(Vector3.one, Constants.QUICK_DELAY));
 
         float playerMoney = PlayerPrefsManager.getPlayerMoney();
         float nextBet = GameHandler.Instance.GetCurrentBet() + bettingValues[index];
@@ -163,11 +162,11 @@ public class GUI_Handler : MonoBehaviour
         SFXHandler.Instance.PlayNegativeUISfx();
 
         PlayerMoneyTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
-            .OnComplete(() => PlayerMoneyTransform.DOMove(PlayerMoneyTransform.position, 0.2f));
+            .OnComplete(() => PlayerMoneyTransform.DOMove(PlayerMoneyTransform.position, Constants.QUICK_DELAY));
 
         lbl_PlayerMoney.DOColor(Color.red, negativePunchDuration)
-            .SetEase(Ease.Flash, 6f, 1f)
-            .OnComplete(() => lbl_PlayerMoney.DOColor(Color.white, 0.2f));
+            .SetEase(Ease.Flash, Constants.FEEDBACK_AMPLITUDE, Constants.SECOND_DELAY)
+            .OnComplete(() => lbl_PlayerMoney.DOColor(Color.white, Constants.QUICK_DELAY));
     }
 
     public void PlayInvalidBetFeedback()
@@ -175,11 +174,11 @@ public class GUI_Handler : MonoBehaviour
         SFXHandler.Instance.PlayNegativeUISfx();
 
         PlayerBetTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
-            .OnComplete(() => PlayerBetTransform.DOMove(PlayerBetTransform.position, 0.2f));
+            .OnComplete(() => PlayerBetTransform.DOMove(PlayerBetTransform.position, Constants.QUICK_DELAY));
 
         lbl_PlayerBet.DOColor(Color.red, negativePunchDuration)
-            .SetEase(Ease.Flash, 6f, 1f)
-            .OnComplete(() => lbl_PlayerBet.DOColor(Color.white, 0.2f));
+            .SetEase(Ease.Flash, Constants.FEEDBACK_AMPLITUDE, Constants.SECOND_DELAY)
+            .OnComplete(() => lbl_PlayerBet.DOColor(Color.white, Constants.QUICK_DELAY));
     }
 
     public void GUI_ClearBet()
@@ -191,7 +190,7 @@ public class GUI_Handler : MonoBehaviour
     {
         if (GameHandler.Instance.GetCurrentBet() != 0)
         {
-            BettingStation.DOScale(Vector3.zero, 0.2f)
+            BettingStation.DOScale(Vector3.zero, Constants.QUICK_DELAY)
                 .OnComplete(() => GameHandler.Instance.OnBetsReady());
         }
         else
@@ -212,12 +211,12 @@ public class GUI_Handler : MonoBehaviour
 
     public void GUI_ShowRetry()
     {
-        RetryStation.DOScale(Vector3.one, 0.2f);
+        RetryStation.DOScale(Vector3.one, Constants.QUICK_DELAY);
     }
 
     public void GUI_HideRetry()
     {
-        RetryStation.DOScale(Vector3.zero, 0.2f);
+        RetryStation.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void GUI_DoubleBet()

@@ -7,10 +7,10 @@ public class FloatBehavior : MonoBehaviour
     [SerializeField] private float floatDistance = 1f;
     [SerializeField] private float floatDuration = 1f;
 
-    float doubleDuration = 0f;
-    Transform m_transform;
+    private float doubleDuration = 0f;
+    private Transform m_transform;
 
-    Sequence floatSequence;
+    private Sequence floatSequence;
 
     void Start()
     {
