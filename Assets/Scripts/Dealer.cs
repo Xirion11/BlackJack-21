@@ -414,6 +414,11 @@ public class Dealer : MonoBehaviour
 
                 handValue = CalculateHandValue();
             }
+
+            if(handValue > BLACKJACK)
+            {
+                GUI_Handler.Instance.ShowDealerBusted();
+            }
         }
 
         GameHandler.Instance.OnMatchEnded();

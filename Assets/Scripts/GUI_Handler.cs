@@ -12,6 +12,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerMoneyTransform = null;
     [SerializeField] private Transform PlayerBetTransform = null;
     [SerializeField] private Transform[] bettingChipsTransform = null;
+    [SerializeField] private Transform DealerBustedTransform = null;
     [SerializeField] private Transform PlayerBlackJackTransform = null;
     [SerializeField] private Transform PlayerSplitBlackJackTransform = null;
     [SerializeField] private Transform PlayerBustedTransform = null;
@@ -74,6 +75,16 @@ public class GUI_Handler : MonoBehaviour
     {
         PlayerBlackJackTransform.DOScale(Vector3.zero, 0.2f);
         PlayerSplitBlackJackTransform.DOScale(Vector3.zero, 0.2f);
+    }
+
+    public void ShowDealerBusted()
+    {
+        DealerBustedTransform.DOScale(Vector3.one, 0.2f);
+    }
+
+    public void HideDealerBusted()
+    {
+        DealerBustedTransform.DOScale(Vector3.zero, 0.2f);
     }
 
     public void ShowPlayerBusted(bool forSplitHand = false)

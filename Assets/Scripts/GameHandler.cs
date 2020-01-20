@@ -99,6 +99,7 @@ public class GameHandler : MonoBehaviour
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
         GUI_Handler.Instance.HidePlayerBlackJack();
         GUI_Handler.Instance.HidePlayerBusted();
+        GUI_Handler.Instance.HideDealerBusted();
         m_dealer.DealInitialCards();
     }
 
@@ -119,6 +120,7 @@ public class GameHandler : MonoBehaviour
         m_playerSplitBetDoubleContainer.SetActive(false);
         GUI_Handler.Instance.HidePlayerBlackJack();
         GUI_Handler.Instance.HidePlayerBusted();
+        GUI_Handler.Instance.HideDealerBusted();
     }
 
     public void UpdatePlayerHandValue(bool forSplitHand = false)
