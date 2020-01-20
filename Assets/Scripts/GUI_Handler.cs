@@ -21,6 +21,8 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerSplitWinTransform = null;
     [SerializeField] private Transform PlayerLoseTransform = null;
     [SerializeField] private Transform PlayerSplitLoseTransform = null;
+    [SerializeField] private Transform PlayerDrawTransform = null;
+    [SerializeField] private Transform PlayerSplitDrawTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
 
@@ -136,6 +138,24 @@ public class GUI_Handler : MonoBehaviour
     {
         PlayerSplitLoseTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
         PlayerLoseTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+    }
+
+    public void ShowPlayerDraw(bool forSplitHand = false)
+    {
+        if (forSplitHand)
+        {
+            PlayerSplitDrawTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
+        }
+        else
+        {
+            PlayerDrawTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
+        }
+    }
+
+    public void HidePlayerDraw(bool forSplitHand = false)
+    {
+        PlayerSplitDrawTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
+        PlayerDrawTransform.DOScale(Vector3.zero, Constants.QUICK_DELAY);
     }
 
     public void GUI_IncreaseBet(int index)

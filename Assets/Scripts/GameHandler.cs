@@ -22,6 +22,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private GameObject m_playerSplitBetDoubleContainer = null;
     [SerializeField] private GameObject m_splitWinContainer = null;
     [SerializeField] private GameObject m_splitLoseContainer = null;
+    [SerializeField] private GameObject m_splitDrawContainer = null;
     [SerializeField] private Transform m_playerRewardTransform = null;
     [SerializeField] private Animator shuffleAnimator = null;
     [SerializeField] private AudioButton doubleAction = null;
@@ -129,11 +130,13 @@ public class GameHandler : MonoBehaviour
         m_playerSplitBetDoubleContainer.SetActive(false);
         m_splitWinContainer.SetActive(false);
         m_splitLoseContainer.SetActive(false);
+        m_splitDrawContainer.SetActive(false);
         GUI_Handler.Instance.HidePlayerBlackJack();
         GUI_Handler.Instance.HidePlayerBusted();
         GUI_Handler.Instance.HideDealerBusted();
         GUI_Handler.Instance.HidePlayerWin();
         GUI_Handler.Instance.HidePlayerLose();
+        GUI_Handler.Instance.HidePlayerDraw();
     }
 
     public void UpdatePlayerHandValue(bool forSplitHand = false)
@@ -289,6 +292,7 @@ public class GameHandler : MonoBehaviour
             m_splitBlackjackContainer.SetActive(true);
             m_splitWinContainer.SetActive(true);
             m_splitLoseContainer.SetActive(true);
+            m_splitDrawContainer.SetActive(true);
             m_dealer.SplitHand();
         }
     }
@@ -432,6 +436,7 @@ public class GameHandler : MonoBehaviour
         else if (playerHand == dealerHand)
         {
             prize = m_currentBet;
+            GUI_Handler.Instance.ShowPlayerDraw(forSplitHand);
             Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
 
