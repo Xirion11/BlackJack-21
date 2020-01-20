@@ -270,9 +270,8 @@ public class GameHandler : MonoBehaviour
     public void OnPlayerSplit()
     {
         float playerMoney = PlayerPrefsManager.getPlayerMoney();
-        float nextBet = m_currentBet + m_currentBet;
 
-        if (nextBet > playerMoney)
+        if (m_currentBet > playerMoney)
         {
             GUI_Handler.Instance.PlayNegativeCashFeedback();
         }
@@ -366,7 +365,7 @@ public class GameHandler : MonoBehaviour
             lbl_PlayerReward.SetText(string.Format(rewardTemplate, prize.ToString(TwoDecimalsFormat)));
             m_playerRewardTransform.DOScale(Vector3.one, Constants.QUICK_DELAY);
 
-            yield return Yielders.WaitForSeconds(Constants.LONG_DELAY);
+            yield return Yielders.WaitForSeconds(Constants.SECOND_DELAY);
 
             PlayerPrefsManager.IncreasePlayerMoney(prize);
 
@@ -406,7 +405,7 @@ public class GameHandler : MonoBehaviour
             dealerHand = Constants.BLACKJACK;
         }
 
-        Debug.Log("Player Money: " + m_playerMoney, this);
+        //Debug.Log("Player Money: " + m_playerMoney, this);
         if ((playerHasBlackJack && !m_dealerBlackjack) || m_dealer.IsHandBusted() || ((playerHand > dealerHand) && !m_player.IsHandBusted(forSplitHand)))
         {
             prize = m_currentBet;
@@ -422,7 +421,7 @@ public class GameHandler : MonoBehaviour
 
             GUI_Handler.Instance.ShowPlayerWin(forSplitHand);
 
-            Debug.Log("Player win. Bet: " + prize + " Hands P: " + playerHand + " H:" + dealerHand, this);
+            //Debug.Log("Player win. Bet: " + prize + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
         else if ((!playerHasBlackJack && m_dealerBlackjack) || m_player.IsHandBusted(forSplitHand) || dealerHand > playerHand)
         {
@@ -431,13 +430,13 @@ public class GameHandler : MonoBehaviour
                 GUI_Handler.Instance.ShowPlayerLose(forSplitHand);
             }
 
-            Debug.Log("Dealer win. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
+            //Debug.Log("Dealer win. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
         else if (playerHand == dealerHand)
         {
             prize = m_currentBet;
             GUI_Handler.Instance.ShowPlayerDraw(forSplitHand);
-            Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
+            //Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
 
         return prize;
