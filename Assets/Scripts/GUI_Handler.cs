@@ -17,6 +17,10 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerSplitBlackJackTransform = null;
     [SerializeField] private Transform PlayerBustedTransform = null;
     [SerializeField] private Transform PlayerSplitBustedTransform = null;
+    [SerializeField] private Transform PlayerWinTransform = null;
+    [SerializeField] private Transform PlayerSplitWinTransform = null;
+    [SerializeField] private Transform PlayerLoseTransform = null;
+    [SerializeField] private Transform PlayerSplitLoseTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
 
@@ -103,6 +107,42 @@ public class GUI_Handler : MonoBehaviour
     {
         PlayerBustedTransform.DOScale(Vector3.zero, 0.2f);
         PlayerSplitBustedTransform.DOScale(Vector3.zero, 0.2f);
+    }
+
+    public void ShowPlayerWin(bool forSplitHand = false)
+    {
+        if (forSplitHand)
+        {
+            PlayerSplitWinTransform.DOScale(Vector3.one, 0.2f);
+        }
+        else
+        {
+            PlayerWinTransform.DOScale(Vector3.one, 0.2f);
+        }
+    }
+
+    public void HidePlayerWin(bool forSplitHand = false)
+    {
+        PlayerSplitWinTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerWinTransform.DOScale(Vector3.zero, 0.2f);
+    }
+
+    public void ShowPlayerLose(bool forSplitHand = false)
+    {
+        if (forSplitHand)
+        {
+            PlayerSplitLoseTransform.DOScale(Vector3.one, 0.2f);
+        }
+        else
+        {
+            PlayerLoseTransform.DOScale(Vector3.one, 0.2f);
+        }
+    }
+
+    public void HidePlayerLose(bool forSplitHand = false)
+    {
+        PlayerSplitLoseTransform.DOScale(Vector3.zero, 0.2f);
+        PlayerLoseTransform.DOScale(Vector3.zero, 0.2f);
     }
 
     public void GUI_IncreaseBet(int index)

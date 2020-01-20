@@ -15631,6 +15631,31 @@ PrefabInstance:
       propertyPath: PlayerBetTransform
       value: 
       objectReference: {fileID: 1137157832}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: DealerBustedTransform
+      value: 
+      objectReference: {fileID: 1607386162}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerWinTransform
+      value: 
+      objectReference: {fileID: 344859855}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerSplitWinTransform
+      value: 
+      objectReference: {fileID: 1442253897}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerLoseTransform
+      value: 
+      objectReference: {fileID: 131988778}
+    - target: {fileID: 3640160314215680472, guid: eb65e6f7cf5044143a456485e1d20e05,
+        type: 3}
+      propertyPath: PlayerSplitLoseTransform
+      value: 
+      objectReference: {fileID: 1240426407}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb65e6f7cf5044143a456485e1d20e05, type: 3}
 --- !u!4 &1657495554838754149 stripped
@@ -15907,6 +15932,16 @@ PrefabInstance:
       propertyPath: m_splitBustedContainer
       value: 
       objectReference: {fileID: 1228176193}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: m_splitWinContainer
+      value: 
+      objectReference: {fileID: 1442253896}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
+      propertyPath: m_splitLoseContainer
+      value: 
+      objectReference: {fileID: 1240426406}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58e1cb0431b788740ba68de77364dcc6, type: 3}
 --- !u!1001 &5308718109306565096
