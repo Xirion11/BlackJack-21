@@ -324,6 +324,7 @@ public class GameHandler : MonoBehaviour
     public void OnPlayerStand()
     {
         m_hasPlayerDoubled = false;
+        m_splitButton.SetActive(false);
         doubleAction.interactable = true; 
         GUI_Handler.Instance.GUI_HidePlayerActions();
         m_dealer.OnPlayerStand();
