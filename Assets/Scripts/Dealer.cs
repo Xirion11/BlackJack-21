@@ -323,14 +323,22 @@ public class Dealer : MonoBehaviour
         {
             ResetHandIndicator();
 
-            if (m_player.IsHandBusted())
+            if (IsSplitHandAvailable())
             {
-                ShowDealerCard(SECOND);
-                GameHandler.Instance.OnMatchEnded();
+                if (m_player.IsHandBusted(true))
+                {
+                    ShowDealerCard(SECOND);
+                    GameHandler.Instance.OnMatchEnded();
+                }
+                else
+                {
+                    DrawHand();
+                }
             }
             else
             {
-                DrawHand();
+                ShowDealerCard(SECOND);
+                GameHandler.Instance.OnMatchEnded();
             }
         }
     }
