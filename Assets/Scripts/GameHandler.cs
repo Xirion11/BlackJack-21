@@ -431,7 +431,7 @@ public class GameHandler : MonoBehaviour
         }
         else if (playerHand == dealerHand)
         {
-            PlayerPrefsManager.IncreasePlayerMoney(m_currentBet);
+            prize = m_currentBet;
             Debug.Log("Draw. Bet: " + m_currentBet + " Hands P: " + playerHand + " H:" + dealerHand, this);
         }
 
