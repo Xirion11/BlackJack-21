@@ -6,6 +6,7 @@ using DG.Tweening;
 
 public class GUI_Handler : MonoBehaviour
 {
+    [SerializeField] private GameObject LogoContainer = null;
     [SerializeField] private GameObject PlayerActionsContainer = null;
     [SerializeField] private Transform BettingStation = null;
     [SerializeField] private Transform RetryStation = null;
@@ -268,5 +269,23 @@ public class GUI_Handler : MonoBehaviour
     public void GUI_NoRetry()
     {
         GUI_HideRetry();
+        GameHandler.Instance.OnNotRetry();
+        ShowLogo();
+    }
+
+    public void ShowLogo()
+    {
+        LogoContainer.SetActive(true);
+    }
+
+    public void HideLogo()
+    {
+        LogoContainer.SetActive(false);
+    }
+
+    public void GUI_Start()
+    {
+        HideLogo();
+        GameHandler.Instance.OnPlayerPressedStart();
     }
 }

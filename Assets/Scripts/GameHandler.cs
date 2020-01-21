@@ -63,7 +63,6 @@ public class GameHandler : MonoBehaviour
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
-        PlayShuffleAnimation();
     }
 
     public void IncreaseCurrentBet(float increment)
@@ -490,6 +489,17 @@ public class GameHandler : MonoBehaviour
         GUI_Handler.Instance.ShowBettingStation();
     }
 
+    public void OnNotRetry()
+    {
+        PlayerPrefsManager.setPlayerMoney(Constants.STARTING_MONEY);
+        m_playerMoney = Constants.STARTING_MONEY;
+        InitializeElements();
+        lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
+        lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
+        lbl_PlayerBet.SetText(string.Format(playerBetTemplate, 0));
+        m_deckHandler.PrepareNewDeck();
+    }
+
     private void PlayShuffleAnimation()
     {
         m_shuffleDescription.SetActive(false);
@@ -513,9 +523,16 @@ public class GameHandler : MonoBehaviour
         PlayShuffleAnimation();
     }
 
+    public void OnPlayerPressedStart()
+    {
+        PlayShuffleAnimation();
+    }
+
+#if UNITY_EDITOR
     [ContextMenu("Give Money")]
     public void CHEAT_GiveMoney()
     {
         PlayerPrefsManager.setPlayerMoney(Constants.STARTING_MONEY);
     }
+#endif
 }
