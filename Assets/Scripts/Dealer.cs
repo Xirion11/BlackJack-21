@@ -131,7 +131,9 @@ public class Dealer : MonoBehaviour
             {
                 GUI_Handler.Instance.GUI_HidePlayerActions();
                 ResetHandIndicator();
-                DrawHand();
+
+                ShowDealerCard(Constants.SECOND_CARD);
+                GameHandler.Instance.OnMatchEnded();
             }
             else if (currentHand == SPLIT_HAND && m_player.PlayerHasBlackJack(true))
             {
@@ -359,8 +361,16 @@ public class Dealer : MonoBehaviour
         }
         else //Base Hand
         {
-            ResetHandIndicator();
-            DrawHand();
+            if (!m_player.PlayerHasBlackJack())
+            {
+                ResetHandIndicator();
+                DrawHand();
+            }
+            else
+            {
+                ShowDealerCard(Constants.SECOND_CARD);
+                GameHandler.Instance.OnMatchEnded();
+            }
         }
     }
 
