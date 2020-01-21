@@ -25,7 +25,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerDrawTransform = null;
     [SerializeField] private Transform PlayerSplitDrawTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
-    [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
+    [SerializeField] private TextMeshProUGUI lbl_PlayerBetLimits = null;
 
     [Header("Feedback Parameters")]
     [SerializeField] private Vector3 bettingPunch;
@@ -167,14 +167,18 @@ public class GUI_Handler : MonoBehaviour
         float playerMoney = PlayerPrefsManager.getPlayerMoney();
         float nextBet = GameHandler.Instance.GetCurrentBet() + bettingValues[index];
 
-        if (nextBet <= playerMoney)
+        if (nextBet <= playerMoney && nextBet <= Constants.MAX_BET)
         {
             SFXHandler.Instance.PlayUISfx();
             GameHandler.Instance.IncreaseCurrentBet(bettingValues[index]);
         }
-        else
+        else if (nextBet > playerMoney)
         {
             PlayNegativeCashFeedback();
+        }
+        else if (nextBet > Constants.MAX_BET)
+        {
+            PlayInvalidBetFeedback();
         }
     }
 
@@ -197,9 +201,9 @@ public class GUI_Handler : MonoBehaviour
         PlayerBetTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
             .OnComplete(() => PlayerBetTransform.DOMove(PlayerBetTransform.position, Constants.QUICK_DELAY));
 
-        lbl_PlayerBet.DOColor(Color.red, negativePunchDuration)
+        lbl_PlayerBetLimits.DOColor(Color.red, negativePunchDuration)
             .SetEase(Ease.Flash, Constants.FEEDBACK_AMPLITUDE, Constants.SECOND_DELAY)
-            .OnComplete(() => lbl_PlayerBet.DOColor(Color.white, Constants.QUICK_DELAY));
+            .OnComplete(() => lbl_PlayerBetLimits.DOColor(Color.white, Constants.QUICK_DELAY));
     }
 
     public void GUI_ClearBet()
@@ -209,7 +213,8 @@ public class GUI_Handler : MonoBehaviour
 
     public void GUI_BetReady()
     {
-        if (GameHandler.Instance.GetCurrentBet() != 0)
+        float currentBet = GameHandler.Instance.GetCurrentBet();
+        if (currentBet >= Constants.MIN_BET && currentBet <= Constants.MAX_BET)
         {
             BettingStation.DOScale(Vector3.zero, Constants.QUICK_DELAY)
                 .OnComplete(() => GameHandler.Instance.OnBetsReady());

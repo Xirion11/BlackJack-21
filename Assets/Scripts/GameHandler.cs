@@ -460,7 +460,7 @@ public class GameHandler : MonoBehaviour
 
     private void ShowBetsOrRetry()
     {
-        if (m_playerMoney >= Constants.MINIMUM_BET)
+        if (m_playerMoney >= Constants.MIN_BET)
         {
             GUI_Handler.Instance.ShowBettingStation();
         }
@@ -532,7 +532,7 @@ public class GameHandler : MonoBehaviour
     [ContextMenu("Give Money")]
     public void CHEAT_GiveMoney()
     {
-        PlayerPrefsManager.setPlayerMoney(Constants.STARTING_MONEY);
+        PlayerPrefsManager.setPlayerMoney(Constants.STARTING_MONEY*10);
     }
 #endif
 }

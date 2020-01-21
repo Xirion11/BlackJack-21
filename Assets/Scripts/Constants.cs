@@ -9,7 +9,8 @@
     public const int DEALER_LIMIT = 17;
     public const float BLACKJACK_RATIO = 1.5f;
     public const float STARTING_MONEY = 1000f;
-    public const float MINIMUM_BET = 5f;
+    public const float MIN_BET = 5f;
+    public const float MAX_BET = 2000f;
     public const float NANO_DELAY = 0.05f;
     public const float QUICK_DELAY = 0.2f;
     public const float MID_DELAY = 0.4f;
