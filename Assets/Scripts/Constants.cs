@@ -14,7 +14,6 @@
     public const float NANO_DELAY = 0.05f;
     public const float QUICK_DELAY = 0.2f;
     public const float MID_DELAY = 0.4f;
-    public const float LONG_DELAY = 0.4f;
     public const float SECOND_DELAY = 1f;
     public const float TWO_SECONDS_DELAY = 2f;
     public const float FEEDBACK_AMPLITUDE = 6f;
