@@ -69,6 +69,7 @@ public class GameHandler : MonoBehaviour
             m_playerMoney = Constants.STARTING_MONEY;
         }
 
+        //Clean labels
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_playerHandValue.SetText(string.Empty);

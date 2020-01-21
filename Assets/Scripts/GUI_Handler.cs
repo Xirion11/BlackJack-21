@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
@@ -161,21 +159,27 @@ public class GUI_Handler : MonoBehaviour
 
     public void GUI_IncreaseBet(int index)
     {
+        //Push feedback
         bettingChipsTransform[index].DOPunchScale(bettingPunch, bettingPunchDuration, bettingPunchVibrato, bettingPunchElasticity)
             .OnComplete(() => bettingChipsTransform[index].DOScale(Vector3.one, Constants.QUICK_DELAY));
 
         float playerMoney = PlayerPrefsManager.getPlayerMoney();
         float nextBet = GameHandler.Instance.GetCurrentBet() + bettingValues[index];
 
+        //If the bet is withing the limits
         if (nextBet <= playerMoney && nextBet <= Constants.MAX_BET)
         {
             SFXHandler.Instance.PlayUISfx();
             GameHandler.Instance.IncreaseCurrentBet(bettingValues[index]);
         }
+
+        //If the player does not have enough money
         else if (nextBet > playerMoney)
         {
             PlayNegativeCashFeedback();
         }
+
+        //If the player wants to increase the bet too much
         else if (nextBet > Constants.MAX_BET)
         {
             PlayInvalidBetFeedback();
@@ -185,6 +189,8 @@ public class GUI_Handler : MonoBehaviour
     public void PlayNegativeCashFeedback()
     {
         SFXHandler.Instance.PlayNegativeUISfx();
+
+        //Shake the player money and flash red as to saying NO
 
         PlayerMoneyTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
             .OnComplete(() => PlayerMoneyTransform.DOMove(PlayerMoneyTransform.position, Constants.QUICK_DELAY));
@@ -197,6 +203,8 @@ public class GUI_Handler : MonoBehaviour
     public void PlayInvalidBetFeedback()
     {
         SFXHandler.Instance.PlayNegativeUISfx();
+
+        //Shake the betting label and flash red as to saying NO
 
         PlayerBetTransform.DOPunchPosition(negativePunch, negativePunchDuration, negativePunchVibrato, negativePunchElasticity)
             .OnComplete(() => PlayerBetTransform.DOMove(PlayerBetTransform.position, Constants.QUICK_DELAY));
@@ -214,8 +222,11 @@ public class GUI_Handler : MonoBehaviour
     public void GUI_BetReady()
     {
         float currentBet = GameHandler.Instance.GetCurrentBet();
+
+        //If the current bet is valid
         if (currentBet >= Constants.MIN_BET && currentBet <= Constants.MAX_BET)
         {
+            //Open betting station
             BettingStation.DOScale(Vector3.zero, Constants.QUICK_DELAY)
                 .OnComplete(() => GameHandler.Instance.OnBetsReady());
         }

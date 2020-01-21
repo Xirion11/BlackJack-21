@@ -10,6 +10,7 @@ public class SFXHandler : MonoBehaviour
     [SerializeField] private AudioClip SFX_PlayChips = null;
     [SerializeField] private AudioClip SFX_RewardChips = null;
     [SerializeField] private AudioClip[] cardSounds = null;
+
     private Queue<AudioClip> AudioClipQueue;
 
     public static SFXHandler Instance { get; private set; }
@@ -28,13 +29,18 @@ public class SFXHandler : MonoBehaviour
     {
         if (IsAudioEnabled())
         {
+            //If there are pendind sfx
             if (AudioClipQueue.Count > 0)
             {
+                //Play next sfx in queue
                 audioSource.PlayOneShot(AudioClipQueue.Dequeue());
             }
         }
+
+        //If the player muted the game while there still were pendind sfx
         else if (AudioClipQueue.Count > 0)
         {
+            //Clear queue
             AudioClipQueue.Clear();
         }
     }

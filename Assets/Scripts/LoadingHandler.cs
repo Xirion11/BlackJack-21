@@ -11,6 +11,7 @@ public class LoadingHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Start loading the next scene
         StartCoroutine(LoadAsynchronously());
     }
 
@@ -22,12 +23,14 @@ public class LoadingHandler : MonoBehaviour
         const float HalfSecond = 0.5f;
         const float LoaderIncrements = 0.9f;
 
+        //Wait half a second so the loading screen is visible for a little
+
         yield return new WaitForSeconds(HalfSecond);
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(gameSceneIndex);
         while (!operation.isDone)
         {
-            
+            //Update progress bar
             progress = Mathf.Clamp01(operation.progress / LoaderIncrements);
             img_Loading.fillAmount = progress;
             yield return Yielders.EndOfFrame;
@@ -35,6 +38,7 @@ public class LoadingHandler : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    //Cheats to get a clean save
     [ContextMenu ("Reset PlayerPrefs")]
     public void ResetPlayerPrefs()
     {
