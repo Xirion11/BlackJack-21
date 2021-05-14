@@ -24,6 +24,7 @@ public class GUI_Handler : MonoBehaviour
     [SerializeField] private Transform PlayerSplitDrawTransform = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerMoney = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerBetLimits = null;
+    [SerializeField] private GameObject objQuitButton;
 
     [Header("Feedback Parameters")]
     [SerializeField] private Vector3 bettingPunch;
@@ -53,6 +54,11 @@ public class GUI_Handler : MonoBehaviour
     {
         Instance = this;
         initialBetLimitsPos = PlayerBetTransform.localPosition;
+#if UNITY_ANDROID
+        objQuitButton.SetActive(false);
+#else
+        objQuitButton.SetActive(true);
+#endif
     }
     
     public void ShowBettingStation()
@@ -307,5 +313,10 @@ public class GUI_Handler : MonoBehaviour
     {
         HideLogo();
         GameHandler.Instance.OnPlayerPressedStart();
+    }
+
+    public void GUI_QuitGame()
+    {
+        Application.Quit();
     }
 }
