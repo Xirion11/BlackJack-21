@@ -45,16 +45,20 @@ public class GUI_Handler : MonoBehaviour
         1000f
     };
 
+    Vector3 initialBetLimitsPos;
+
     public static GUI_Handler Instance { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        initialBetLimitsPos = PlayerBetTransform.localPosition;
     }
     
     public void ShowBettingStation()
     {
         BettingStation.DOScale(Vector3.one, Constants.QUICK_DELAY);
+        PlayerBetTransform.localPosition = PlayerBetTransform.position = initialBetLimitsPos;
     }
 
     public void ShowPlayerBlackJack(bool forSplitHand = false)
