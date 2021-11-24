@@ -28,6 +28,7 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 2800000, guid: 203cab64a2001a74ab850f61c7ba0009, type: 3}
@@ -84,8 +85,9 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 8b3bdfa5afbafbb4cb38353d1806970a, type: 3}
     - {fileID: 2800000, guid: c307f8b203e87344f924533d60ce71f4, type: 3}
     - {fileID: 2800000, guid: 97393a6da27b80b4ab80066ba2de3cfc, type: 3}
-    totalSpriteSurfaceArea: 1436400
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 03205200a7eb8e445aa5063650b1828c, type: 3}
@@ -197,5 +199,6 @@ SpriteAtlas:
   - cardDiamonds05
   - cardClubs08
   - cardDiamonds09
+  m_RenderDataMap: {}
   m_Tag: CardAtlas
   m_IsVariant: 0
