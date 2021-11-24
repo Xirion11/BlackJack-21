@@ -2,7 +2,7 @@
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
-using Yodo1.MAS;
+//using Yodo1.MAS;
 
 public class GameHandler : MonoBehaviour
 {
@@ -48,7 +48,7 @@ public class GameHandler : MonoBehaviour
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "F2";
 
-    private Yodo1U3dBannerAdView mBannerAdView;
+    //private Yodo1U3dBannerAdView mBannerAdView;
 
     public static GameHandler Instance { get; private set; }
 
@@ -81,13 +81,13 @@ public class GameHandler : MonoBehaviour
         lbl_dealerHandValue.SetText(string.Empty);
 
         // Initialize the MAS SDK.
-        Yodo1U3dMas.InitializeSdk();
+        //Yodo1U3dMas.InitializeSdk();
 
         // Request Banner
-        RequestBanner();
+        //RequestBanner();
     }
 
-    private void RequestBanner()
+    /*private void RequestBanner()
     {
         // Clean up banner before reusing
         if (mBannerAdView != null)
@@ -100,7 +100,7 @@ public class GameHandler : MonoBehaviour
 
         // Load banner ads, the banner ad will be displayed automatically after loaded
         mBannerAdView.LoadAd();
-    }
+    }*/
 
     //Increasing a bet deducts it from the player money
     public void IncreaseCurrentBet(float increment)
