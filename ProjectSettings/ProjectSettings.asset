@@ -249,8 +249,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: D:/Desarrollo/Security/PatoliSafety_key.keystore
-  AndroidKeyaliasName: blackjack-21
+  AndroidKeystoreName: C:/Users/svl88/Documents/Unity Projects/Keystores/PatoliSafety_key.keystore
+  AndroidKeyaliasName: patolistudio
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1

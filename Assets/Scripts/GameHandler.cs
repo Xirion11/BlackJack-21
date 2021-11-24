@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using Yodo1.MAS;
 
 public class GameHandler : MonoBehaviour
 {
@@ -48,6 +48,8 @@ public class GameHandler : MonoBehaviour
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "F2";
 
+    private Yodo1U3dBannerAdView mBannerAdView;
+
     public static GameHandler Instance { get; private set; }
 
     private void Awake()
@@ -58,6 +60,9 @@ public class GameHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        
+
         //Get player money and initiate all labels
         m_playerMoney = PlayerPrefsManager.getPlayerMoney();
 
@@ -74,6 +79,27 @@ public class GameHandler : MonoBehaviour
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
+
+        // Initialize the MAS SDK.
+        Yodo1U3dMas.InitializeSdk();
+
+        // Request Banner
+        RequestBanner();
+    }
+
+    private void RequestBanner()
+    {
+        // Clean up banner before reusing
+        if (mBannerAdView != null)
+        {
+            mBannerAdView.Destroy();
+        }
+
+        // Create a 320x50 banner at top of the screen
+        mBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+
+        // Load banner ads, the banner ad will be displayed automatically after loaded
+        mBannerAdView.LoadAd();
     }
 
     //Increasing a bet deducts it from the player money
