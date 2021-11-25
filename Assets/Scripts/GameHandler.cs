@@ -86,8 +86,20 @@ public class GameHandler : MonoBehaviour
 
     private void RequestBanner()
     {
-        Yodo1U3dMas.ShowBannerAd();
+        // Clean up banner before reusing
+        if (mBannerAdView != null)
+        {
+            mBannerAdView.Destroy();
+        }
 
+        // Create a 320x50 banner at top of the screen
+        mBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerRight);
+
+        // Load banner ads, the banner ad will be displayed automatically after loaded
+        mBannerAdView.LoadAd();
+
+        /*int align = (int)(Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+        Yodo1U3dMas.ShowBannerAd(align);*/
     }
 
     //Increasing a bet deducts it from the player money
