@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "f566a60",
         "name": "com.PatoliStudio.BlackJack21",
-        "processId": 24199,
+        "processId": 15402,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -24,6 +24,18 @@
             "deviceId": "f566a60",
             "name": "com.PatoliStudio.BlackJack21",
             "processId": 24199,
+            "exited": true
+        },
+        {
+            "deviceId": "f566a60",
+            "name": "com.PatoliStudio.BlackJack21",
+            "processId": 5107,
+            "exited": true
+        },
+        {
+            "deviceId": "f566a60",
+            "name": "com.PatoliStudio.BlackJack21",
+            "processId": 15402,
             "exited": false
         }
     ],
