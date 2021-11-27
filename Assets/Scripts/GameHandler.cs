@@ -77,11 +77,13 @@ public class GameHandler : MonoBehaviour
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
 
-        // Initialize the MAS SDK.
-        Yodo1U3dMas.InitializeSdk();
 
-        // Request Banner
-        RequestBanner();
+        //MAS built-in privacy compliance dialog, will show the dialog at start until information is received
+        Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
+        Yodo1U3dMas.SetAdBuildConfig(config);
+
+        // Initialize MAS SDK.
+        Yodo1U3dMas.InitializeSdk();
     }
 
     private void RequestBanner()
@@ -97,9 +99,6 @@ public class GameHandler : MonoBehaviour
 
         // Load banner ads, the banner ad will be displayed automatically after loaded
         mBannerAdView.LoadAd();
-
-        /*int align = (int)(Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
-        Yodo1U3dMas.ShowBannerAd(align);*/
     }
 
     //Increasing a bet deducts it from the player money
@@ -765,6 +764,9 @@ public class GameHandler : MonoBehaviour
     {
         //Start by shuffling the deck
         PlayShuffleAnimation();
+
+        // Request Banner
+        RequestBanner();
     }
 
 #if UNITY_EDITOR
