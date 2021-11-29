@@ -2,11 +2,11 @@
     "m_SelectedDeviceId": "f566a60",
     "m_SelectedPackage": {
         "deviceId": "f566a60",
-        "name": "com.PatoliStudio.BlackJack21",
-        "processId": 15402,
+        "name": "com.PatoliStudio.BlackJack",
+        "processId": 27015,
         "exited": false
     },
-    "m_SelectedPriority": 0,
+    "m_SelectedPriority": 2,
     "m_KnownPackagesForSerialization": [
         {
             "deviceId": "f566a60",
@@ -36,6 +36,12 @@
             "deviceId": "f566a60",
             "name": "com.PatoliStudio.BlackJack21",
             "processId": 15402,
+            "exited": true
+        },
+        {
+            "deviceId": "f566a60",
+            "name": "com.PatoliStudio.BlackJack",
+            "processId": 27015,
             "exited": false
         }
     ],
