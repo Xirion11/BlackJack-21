@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using Yodo1.MAS;
 
 public class GameHandler : MonoBehaviour
 {
@@ -48,6 +48,8 @@ public class GameHandler : MonoBehaviour
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "F2";
 
+    private Yodo1U3dBannerAdView mBannerAdView;
+
     public static GameHandler Instance { get; private set; }
 
     private void Awake()
@@ -74,6 +76,29 @@ public class GameHandler : MonoBehaviour
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
+
+
+        //MAS built-in privacy compliance dialog, will show the dialog at start until information is received
+        Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
+        Yodo1U3dMas.SetAdBuildConfig(config);
+
+        // Initialize MAS SDK.
+        Yodo1U3dMas.InitializeSdk();
+    }
+
+    private void RequestBanner()
+    {
+        // Clean up banner before reusing
+        if (mBannerAdView != null)
+        {
+            mBannerAdView.Destroy();
+        }
+
+        // Create a 320x50 banner at top of the screen
+        mBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerRight);
+
+        // Load banner ads, the banner ad will be displayed automatically after loaded
+        mBannerAdView.LoadAd();
     }
 
     //Increasing a bet deducts it from the player money
@@ -739,6 +764,9 @@ public class GameHandler : MonoBehaviour
     {
         //Start by shuffling the deck
         PlayShuffleAnimation();
+
+        // Request Banner
+        RequestBanner();
     }
 
 #if UNITY_EDITOR

@@ -186,9 +186,9 @@ public class DeckHandler : MonoBehaviour
     //Animate the separator to move aside
     public void SetSeparatorAside()
     {
-        const float separatorOffset = 2f;
-        float newY = SeparatorTransform.position.y - separatorOffset;
-        SeparatorTransform.DOMoveY(newY, Constants.QUICK_DELAY);
+        const float separatorOffset = 2.0f;
+        float newX = SeparatorTransform.position.x - separatorOffset;
+        SeparatorTransform.DOMoveX(newX, Constants.QUICK_DELAY);
     }
 
     //If the separator has been found the deck needs to be shuffled again
