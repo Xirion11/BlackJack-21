@@ -33,12 +33,46 @@ namespace Yodo1.MAS
             }
         }
 
+        public static void InitMasWithAppKey(string appKey)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic("initMas", currentActivity, appKey, Yodo1U3dMasCallback.Instance.SdkObjectName, Yodo1U3dMasCallback.Instance.SdkMethodName);
+            }
+        }
+
+        public static void ShowPopupToReportAd()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic("showPopupToReportAd", currentActivity);
+            }
+        }
+
+        public static void ShowDebugger()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic("showDebugger", currentActivity);
+            }
+        }
+
         public static void SetUserConsent(bool consent)
         {
             if (Application.platform == RuntimePlatform.Android && javaClass != null)
             {
                 javaClass.CallStatic("setGDPR", consent);
             }
+        }
+
+        public static bool IsGDPRUserConsent()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                bool value = javaClass.CallStatic<bool>("isGDPRUserConsent");
+                return value;
+            }
+            return false;
         }
 
         public static void SetAdBuildConfig(string adBuildConfig)
@@ -57,6 +91,16 @@ namespace Yodo1.MAS
             }
         }
 
+        public static bool IsCOPPAAgeRestricted()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                bool value = javaClass.CallStatic<bool>("isCOPPAAgeRestricted");
+                return value;
+            }
+            return false;
+        }
+
         public static void SetDoNotSell(bool doNotSell)
         {
             if (Application.platform == RuntimePlatform.Android && javaClass != null)
@@ -65,12 +109,31 @@ namespace Yodo1.MAS
             }
         }
 
+        public static bool IsCCPADoNotSell()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                bool value = javaClass.CallStatic<bool>("isCCPADoNotSell");
+                return value;
+            }
+            return false;
+        }
+
+        public static int GetUserAge()
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                int value = javaClass.CallStatic<int>("getUserAge");
+                return value;
+            }
+            return 0;
+        }
+
         public static void ShowInterstitialAd()
         {
             if (Application.platform == RuntimePlatform.Android && javaClass != null)
             {
                 javaClass.CallStatic("showInterstitialAd", currentActivity);
-
             }
         }
 
@@ -201,6 +264,7 @@ namespace Yodo1.MAS
             }
             return 0;
         }
+
         public static int GetBannerWidth(int type)
         {
             if (Application.platform == RuntimePlatform.Android && javaClass != null)
@@ -228,6 +292,57 @@ namespace Yodo1.MAS
                 return value;
             }
             return 0;
+        }
+
+        public static void Native(string methodName, string param)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic(methodName, currentActivity, param);
+            }
+        }
+
+        public static void RewardedInterstitial(string methodName, string param)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic(methodName, currentActivity, param);
+            }
+        }
+
+        public static void AppOpen(string methodName, string param)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic(methodName, currentActivity, param);
+            }
+        }
+
+        public static void RewardV2(string methodName, string param)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic(methodName, currentActivity, param);
+            }
+        }
+
+
+        public static void InterstitialV2(string methodName, string param)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                javaClass.CallStatic(methodName, currentActivity, param);
+            }
+        }
+
+        public static bool IsAdLoadedV2(string methodName)
+        {
+            if (Application.platform == RuntimePlatform.Android && javaClass != null)
+            {
+                bool value = javaClass.CallStatic<bool>(methodName);
+                return value;
+            }
+            return false;
         }
 #endif
     }

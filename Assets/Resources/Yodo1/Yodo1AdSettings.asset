@@ -15,12 +15,36 @@ MonoBehaviour:
   androidSettings:
     AppKey: CtbUkx5NL3
     AdmobAppID: ca-app-pub-5580537606944457~8631464250
+    BundleID: com.PatoliStudio.BlackJack
     GooglePlayStore: 1
     ChineseAndroidStores: 0
     Channel: 
   iOSSettings:
     AppKey: 
     AdmobAppID: 
+    BundleID: 
     ChinaRegion: 0
     GlobalRegion: 1
     AppLovinSdkKey: xcGD2fy-GdmiZQapx_kUSy5SMKyLoXBk8RyB5u9MVv34KetGdbl4XrXvAUFy0Qg9scKyVTI0NM4i_yzdXih4XE
+  androidDynamicNetworkSettings:
+    sdkType: 0
+    sdkVersion: 4.8.10
+    latestSdkVersion: 4.9.1
+    networks:
+    - APPLOVIN
+    - ADMOB
+    - IRONSOURCE
+    - facebook
+    - fyber
+    - inmobi
+    - kidoz
+    - mintegral
+    - pangle
+    - unity
+    - vungle
+    - yandex
+  iosDynamicNetworkSettings:
+    sdkType: -1
+    sdkVersion: 
+    latestSdkVersion: 
+    networks: []
