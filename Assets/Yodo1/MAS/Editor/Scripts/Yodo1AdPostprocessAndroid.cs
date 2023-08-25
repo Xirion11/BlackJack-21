@@ -1,41 +1,39 @@
-﻿
-using UnityEngine;
-using UnityEngine.Networking;
-using UnityEditor;
-using UnityEditor.Callbacks;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
-#endif
-using System.Xml;
+﻿#if UNITY_ANDROID
 
 namespace Yodo1.MAS
 {
-    public class Yodo1PostProcessAndroid
+    using UnityEngine;
+    using UnityEditor;
+    using UnityEditor.Callbacks;
+    using System.IO;
+    using System.Xml;
+
+    public class Yodo1PostProcessAndroid : Yodo1ProcessGradleBuildFile
     {
         [PostProcessBuild()]
         public static void OnPostprocessBuild(BuildTarget buildTarget, string pathToBuiltProject)
         {
             if (buildTarget == BuildTarget.Android)
             {
-#if UNITY_ANDROID
                 Yodo1AdSettings settings = Yodo1AdSettingsSave.Load();
                 if (CheckConfiguration_Android(settings))
                 {
 #if UNITY_2019_1_OR_NEWER
 #else
                     ValidateManifest(settings);
-#endif
+#endif              
+                }
+                string GradleTemplatePath = Path.Combine("Assets/Plugins/Android", "mainTemplate.gradle");
+                if (File.Exists(GradleTemplatePath) && isAdReviewFuntionEnable())
+                {
 #if UNITY_2019_3_OR_NEWER
+                    // The publisher could be migrating from older Unity versions to 2019_3 or newer.
+                    // If so, we should delete the plugin from the template. The plugin will be added to the project's application module in the post processing script (Yodo1PostProcessGradleProject).
+                    RemoveAppLovinQualityServiceOrSafeDkPlugin(GradleTemplatePath);
 #else
-                    Yodo1ProcessGradleBuildFile.AddAdReviewToApplicationGradle(Path.Combine("Assets/Plugins/Android", "mainTemplate.gradle"));
+                    AddAppLovinQualityServicePlugin(GradleTemplatePath);
 #endif
                 }
-#endif
             }
         }
 
@@ -44,7 +42,7 @@ namespace Yodo1.MAS
             if (settings == null)
             {
                 string message = "MAS Android settings is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
+                Debug.LogError(Yodo1U3dMas.TAG + message);
                 Yodo1AdUtils.ShowAlert("Error", message, "Ok");
                 return false;
             }
@@ -52,7 +50,7 @@ namespace Yodo1.MAS
             if (string.IsNullOrEmpty(settings.androidSettings.AppKey.Trim()))
             {
                 string message = "MAS Android AppKey is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
+                Debug.LogError(Yodo1U3dMas.TAG + message);
                 Yodo1AdUtils.ShowAlert("Error", message, "Ok");
                 return false;
             }
@@ -60,7 +58,7 @@ namespace Yodo1.MAS
             if (settings.androidSettings.ChineseAndroidStores && string.IsNullOrEmpty(settings.androidSettings.Channel.Trim()))
             {
                 string message = "MAS Android Channel is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
+                Debug.LogError(Yodo1U3dMas.TAG + message);
                 Yodo1AdUtils.ShowAlert("Error", message, "Ok");
                 return false;
             }
@@ -68,7 +66,7 @@ namespace Yodo1.MAS
             if (settings.androidSettings.GooglePlayStore && string.IsNullOrEmpty(settings.androidSettings.AdmobAppID.Trim()))
             {
                 string message = "MAS Android AdMob App ID is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
+                Debug.LogError(Yodo1U3dMas.TAG + message);
                 Yodo1AdUtils.ShowAlert("Error", message, "Ok");
                 return false;
             }
@@ -106,7 +104,7 @@ namespace Yodo1.MAS
 
         static void Yodo1ValidateGradle(string path)
         {
-            Debug.Log("[Yodo1 Mas] path: " + path);
+            Debug.Log(Yodo1U3dMas.TAG + "path: " + path);
             var gradlePath = Path.Combine(path, PlayerSettings.productName + "/build.gradle");
             ValidateGradlePluginVersion_(gradlePath);
 
@@ -148,7 +146,7 @@ namespace Yodo1.MAS
         private static void ValidateGradlePluginVersion_(string projectGradlePath)
         {
 
-            Debug.Log("[Yodo1 Mas] projectGradlePath: " + projectGradlePath);
+            Debug.Log(Yodo1U3dMas.TAG + "projectGradlePath: " + projectGradlePath);
             StreamReader streamReader1 = new StreamReader(projectGradlePath);
             string text_all = streamReader1.ReadToEnd();
             streamReader1.Close();
@@ -211,7 +209,7 @@ namespace Yodo1.MAS
                 StreamWriter streamWriter = new StreamWriter(projectGradlePath);
                 streamWriter.Write(text_all);
                 streamWriter.Close();
-                Debug.Log("[Yodo1 Mas] changed gradle plugin version from " + oldLineStr + " to " + newLineStr);
+                Debug.Log(Yodo1U3dMas.TAG + "changed gradle plugin version from " + oldLineStr + " to " + newLineStr);
             }
 
 
@@ -230,7 +228,7 @@ namespace Yodo1.MAS
 
             if (oldVerionNum < minVersionNum)
             {
-                Debug.Log("[Yodo1 Mas] need to use the version of Unity as follows:" + System.Environment.NewLine +
+                Debug.Log(Yodo1U3dMas.TAG + "need to use the version of Unity as follows:" + System.Environment.NewLine +
                     "Unity 2017 starting from 2017.4.38f1" + System.Environment.NewLine +
                     "Unity 2018 starting from 2018.4.4f1" + System.Environment.NewLine +
                     "Unity 2019 starting from 2019.1.7f1" + System.Environment.NewLine +
@@ -240,7 +238,7 @@ namespace Yodo1.MAS
 
             if (oldVerionNum > 410)
             {
-                Debug.Log("[Yodo1 Mas] no need do anything");
+                Debug.Log(Yodo1U3dMas.TAG + "no need do anything");
                 return null;
             }
 
@@ -263,7 +261,7 @@ namespace Yodo1.MAS
         {
             if (settings == null)
             {
-                Debug.LogError("[Yodo1 Mas] Validate manifest failed. Yodo1 ad settings is not exsit.");
+                Debug.LogError(Yodo1U3dMas.TAG + "Validate manifest failed. Yodo1 ad settings is not exsit.");
                 return false;
             }
 
@@ -280,7 +278,7 @@ namespace Yodo1.MAS
 
             if (doc == null)
             {
-                Debug.LogError("[Yodo1 Mas] Couldn't load " + manifestFile);
+                Debug.LogError(Yodo1U3dMas.TAG + "Couldn't load " + manifestFile);
                 return false;
             }
 
@@ -291,7 +289,7 @@ namespace Yodo1.MAS
 
             if (app == null)
             {
-                Debug.LogError("[Yodo1 Mas] Error parsing " + manifestFile + ", tag for application not found.");
+                Debug.LogError(Yodo1U3dMas.TAG + "Error parsing " + manifestFile + ", tag for application not found.");
                 return false;
             }
 
@@ -304,7 +302,7 @@ namespace Yodo1.MAS
                 string admobAppIdValue = settings.androidSettings.AdmobAppID.Trim();
                 if (string.IsNullOrEmpty(admobAppIdValue))
                 {
-                    Debug.LogError("[Yodo1 Mas] MAS Android AdMob App ID is null, please check the configuration.");
+                    Debug.LogError(Yodo1U3dMas.TAG + "MAS Android AdMob App ID is null, please check the configuration.");
                     return false;
                 }
                 string admobAppIdName = "com.google.android.gms.ads.APPLICATION_ID";
@@ -328,7 +326,7 @@ namespace Yodo1.MAS
                 channelValue = settings.androidSettings.Channel.Trim();
                 if (string.IsNullOrEmpty(channelValue))
                 {
-                    Debug.LogError("[Yodo1 Mas] MAS Android Channel is null, please check the configuration.");
+                    Debug.LogError(Yodo1U3dMas.TAG + "MAS Android Channel is null, please check the configuration.");
                     return false;
                 }
             }
@@ -383,5 +381,36 @@ namespace Yodo1.MAS
             }
             return null;
         }
+
+        public static XmlNode FindLauncherActivityNode(XmlNode applicaiton)
+        {
+            XmlNode acNode = applicaiton.FirstChild;
+            while (acNode != null)
+            {
+                if (acNode.Name.Equals("activity"))
+                {
+                    XmlNode intentFilterNode = acNode.FirstChild;
+                    while (intentFilterNode != null)
+                    {
+                        if (intentFilterNode.Name.Equals("intent-filter"))
+                        {
+                            XmlNode launcherCategeryNode = FindChildNodeWithAttribute(intentFilterNode, "category", "android:name", "android.intent.category.LAUNCHER");
+                            if (launcherCategeryNode != null)
+                            {
+                                return acNode;
+                            }
+                        }
+
+                        intentFilterNode = intentFilterNode.NextSibling;
+                    }
+
+                }
+
+                acNode = acNode.NextSibling;
+            }
+            return null;
+        }
     }
 }
+
+#endif

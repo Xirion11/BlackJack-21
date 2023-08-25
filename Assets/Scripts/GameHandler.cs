@@ -2,7 +2,9 @@
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+#if ADS_ENABLED
 using Yodo1.MAS;
+#endif
 
 public class GameHandler : MonoBehaviour
 {
@@ -77,17 +79,19 @@ public class GameHandler : MonoBehaviour
         lbl_playerHandValue.SetText(string.Empty);
         lbl_dealerHandValue.SetText(string.Empty);
 
-
+#if ADS_ENABLED
         //MAS built-in privacy compliance dialog, will show the dialog at start until information is received
         Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
         Yodo1U3dMas.SetAdBuildConfig(config);
 
         // Initialize MAS SDK.
-        Yodo1U3dMas.InitializeSdk();
+        Yodo1U3dMas.InitializeMasSdk();
+#endif
     }
 
     private void RequestBanner()
     {
+#if ADS_ENABLED
         // Clean up banner before reusing
         if (mBannerAdView != null)
         {
@@ -99,6 +103,7 @@ public class GameHandler : MonoBehaviour
 
         // Load banner ads, the banner ad will be displayed automatically after loaded
         mBannerAdView.LoadAd();
+#endif
     }
 
     //Increasing a bet deducts it from the player money

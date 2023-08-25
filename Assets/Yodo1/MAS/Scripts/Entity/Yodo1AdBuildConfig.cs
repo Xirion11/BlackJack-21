@@ -8,6 +8,7 @@ namespace Yodo1.MAS
         private bool _enableUserPrivacyDialog;
         private string _userAgreementUrl;
         private string _privacyPolicyUrl;
+        public Yodo1MasUserPrivacyConfig _agePopBuildConfig;
 
         /// <summary>
         /// Enable adaptive banner method, 
@@ -45,6 +46,12 @@ namespace Yodo1.MAS
             return this;
         }
 
+        public Yodo1AdBuildConfig userPrivacyConfig(Yodo1MasUserPrivacyConfig agePopBuildConfig)
+        {
+            this._agePopBuildConfig = agePopBuildConfig;
+            return this;
+        }
+
         public string toJson()
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();
@@ -52,7 +59,7 @@ namespace Yodo1.MAS
             dic.Add("enableUserPrivacyDialog", _enableUserPrivacyDialog);
             if (string.IsNullOrEmpty(_userAgreementUrl))
             {
-                dic.Add("userAgreementUrl", "");
+                dic.Add("userAgreementUrl", string.Empty);
             }
             else
             {
@@ -61,11 +68,20 @@ namespace Yodo1.MAS
 
             if (string.IsNullOrEmpty(_privacyPolicyUrl))
             {
-                dic.Add("privacyPolicyUrl", "");
+                dic.Add("privacyPolicyUrl", string.Empty);
             }
             else
             {
                 dic.Add("privacyPolicyUrl", _privacyPolicyUrl);
+            }
+
+            if (_agePopBuildConfig == null)
+            {
+                dic.Add("userPrivacyConfig", string.Empty);
+            }
+            else
+            {
+                dic.Add("userPrivacyConfig", _agePopBuildConfig.toJson());
             }
             return Yodo1JSON.Serialize(dic);
         }

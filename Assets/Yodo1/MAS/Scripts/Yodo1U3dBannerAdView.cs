@@ -7,13 +7,14 @@ namespace Yodo1.MAS
     public class Yodo1U3dBannerAdView
     {
         private static List<Yodo1U3dBannerAdView> BannerAdViews = new List<Yodo1U3dBannerAdView>();
+        private readonly string indexId = (((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000) + BannerAdViews.Count) + "";
 
         private Yodo1U3dBannerAdSize adSize;
         private Yodo1U3dBannerAdPosition adPosition;
-        private string adPlacement = "";
+        private string adPlacement = string.Empty;
         private int adPositionX = 0;
         private int adPositionY = 0;
-        private bool available;
+
 
         private Action<Yodo1U3dBannerAdView> _onBannerAdLoadedEvent;
         private Action<Yodo1U3dBannerAdView, Yodo1U3dAdError> _onBannerAdFailedToLoadEvent;
@@ -81,12 +82,16 @@ namespace Yodo1.MAS
             }
         }
 
-
-        public static void CallbcksEvent(Yodo1U3dAdEvent adEvent, Yodo1U3dAdError adError)
+        public static void CallbcksEvent(Yodo1U3dAdEvent adEvent, Yodo1U3dAdError adError, string indexId)
         {
+            if (string.IsNullOrEmpty(indexId))
+            {
+                return;
+            }
+
             foreach (Yodo1U3dBannerAdView bannerAdView in Yodo1U3dBannerAdView.BannerAdViews)
             {
-                if (bannerAdView != null)
+                if (bannerAdView != null && indexId.Equals(bannerAdView.indexId))
                 {
                     bannerAdView.Callbacks(adEvent, adError);
                 }
@@ -95,10 +100,6 @@ namespace Yodo1.MAS
 
         private void Callbacks(Yodo1U3dAdEvent adEvent, Yodo1U3dAdError adError)
         {
-            if (!this.available)
-            {
-                return;
-            }
             switch (adEvent)
             {
                 case Yodo1U3dAdEvent.AdError:
@@ -129,14 +130,9 @@ namespace Yodo1.MAS
         /// </summary>
         public Yodo1U3dBannerAdView()
         {
-            this.available = IsCanAddBannerView() ? true : false;
-            if (!this.available)
-            {
-                Debug.LogError("[Yodo1 Mas] You have initialized the banner instance. Initialization of multiple instances is not supported for the time being");
-                return;
-            }
             this.adSize = Yodo1U3dBannerAdSize.Banner;
             this.adPosition = Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter;
+            BannerAdViews.Add(this);
         }
 
         /// <summary>
@@ -146,14 +142,9 @@ namespace Yodo1.MAS
         /// <param name="adPosition">Banner ad position</param>
         public Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize adSize, Yodo1U3dBannerAdPosition adPosition)
         {
-            this.available = IsCanAddBannerView() ? true : false;
-            if (!this.available)
-            {
-                Debug.LogError("[Yodo1 Mas] You have initialized the banner instance. Initialization of multiple instances is not supported for the time being");
-                return;
-            }
             this.adSize = adSize;
             this.adPosition = adPosition;
+            BannerAdViews.Add(this);
         }
 
         /// <summary>
@@ -168,15 +159,10 @@ namespace Yodo1.MAS
         /// <param name="y">Y-coordinates in pixels</param>
         public Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize adSize, int x, int y)
         {
-            this.available = IsCanAddBannerView() ? true : false;
-            if (!this.available)
-            {
-                Debug.LogError("[Yodo1 Mas] You have initialized the banner instance. Initialization of multiple instances is not supported for the time being");
-                return;
-            }
             this.adSize = adSize;
             this.adPositionX = x;
             this.adPositionY = y;
+            BannerAdViews.Add(this);
         }
 
         private void BannerV2(string methodName)
@@ -200,11 +186,14 @@ namespace Yodo1.MAS
         /// </summary>
         public void LoadAd()
         {
-            if (!this.available)
-            {
-                return;
-            }
+
+#if UNITY_EDITOR
+
+            Yodo1EditorAds.ShowBannerAdsInEditor(indexId, (int)adPosition, (int)adSize.AdType, adPositionX, adPositionY);
+#endif
+#if !UNITY_EDITOR
             BannerV2("loadBannerAdV2");
+#endif
         }
 
         /// <summary>
@@ -212,11 +201,12 @@ namespace Yodo1.MAS
         /// </summary>
         public void Hide()
         {
-            if (!this.available)
-            {
-                return;
-            }
+#if UNITY_EDITOR
+            Yodo1EditorAds.HideBannerAdsInEditor(indexId);
+#endif
+#if !UNITY_EDITOR
             BannerV2("hideBannerAdV2");
+#endif
         }
 
         /// <summary>
@@ -224,11 +214,13 @@ namespace Yodo1.MAS
         /// </summary>
         public void Show()
         {
-            if (!this.available)
-            {
-                return;
-            }
+#if UNITY_EDITOR
+            Yodo1EditorAds.ShowBannerAdsInEditor(indexId, (int)adPosition, (int)adSize.AdType, adPositionX, adPositionY);
+#endif
+#if !UNITY_EDITOR
             BannerV2("showBannerAdV2");
+#endif
+
         }
 
         /// <summary>
@@ -236,10 +228,9 @@ namespace Yodo1.MAS
         /// </summary>
         public void Destroy()
         {
-            if (!this.available)
-            {
-                return;
-            }
+#if UNITY_EDITOR
+            Yodo1EditorAds.DestroyBannerAdsInEditor(indexId);
+#endif
             BannerV2("destroyBannerAdV2");
             Yodo1U3dMasCallback.InvokeEvent(_onBannerAdClosedEvent, this);
             BannerAdViews.Remove(this);
@@ -281,10 +272,6 @@ namespace Yodo1.MAS
 
         public void SetAdPlacement(string adPlacement)
         {
-            if (!this.available)
-            {
-                return;
-            }
             this.adPlacement = adPlacement;
         }
 
@@ -296,17 +283,8 @@ namespace Yodo1.MAS
             dic.Add("customAdPositionX", this.adPositionX);
             dic.Add("customAdPositionY", this.adPositionY);
             dic.Add("adPlacement", this.adPlacement);
+            dic.Add("indexId", this.indexId);
             return Yodo1JSON.Serialize(dic);
-        }
-
-        private bool IsCanAddBannerView()
-        {
-            if (BannerAdViews.Count == 0)
-            {
-                BannerAdViews.Add(this);
-                return true;
-            }
-            return false;
         }
     }
 }

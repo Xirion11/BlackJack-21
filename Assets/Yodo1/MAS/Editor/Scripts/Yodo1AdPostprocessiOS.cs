@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿#if UNITY_IOS || UNITY_IPHONE
+#if UNITY_2019_3_OR_NEWER
+using UnityEditor.iOS.Xcode.Extensions;
+#endif
+using UnityEngine;
 using UnityEngine.Networking;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Text;
-using System.Collections.Generic;
-#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
-#endif
+using UnityEditor.XCodeEditor;
 
 namespace Yodo1.MAS
 {
@@ -19,71 +23,43 @@ namespace Yodo1.MAS
     }
     public class Yodo1PostProcessiOS
     {
+        private const string TargetUnityIphonePodfileLine = "target 'Unity-iPhone' do";
+
         [PostProcessBuild(int.MaxValue)]
         public static void OnPostprocessBuild(BuildTarget buildTarget, string pathToBuiltProject)
         {
             if (buildTarget == BuildTarget.iOS)
             {
-#if UNITY_IOS
                 Yodo1AdSettings settings = Yodo1AdSettingsSave.Load();
-                if (CheckConfiguration_iOS(settings))
+                if (Yodo1AdSettingsSave.CheckConfiguration_iOS(settings))
                 {
                     UpdateIOSPlist(pathToBuiltProject, settings);
                     UpdateIOSProject(pathToBuiltProject);
-                    // CopyDirectory("Assets/Yodo1/MAS/Command/", pathToBuiltProject, null);
-                    // StartPodsProcess(pathToBuiltProject, "open_repo_update.command");
 
                     var podVersion = Yodo1AdCommandLine.Run("pod", "--version", pathToBuiltProject);
                     if (podVersion.ExitCode != 0)
                     {
-                        Debug.LogError("Cocoapods is not installed, " + podVersion.StandardOutput + "," + podVersion.StandardError);
+                        Debug.LogError(Yodo1U3dMas.TAG + "Cocoapods is not installed, " + podVersion.StandardOutput + "," + podVersion.StandardError);
                         return;
                     }
 
                     var podResult = Yodo1AdCommandLine.Run("pod", "install --repo-update", pathToBuiltProject);
                     if (podResult != null)
                     {
-                        EnableAdReview(pathToBuiltProject);
-
+                        if (isAdReviewFuntionEnable())
+                        {
+                            EnableAdReview(pathToBuiltProject);
+                        }
+                        
                         if (podResult.ExitCode != 0)
                         {
                             Yodo1AdCommandLine.Run("pod", "install", pathToBuiltProject);
                         }
                     }
                 }
-#endif
             }
         }
 
-        public static bool CheckConfiguration_iOS(Yodo1AdSettings settings)
-        {
-            if (settings == null)
-            {
-                string message = "MAS iOS settings is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
-                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(settings.iOSSettings.AppKey.Trim()))
-            {
-                string message = "MAS iOS AppKey is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
-                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
-                return false;
-            }
-
-            if (settings.iOSSettings.GlobalRegion && string.IsNullOrEmpty(settings.iOSSettings.AdmobAppID.Trim()))
-            {
-                string message = "MAS iOS AdMob App ID is null, please check the configuration.";
-                Debug.LogError("[Yodo1 Mas] " + message);
-                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
-                return false;
-            }
-            return true;
-        }
-
-#if UNITY_IOS
         private static Yodo1SkAdNetworkData GetSkAdNetworkData()
         {
             var uriBuilder = new UriBuilder("https://dash.applovin.com/docs/v1/unity_integration_manager/sk_ad_networks_info");
@@ -107,7 +83,7 @@ namespace Yodo1.MAS
             if (unityWebRequest.isError)
 #endif
             {
-                Debug.LogError("Failed to retrieve SKAdNetwork IDs with error: " + unityWebRequest.error);
+                Debug.LogError(Yodo1U3dMas.TAG + "Failed to retrieve SKAdNetwork IDs with error: " + unityWebRequest.error);
                 return new Yodo1SkAdNetworkData();
             }
             try
@@ -116,7 +92,7 @@ namespace Yodo1.MAS
             }
             catch (Exception exception)
             {
-                Debug.LogError("Failed to parse data '" + unityWebRequest.downloadHandler.text + "' with exception: " + exception);
+                Debug.LogError(Yodo1U3dMas.TAG + "Failed to parse data '" + unityWebRequest.downloadHandler.text + "' with exception: " + exception);
                 return new Yodo1SkAdNetworkData();
             }
         }
@@ -124,95 +100,116 @@ namespace Yodo1.MAS
         private static void UpdateIOSPlist(string path, Yodo1AdSettings settings)
         {
             string[] mSKAdNetworkId = new string[] {
-                "275upjj5gd.skadnetwork",
-                "294l99pt4k.skadnetwork",
-                "2u9pt9hc89.skadnetwork",
-                "3rd42ekr43.skadnetwork",
-                "4468km3ulz.skadnetwork",
-                "44jx6755aq.skadnetwork",
-                "4fzdc2evr5.skadnetwork",
-                "4pfyvq9l8r.skadnetwork",
-                "5lm9lj6jb7.skadnetwork",
-                "6g9af3uyq4.skadnetwork",
-                "7rz58n8ntl.skadnetwork",
-                "7ug5zh24hu.skadnetwork",
-                "8s468mfl3y.skadnetwork",
-                "9nlqeag3gk.skadnetwork",
-                "9rd848q2bz.skadnetwork",
-                "9t245vhmpl.skadnetwork",
-                "c6k4g5qg8m.skadnetwork",
-                "cg4yq2srnc.skadnetwork",
-                "ejvt5qm6ak.skadnetwork",
-                "g28c52eehv.skadnetwork",
-                "hs6bdukanm.skadnetwork",
-                "kbmxgpxpgc.skadnetwork",
-                "klf5c3l5u5.skadnetwork",
-                "m8dbw4sv7c.skadnetwork",
-                "mlmmfzh3r3.skadnetwork",
-                "mtkv5xtk9e.skadnetwork",
-                "ppxm28t8ap.skadnetwork",
-                "prcb7njmu6.skadnetwork",
-                "qqp299437r.skadnetwork",
-                "rx5hdcabgc.skadnetwork",
-                "t38b2kh725.skadnetwork",
-                "tl55sbb4fm.skadnetwork",
-                "u679fj5vs4.skadnetwork",
-                "uw77j35x4d.skadnetwork",
-                "v72qych5uu.skadnetwork",
-                "wg4vff78zm.skadnetwork",
-                "yclnxrl5pm.skadnetwork",
+                "22mmun2rn5.skadnetwork",
                 "2fnua5tdw4.skadnetwork",
+                "2u9pt9hc89.skadnetwork",
                 "3qcr597p9d.skadnetwork",
                 "3qy4746246.skadnetwork",
+                "3rd42ekr43.skadnetwork",
                 "3sh42y64q3.skadnetwork",
                 "424m5254lk.skadnetwork",
+                "4468km3ulz.skadnetwork",
+                "47vhws6wlr.skadnetwork",
                 "4dzt52r2t5.skadnetwork",
+                "4fzdc2evr5.skadnetwork",
+                "4pfyvq9l8r.skadnetwork",
                 "578prtvx9j.skadnetwork",
                 "5a6flpkh64.skadnetwork",
+                "7ug5zh24hu.skadnetwork",
                 "8c4e2ghe7u.skadnetwork",
+                "8s468mfl3y.skadnetwork",
+                "9rd848q2bz.skadnetwork",
+                "9t245vhmpl.skadnetwork",
+                "a2p9lx4jpn.skadnetwork",
                 "av6w8kgt66.skadnetwork",
+                "c6k4g5qg8m.skadnetwork",
+                "cp8zw746q7.skadnetwork",
                 "cstr6suwn9.skadnetwork",
                 "e5fvkxwrpn.skadnetwork",
+                "ecpz2srf59.skadnetwork",
                 "f38h382jlk.skadnetwork",
+                "gta9lk7p23.skadnetwork",
+                "hs6bdukanm.skadnetwork",
                 "kbd757ywx3.skadnetwork",
+                "klf5c3l5u5.skadnetwork",
+                "ludvb6z3bs.skadnetwork",
+                "mlmmfzh3r3.skadnetwork",
+                "n38lu8286q.skadnetwork",
                 "n6fk4nfna4.skadnetwork",
                 "p78axxw29g.skadnetwork",
+                "ppxm28t8ap.skadnetwork",
+                "prcb7njmu6.skadnetwork",
                 "s39g8k73mm.skadnetwork",
+                "t38b2kh725.skadnetwork",
+                "uw77j35x4d.skadnetwork",
                 "v4nxqhlyqp.skadnetwork",
+                "v72qych5uu.skadnetwork",
+                "v9wttpbfk9.skadnetwork",
                 "wzmmz9fp6w.skadnetwork",
+                "y5ghdn5j9k.skadnetwork",
+                "yclnxrl5pm.skadnetwork",
                 "ydx93a7ass.skadnetwork",
                 "zq492l623r.skadnetwork",
                 "24t9a8vw3c.skadnetwork",
+                "275upjj5gd.skadnetwork",
+                "294l99pt4k.skadnetwork",
                 "32z4fx6l9h.skadnetwork",
+                "3l6bd9hu43.skadnetwork",
                 "523jb4fst2.skadnetwork",
+                "52fl2v3hgk.skadnetwork",
                 "54nzkqm89y.skadnetwork",
                 "5l3tpt7t6e.skadnetwork",
+                "5lm9lj6jb7.skadnetwork",
+                "5tjdwbrq8w.skadnetwork",
+                "6g9af3uyq4.skadnetwork",
                 "6xzpu9s2p8.skadnetwork",
                 "79pbpufp6p.skadnetwork",
+                "7rz58n8ntl.skadnetwork",
+                "8r8llnkz5a.skadnetwork",
                 "9b89h5y424.skadnetwork",
+                "9nlqeag3gk.skadnetwork",
+                "9yg77x724h.skadnetwork",
+                "a8cz6cu7e5.skadnetwork",
+                "c3frkrj4fj.skadnetwork",
+                "cg4yq2srnc.skadnetwork",
                 "cj5566h2ga.skadnetwork",
+                "dbu4b84rxf.skadnetwork",
+                "dkc879ngq3.skadnetwork",
+                "ejvt5qm6ak.skadnetwork",
                 "feyaarzu9v.skadnetwork",
+                "g28c52eehv.skadnetwork",
                 "ggvn48r87g.skadnetwork",
                 "glqzh8vgby.skadnetwork",
-                "gta9lk7p23.skadnetwork",
                 "k674qkevps.skadnetwork",
-                "ludvb6z3bs.skadnetwork",
+                "kbmxgpxpgc.skadnetwork",
+                "m5mvw97r93.skadnetwork",
+                "m8dbw4sv7c.skadnetwork",
+                "mtkv5xtk9e.skadnetwork",
+                "n66cz3y3bx.skadnetwork",
                 "n9x2a789qt.skadnetwork",
+                "nzq8sh4pbs.skadnetwork",
                 "pwa73g5rt2.skadnetwork",
+                "qqp299437r.skadnetwork",
                 "r45fhb6rf7.skadnetwork",
                 "rvh3l7un93.skadnetwork",
+                "tl55sbb4fm.skadnetwork",
+                "vcra2ehyfk.skadnetwork",
+                "wg4vff78zm.skadnetwork",
+                "x44k69ngh6.skadnetwork",
+                "x5l83yy675.skadnetwork",
                 "x8jxxk4ff5.skadnetwork",
+                "x8uqf25wch.skadnetwork",
                 "xy9t38ct57.skadnetwork",
                 "zmvfpc5aq8.skadnetwork",
-                "n38lu8286q.skadnetwork",
-                "v9wttpbfk9.skadnetwork",
-                "22mmun2rn5.skadnetwork",
                 "252b5q8x7y.skadnetwork",
+                "44jx6755aq.skadnetwork",
                 "9g2aggbj52.skadnetwork",
                 "dzg6xy7pwj.skadnetwork",
                 "f73kdq92p3.skadnetwork",
                 "hdw39hrw9y.skadnetwork",
-                "x8uqf25wch.skadnetwork",
+                "krvm3zuq6h.skadnetwork",
+                "rx5hdcabgc.skadnetwork",
+                "t6d3zquu66.skadnetwork",
                 "y45688jllp.skadnetwork",
                 "74b6s63p6l.skadnetwork",
                 "97r2b46745.skadnetwork",
@@ -220,27 +217,26 @@ namespace Yodo1.MAS
                 "mls7yz5dvl.skadnetwork",
                 "w9q455wk68.skadnetwork",
                 "su67r6k2v3.skadnetwork",
-                "r26jy69rpl.skadnetwork",
+                "737z793b9f.skadnetwork",
                 "238da6jt44.skadnetwork",
                 "44n7hlldy6.skadnetwork",
                 "488r3q3dtq.skadnetwork",
-                "52fl2v3hgk.skadnetwork",
-                "5tjdwbrq8w.skadnetwork",
-                "737z793b9f.skadnetwork",
-                "9yg77x724h.skadnetwork",
-                "ecpz2srf59.skadnetwork",
                 "gvmwg8q7h5.skadnetwork",
                 "lr83yxwka7.skadnetwork",
-                "n66cz3y3bx.skadnetwork",
-                "nzq8sh4pbs.skadnetwork",
                 "pu4na253f3.skadnetwork",
+                "u679fj5vs4.skadnetwork",
                 "v79kvwwj4g.skadnetwork",
                 "yrqqpx2mcb.skadnetwork",
                 "z4gj7hsk7h.skadnetwork",
+                "x2jnk7ly8j.skadnetwork",
+                "4w7y6s5ca2.skadnetwork",
                 "f7s53z58qe.skadnetwork",
                 "mp6xlyr22a.skadnetwork",
-                "x44k69ngh6.skadnetwork",
                 "7953jerfzd.skadnetwork",
+                "7fmhfwg9en.skadnetwork",
+                "qu637u8glc.skadnetwork"
+
+
             };
             string plistPath = Path.Combine(path, "Info.plist");
             PlistDocument plist = new PlistDocument();
@@ -268,22 +264,37 @@ namespace Yodo1.MAS
             //Set AppLovinSdkKey
             rootDict.SetString("AppLovinSdkKey", Yodo1AdEditorConstants.DEFAULT_APPLOVIN_SDK_KEY);
 
-            //Set AdMob APP Id
             if (settings.iOSSettings.GlobalRegion)
             {
+                //Add Google AdMob App ID
                 rootDict.SetString("GADApplicationIdentifier", settings.iOSSettings.AdmobAppID);
+                //Enable Google Ad Manager
+                rootDict.SetBoolean("GADIsAdManagerApp", true);
             }
 
-            PlistElementString privacy = (PlistElementString)rootDict["NSLocationAlwaysUsageDescription"];
-            if (privacy == null)
+            string version = Application.unityVersion;
+            if (!string.IsNullOrEmpty(version))
+            {
+                rootDict.SetString("engineType", "Unity");
+                rootDict.SetString("engineVersion", version);
+            }
+
+            PlistElementString locationAlwaysUsagePrivacy = (PlistElementString)rootDict["NSLocationAlwaysUsageDescription"];
+            if (locationAlwaysUsagePrivacy == null)
             {
                 rootDict.SetString("NSLocationAlwaysUsageDescription", "Some ad content may require access to the location for an interactive ad experience.");
             }
 
-            PlistElementString privacy1 = (PlistElementString)rootDict["NSLocationWhenInUseUsageDescription"];
-            if (privacy1 == null)
+            PlistElementString locationWhenInUseUsagePrivacy = (PlistElementString)rootDict["NSLocationWhenInUseUsageDescription"];
+            if (locationWhenInUseUsagePrivacy == null)
             {
                 rootDict.SetString("NSLocationWhenInUseUsageDescription", "Some ad content may require access to the location for an interactive ad experience.");
+            }
+
+            PlistElementString locationAlwaysAndWhenInUseUsagePrivacy = (PlistElementString)rootDict["NSLocationAlwaysAndWhenInUseUsageDescription"];
+            if (locationAlwaysAndWhenInUseUsagePrivacy == null)
+            {
+                rootDict.SetString("NSLocationAlwaysAndWhenInUseUsageDescription", "Some ad content may require access to the location for an interactive ad experience.");
             }
 
             PlistElementString attPrivacy = (PlistElementString)rootDict["NSUserTrackingUsageDescription"];
@@ -301,53 +312,140 @@ namespace Yodo1.MAS
             File.WriteAllText(plistPath, plist.WriteToString());
         }
 
-        private static void UpdateIOSProject(string path)
+        private static void UpdateIOSProject(string buildPath)
         {
-            PBXProject proj = new PBXProject();
-            string projPath = PBXProject.GetPBXProjectPath(path);
+            UnityEditor.iOS.Xcode.PBXProject proj = new UnityEditor.iOS.Xcode.PBXProject();
+            string projPath = UnityEditor.iOS.Xcode.PBXProject.GetPBXProjectPath(buildPath);
             proj.ReadFromFile(projPath);
 
-            string mainTargetGuid = string.Empty;
+            string unityMainTargetGuid = string.Empty;
             string unityFrameworkTargetGuid = string.Empty;
 
 #if UNITY_2019_3_OR_NEWER
-            mainTargetGuid = proj.GetUnityMainTargetGuid();
+            unityMainTargetGuid = proj.GetUnityMainTargetGuid();
             unityFrameworkTargetGuid = proj.GetUnityFrameworkTargetGuid();
-            //string frameworksPath = path + "/Frameworks/Plugins/iOS/Yodo1Ads/";
-            //string[] directories = Directory.GetDirectories(frameworksPath, "*.bundle", SearchOption.AllDirectories);
-            //for (int i = 0; i < directories.Length; i++)
-            //{
-            //    var dirPath = directories[i];
-            //    var suffixPath = dirPath.Substring(path.Length + 1);
-            //    var fileGuid = proj.AddFile(suffixPath, suffixPath);
-            //    proj.AddFileToBuild(mainTargetGuid, fileGuid);
-
-            //    fileGuid = proj.FindFileGuidByProjectPath(suffixPath);
-            //    if (fileGuid != null)
-            //    {
-            //        proj.RemoveFileFromBuild(unityFrameworkTargetGuid, fileGuid);
-            //    }
-            //}
 #else
-            mainTargetGuid = proj.TargetGuidByName("Unity-iPhone");
-            unityFrameworkTargetGuid = mainTargetGuid;
+            unityMainTargetGuid = proj.TargetGuidByName("Unity-iPhone");
+            unityFrameworkTargetGuid = unityMainTargetGuid;
 #endif
 
-#if UNITY_2019_3_OR_NEWER
-            var unityFrameworkGuid = proj.FindFileGuidByProjectPath("UnityFramework.framework");
-            if (unityFrameworkGuid == null)
-            {
-                unityFrameworkGuid = proj.AddFile("UnityFramework.framework", "UnityFramework.framework");
-                proj.AddFileToBuild(mainTargetGuid, unityFrameworkGuid);
-            }
-            proj.AddFrameworkToProject(mainTargetGuid, "UnityFramework.framework", false);
-            proj.SetBuildProperty(mainTargetGuid, "ENABLE_BITCODE", "NO");
-#endif
-
+            proj.SetBuildProperty(unityMainTargetGuid, "ENABLE_BITCODE", "NO");
             proj.SetBuildProperty(unityFrameworkTargetGuid, "ENABLE_BITCODE", "NO");
             proj.SetBuildProperty(unityFrameworkTargetGuid, "GCC_ENABLE_OBJC_EXCEPTIONS", "YES");
+
+            /// <summary>
+            /// For Swift 5+ code that uses the standard libraries, the Swift Standard Libraries MUST be embedded for iOS < 12.2
+            /// Swift 5 introduced ABI stability, which allowed iOS to start bundling the standard libraries in the OS starting with iOS 12.2
+            /// Issue Reference: https://github.com/facebook/facebook-sdk-for-unity/issues/506
+            /// </summary>
+            proj.SetBuildProperty(unityMainTargetGuid, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES");
+            proj.AddBuildProperty(unityFrameworkTargetGuid, "LD_RUNPATH_SEARCH_PATHS", "/usr/lib/swift");
+
+            EmbedDynamicLibrariesIfNeeded(buildPath, proj, unityMainTargetGuid);
+            AddSwiftSupportIfNeeded(buildPath, proj, unityFrameworkTargetGuid);
             // rewrite to file
             File.WriteAllText(projPath, proj.WriteToString());
+
+
+#if UNITY_2019_3_OR_NEWER
+            XCProject xcProject = new XCProject(buildPath);
+
+            string unityFrameworkTargetName = "UnityFramework";
+            PBXNativeTarget nativeTarget = xcProject.GetNativeTarget(unityFrameworkTargetName);
+            if (nativeTarget == null)
+            {
+                unityFrameworkTargetName = "Unity-iPhone";
+                nativeTarget = xcProject.GetNativeTarget(unityFrameworkTargetName);
+            }
+            if (nativeTarget != null)
+            {
+                string headersGuid = proj.GetHeadersBuildPhaseByTarget(unityFrameworkTargetGuid);
+                string sourcesGuid = proj.GetSourcesBuildPhaseByTarget(unityFrameworkTargetGuid);
+
+                PBXList buildPhases = (PBXList)nativeTarget.data["buildPhases"];
+                if (headersGuid != null)
+                {
+                    buildPhases.Remove(headersGuid);
+
+                    int index = 1;
+                    if (sourcesGuid != null)
+                    {
+                        index = buildPhases.IndexOf(sourcesGuid);
+                    }
+                    if (index >= 0 && index < buildPhases.Count)
+                    {
+                        buildPhases.Insert(index, headersGuid);
+                    }
+
+                    nativeTarget.data["buildPhases"] = buildPhases;
+
+                    xcProject.SetNativeTarget(unityFrameworkTargetName, nativeTarget);
+                    xcProject.Save();
+                }
+            }
+#endif
+        }
+
+        private static void EmbedDynamicLibrariesIfNeeded(string buildPath, UnityEditor.iOS.Xcode.PBXProject project, string targetGuid)
+        {
+            var dynamicLibraryPathsPresentInProject = DynamicLibraryPathsToEmbed.Where(dynamicLibraryPath => Directory.Exists(Path.Combine(buildPath, dynamicLibraryPath))).ToList();
+            if (dynamicLibraryPathsPresentInProject.Count <= 0) return;
+
+#if UNITY_2019_3_OR_NEWER
+            // Embed framework only if the podfile does not contain target `Unity-iPhone`.
+            if (!ContainsUnityIphoneTargetInPodfile(buildPath))
+            {
+                foreach (var dynamicLibraryPath in dynamicLibraryPathsPresentInProject)
+                {
+                    var fileGuid = project.AddFile(dynamicLibraryPath, dynamicLibraryPath);
+                    project.AddFileToEmbedFrameworks(targetGuid, fileGuid);
+                }
+            }
+#else
+            string runpathSearchPaths;
+#if UNITY_2018_2_OR_NEWER
+            runpathSearchPaths = project.GetBuildPropertyForAnyConfig(targetGuid, "LD_RUNPATH_SEARCH_PATHS");
+#else
+            runpathSearchPaths = "$(inherited)";
+#endif
+            runpathSearchPaths += string.IsNullOrEmpty(runpathSearchPaths) ? "" : " ";
+
+            // Check if runtime search paths already contains the required search paths for dynamic libraries.
+            if (runpathSearchPaths.Contains("@executable_path/Frameworks")) return;
+
+            runpathSearchPaths += "@executable_path/Frameworks";
+            project.SetBuildProperty(targetGuid, "LD_RUNPATH_SEARCH_PATHS", runpathSearchPaths);
+#endif
+        }
+
+        private static void AddSwiftSupportIfNeeded(string buildPath, UnityEditor.iOS.Xcode.PBXProject project, string targetGuid)
+        {
+            var swiftFileRelativePath = "Classes/MASSwiftSupport.swift";
+            var swiftFilePath = Path.Combine(buildPath, swiftFileRelativePath);
+
+            // Add Swift file
+            CreateSwiftFile(swiftFilePath);
+            var swiftFileGuid = project.AddFile(swiftFileRelativePath, swiftFileRelativePath, PBXSourceTree.Source);
+            project.AddFileToBuild(targetGuid, swiftFileGuid);
+
+            // Enable Swift modules
+            project.SetBuildProperty(targetGuid, "SWIFT_VERSION", "5.0");
+            project.AddBuildProperty(targetGuid, "CLANG_ENABLE_MODULES", "YES");
+        }
+
+        private static void CreateSwiftFile(string swiftFilePath)
+        {
+            if (File.Exists(swiftFilePath)) return;
+
+            // Create a file to write to.
+            using (var writer = File.CreateText(swiftFilePath))
+            {
+                writer.WriteLine("//\n//  MASSwiftSupport.swift\n//");
+                writer.WriteLine("\nimport Foundation\n");
+                writer.WriteLine("// This file ensures the project includes Swift support.");
+                writer.WriteLine("// It is automatically generated by the MAS Unity Plugin.");
+                writer.Close();
+            }
         }
 
         public static void CopyDirectory(string srcPath, string dstPath, string[] excludeExtensions, bool overwrite = true)
@@ -371,13 +469,51 @@ namespace Yodo1.MAS
             proc.Start();
         }
 
+        protected static bool isAdReviewFuntionEnable()
+        {
+            bool adReview = false;
+            string dependencyFilePath = Path.Combine("Assets/Yodo1/MAS/Editor/Dependencies", "Yodo1MasiOSDependencies.xml");
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;//忽略文档里面的注释
+            XmlReader reader = XmlReader.Create(dependencyFilePath, settings);
+
+            XmlDocument xmlReadDoc = new XmlDocument();
+            xmlReadDoc.Load(dependencyFilePath);
+            XmlNode dependenciesRead = xmlReadDoc.SelectSingleNode("dependencies");
+            XmlNode iosPodsRead = dependenciesRead.SelectSingleNode("iosPods");
+            XmlNodeList nodeList = iosPodsRead.SelectNodes("iosPod");
+            if (nodeList != null && nodeList.Count > 0)
+            {
+                try
+                {
+                    foreach (XmlNode node in nodeList)
+                    {
+                        string name = ((XmlElement)node).GetAttribute("name").ToString();
+                        if (!string.IsNullOrEmpty(name) && name.Contains("Yodo1MasMediationApplovin"))
+                        {
+                            adReview = true;
+                            break;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(Yodo1U3dMas.TAG + e.Message);
+                }
+            }
+            reader.Close();
+
+            return adReview;
+        }
+
         public static void EnableAdReview(string buildPath)
         {
             const string OutputFileName = "AppLovinQualityServiceSetup.rb";
             var sdkKey = Yodo1AdEditorConstants.DEFAULT_APPLOVIN_SDK_KEY;
             if (string.IsNullOrEmpty(sdkKey))
             {
-                Debug.LogError("Failed to install AppLovin Quality Service plugin. AppLovin SDK Key is empty");
+                Debug.LogError(Yodo1U3dMas.TAG + "Failed to install AppLovin Quality Service plugin. AppLovin SDK Key is empty");
                 return;
             }
 
@@ -425,7 +561,7 @@ namespace Yodo1.MAS
             if (webRequest.isError)
 #endif
             {
-                Debug.LogError("AppLovin Quality Service installation failed. Failed to download script with error: " + unityWebRequest.error);
+                Debug.LogError(Yodo1U3dMas.TAG + "AppLovin Quality Service installation failed. Failed to download script with error: " + unityWebRequest.error);
                 return;
             }
 
@@ -433,7 +569,7 @@ namespace Yodo1.MAS
             var rubyVersion = Yodo1AdCommandLine.Run("ruby", "--version", buildPath);
             if (rubyVersion.ExitCode != 0)
             {
-                Debug.LogError("AppLovin Quality Service installation requires Ruby. Please install Ruby, export it to your system PATH and re-export the project.");
+                Debug.LogError(Yodo1U3dMas.TAG + "AppLovin Quality Service installation requires Ruby. Please install Ruby, export it to your system PATH and re-export the project.");
                 return;
             }
 
@@ -441,10 +577,31 @@ namespace Yodo1.MAS
             var result = Yodo1AdCommandLine.Run("ruby", OutputFileName, buildPath);
 
             // Check if we have an error.
-            if (result.ExitCode != 0) Debug.LogError("Failed to set up AppLovin Quality Service");
+            if (result.ExitCode != 0) Debug.LogError(Yodo1U3dMas.TAG + "Failed to set up AppLovin Quality Service");
 
-            Debug.Log(result.Message);
+            Debug.Log(Yodo1U3dMas.TAG + result.Message);
+        }
+
+#if UNITY_2019_3_OR_NEWER
+        private static bool ContainsUnityIphoneTargetInPodfile(string buildPath)
+        {
+            var podfilePath = Path.Combine(buildPath, "Podfile");
+            if (!File.Exists(podfilePath)) return false;
+
+            var lines = File.ReadAllLines(podfilePath);
+            return lines.Any(line => line.Contains(TargetUnityIphonePodfileLine));
         }
 #endif
+
+        private static List<string> DynamicLibraryPathsToEmbed
+        {
+            get
+            {
+                var dynamicLibraryPathsToEmbed = new List<string>();
+                dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "FBSDKCoreKit_Basics/XCFrameworks/FBSDKCoreKit_Basics.xcframework"));
+                return dynamicLibraryPathsToEmbed;
+            }
+        }
     }
 }
+#endif

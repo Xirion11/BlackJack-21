@@ -1,6 +1,4 @@
-
-
-#if UNITY_IOS || UNITY_IPHONE
+//#if UNITY_IOS || UNITY_IPHONE
 
 using System.Diagnostics;
 using System.IO;
@@ -29,7 +27,7 @@ namespace Yodo1.MAS
         /// </summary>
         public string Message;
     }
-    
+
     /// <summary>
     /// A helper class to run command line tools.
     ///
@@ -82,4 +80,4 @@ namespace Yodo1.MAS
     }
 }
 
-#endif
+//#endif
