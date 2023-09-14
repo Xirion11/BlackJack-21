@@ -40,9 +40,9 @@ MonoBehaviour:
     - kidoz
     - mintegral
     - pangle
-    - unity
     - vungle
     - yandex
+    - unity
   iosDynamicNetworkSettings:
     sdkType: -1
     sdkVersion: 

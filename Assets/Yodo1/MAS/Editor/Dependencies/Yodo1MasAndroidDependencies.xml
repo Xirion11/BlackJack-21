@@ -26,12 +26,12 @@
     <androidPackage spec="com.yodo1.mas.mediation.mintegral.adapters:applovin:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation:pangle:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation.pangle.adapters:applovin:4.9.1" />
-    <androidPackage spec="com.yodo1.mas.mediation:unityads:4.9.1" />
-    <androidPackage spec="com.yodo1.mas.mediation.unityads.adapters:applovin:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation:vungle:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation.vungle.adapters:applovin:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation:yandex:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation.yandex.adapters:applovin:4.9.1" />
+    <androidPackage spec="com.yodo1.mas.mediation:unityads:4.9.1" />
+    <androidPackage spec="com.yodo1.mas.mediation.unityads.adapters:applovin:4.9.1" />
     <androidPackage spec="com.yodo1.mas.mediation:yodo1:4.9.1" />
   </androidPackages>
 </dependencies>
