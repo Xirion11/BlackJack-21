@@ -68,16 +68,6 @@ public class YodoAdsManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-#if UNITY_EDITOR
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }    
-#endif
     private void Start()
     {
         Yodo1U3dMasCallback.OnSdkInitializedEvent += (success, error) =>
@@ -142,23 +132,4 @@ public class YodoAdsManager : MonoBehaviour
             //Yodo1U3dMas.SetAutoPauseGame(autoPauseGame);
         }
     }
-#if UNITY_EDITOR
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        EventSystem sceneEventSystem = FindObjectOfType<EventSystem>();
-        if (GameObject.Find("Yodo1AdCanvas") == null)
-        {
-            Yodo1EditorAds.AdHolder = Instantiate(Resources.Load("SampleAds/AdHolder") as GameObject);
-            Yodo1EditorAds.AdHolder.name = "Yodo1AdCanvas";
-            Yodo1EditorAds.AdHolderCanvas = Yodo1EditorAds.AdHolder.transform.GetChild(0).GetComponent<Canvas>();
-            Yodo1EditorAds.AdHolderCanvas.sortingOrder = Yodo1EditorAds.HighestOrderCanvas();
-        }
-        if (sceneEventSystem == null)
-        {
-            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        }
-        Yodo1EditorAds.InitializeAds();
-
-    }
-#endif
 }
