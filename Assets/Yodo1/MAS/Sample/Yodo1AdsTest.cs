@@ -7,7 +7,6 @@ public class Yodo1AdsTest : MonoBehaviour
     [Header("Ad Placements")]
     public InputField interstitialAdPlacement;
     public InputField rewardAdPlacement;
-    public InputField rewardInterstitialAdPlacement;
     public InputField appOpenAdPlacement;
 
     void Start()
@@ -16,28 +15,60 @@ public class Yodo1AdsTest : MonoBehaviour
         {
             Debug.Log(Yodo1U3dMas.TAG + ": The game has entered the foreground");
         };
+
+        Yodo1U3dMasCallback.OnUmpCompletionEvent += (Yodo1U3dAdError error) =>
+        {
+            if (error == null)
+            {
+                Debug.Log(Yodo1U3dMas.TAG + "OnUmpCompletionEvent success");
+            }
+            else
+            {
+                Debug.Log(Yodo1U3dMas.TAG + "OnUmpCompletionEvent with error " + error.ToString());
+            }
+
+            Debug.Log(Yodo1U3dMas.TAG + "OnUmpCompletionEvent purposeConsents " + Yodo1U3dMas.GetIABTCFString("IABTCF_PurposeConsents"));
+        };
+
         Yodo1U3dMasCallback.OnSdkInitializedEvent += (success, error) =>
         {
-            Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, success:" + success + ", error: " + error.ToString());
-            Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, age:" + Yodo1U3dMas.GetUserAge());
             if (success)
             {
+                Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, success:" + success + ", user age:" + Yodo1U3dMas.GetUserAge());
+            }
+            else
+            {
+                Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, error: " + error.ToString());
+            }
+        };
+
+        Yodo1U3dMasCallback.OnSdkInitializationEvent += (Yodo1MasSdkConfiguration configuration, Yodo1U3dAdError error) =>
+        {
+            if (configuration != null)
+            {
+                Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializationEvent, Yodo1MasSdkConfiguration: " + configuration.ToString());
+
+                Yodo1U3dMas.SetUserIdentifier(SystemInfo.deviceUniqueIdentifier);
+
                 InitializeBannerAds();
                 InitializeInterstitialAds();
                 InitializeRewardedAds();
                 InitializeNativeAds();
-                InitializeRewardedInterstitialAds();
                 InitializeAppOpenAds();
+            }
+            else
+            {
+                Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializationEvent, Yodo1U3dAdError: " + error.ToString());
             }
         };
 
         Yodo1MasUserPrivacyConfig userPrivacyConfig = new Yodo1MasUserPrivacyConfig()
-            .titleBackgroundColor(Color.green)
-            .titleTextColor(Color.blue)
-            .contentBackgroundColor(Color.black)
-            .contentTextColor(Color.white)
-            .buttonBackgroundColor(Color.red)
-            .buttonTextColor(Color.green);
+            .titleBackgroundColor(Color.white)
+            .titleTextColor(Color.black)
+            .contentBackgroundColor(Color.white)
+            .contentTextColor(Color.black)
+            .buttonBackgroundColor(Color.yellow)
+            .buttonTextColor(Color.white);
 
         Yodo1AdBuildConfig config = new Yodo1AdBuildConfig()
             .enableUserPrivacyDialog(true)
@@ -48,6 +79,23 @@ public class Yodo1AdsTest : MonoBehaviour
         Yodo1U3dMas.InitializeMasSdk();
     }
 
+    public void ShowUmpForExistingUser()
+    {
+        if (Yodo1U3dMas.GetSdkConfiguration() == null)
+        {
+            return;
+        }
+        Debug.Log(Yodo1U3dMas.TAG + "ShowUmpForExistingUser, purposeConsents " + Yodo1U3dMas.GetIABTCFString("IABTCF_PurposeConsents"));
+
+        if (Yodo1U3dMas.GetSdkConfiguration().ConsentFlowUserGeography == Yodo1MasConsentFlowUserGeography.Gdpr)
+        {
+            Yodo1U3dMas.ShowUmpForExistingUser();
+        }
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "ShowUmpForExistingUser fail, " + Yodo1U3dMas.GetSdkConfiguration().ConsentFlowUserGeography.ToString());
+        }
+    }
 
     #region Banner Ad Methods
     private void InitializeBannerAds()
@@ -119,6 +167,7 @@ public class Yodo1AdsTest : MonoBehaviour
         bannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         bannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         bannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        bannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
 
         // Load banner ads, the banner ad will be displayed automatically after loaded
         bannerAdView.LoadAd();
@@ -139,6 +188,7 @@ public class Yodo1AdsTest : MonoBehaviour
         standardBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         standardBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         standardBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        standardBannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
 
         // Large Banner
         if (largeBannerAdView != null)
@@ -156,6 +206,7 @@ public class Yodo1AdsTest : MonoBehaviour
         largeBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         largeBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         largeBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        largeBannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
 
         // IAB Banner
         if (IABBannerAdView != null)
@@ -173,6 +224,7 @@ public class Yodo1AdsTest : MonoBehaviour
         IABBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         IABBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         IABBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        IABBannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
 
         // Smart Banner
         if (smartBannerAdView != null)
@@ -189,6 +241,7 @@ public class Yodo1AdsTest : MonoBehaviour
         smartBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         smartBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         smartBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        smartBannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
 
         // Adaptive Banner
         if (adaptiveBannerAdView != null)
@@ -205,32 +258,46 @@ public class Yodo1AdsTest : MonoBehaviour
         adaptiveBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
         adaptiveBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
         adaptiveBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+        adaptiveBannerAdView.OnAdPayRevenueEvent += OnBannerAdPayRevenueEvent;
     }
 
     private void OnBannerAdLoadedEvent(Yodo1U3dBannerAdView adView)
     {
         // Banner ad is ready to be shown.
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad loaded, " + adView.ToJsonString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdLoadedEvent event received");
     }
 
     private void OnBannerAdFailedToLoadEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad failed to load with error code: " + adError.ToString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdFailedToLoadEvent event received, error: " + adError.ToString());
     }
 
     private void OnBannerAdOpenedEvent(Yodo1U3dBannerAdView adView)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad opened, " + adView.ToJsonString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdOpenedEvent event received");
     }
 
     private void OnBannerAdFailedToOpenEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad failed to load with error code: " + adError.ToString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdFailedToOpenEvent event received, error: " + adError.ToString());
     }
 
     private void OnBannerAdClosedEvent(Yodo1U3dBannerAdView adView)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad closed, " + adView.ToJsonString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdClosedEvent event received");
+    }
+
+    private void OnBannerAdPayRevenueEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdValue adValue)
+    {
+        if (adValue == null)
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdPayRevenueEvent event received, adValue is null");
+        }
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdPayRevenueEvent event received, adValue " + adValue.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnBannerAdPayRevenueEvent event received, adValue revenue " + adValue.Revenue);
+        }
     }
 
     /// <summary>
@@ -341,6 +408,8 @@ public class Yodo1AdsTest : MonoBehaviour
         Yodo1U3dInterstitialAd.GetInstance().OnAdOpenedEvent += OnInterstitialAdOpenedEvent;
         Yodo1U3dInterstitialAd.GetInstance().OnAdOpenFailedEvent += OnInterstitialAdOpenFailedEvent;
         Yodo1U3dInterstitialAd.GetInstance().OnAdClosedEvent += OnInterstitialAdClosedEvent;
+
+        Yodo1U3dInterstitialAd.GetInstance().OnAdPayRevenueEvent += OnInterstitialAdPayRevenueEvent;
     }
 
     public void LoadInterstitialAdV2()
@@ -376,6 +445,20 @@ public class Yodo1AdsTest : MonoBehaviour
     private void OnInterstitialAdClosedEvent(Yodo1U3dInterstitialAd ad)
     {
         Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdClosedEvent event received");
+    }
+
+    private void OnInterstitialAdPayRevenueEvent(Yodo1U3dInterstitialAd ad, Yodo1U3dAdValue adValue)
+    {
+        if (adValue == null)
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdPayRevenueEvent event received, adValue is null");
+        }
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdPayRevenueEvent event received, adValue " + adValue.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdPayRevenueEvent event received, adValue revenue " + adValue.Revenue);
+
+        }
     }
 
     private void ShowInterstitialAdsV2(string adPlacement)
@@ -422,6 +505,8 @@ public class Yodo1AdsTest : MonoBehaviour
         Yodo1U3dRewardAd.GetInstance().OnAdOpenFailedEvent += OnRewardAdOpenFailedEvent;
         Yodo1U3dRewardAd.GetInstance().OnAdClosedEvent += OnRewardAdClosedEvent;
         Yodo1U3dRewardAd.GetInstance().OnAdEarnedEvent += OnRewardAdEarnedEvent;
+
+        Yodo1U3dRewardAd.GetInstance().OnAdPayRevenueEvent += OnRewardAdPayRevenueEvent;
     }
 
     public void LoadRewardAdV2()
@@ -464,6 +549,19 @@ public class Yodo1AdsTest : MonoBehaviour
         Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdEarnedEvent event received");
     }
 
+    private void OnRewardAdPayRevenueEvent(Yodo1U3dRewardAd ad, Yodo1U3dAdValue adValue)
+    {
+        if (adValue == null)
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdPayRevenueEvent event received, adValue is null");
+        }
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdPayRevenueEvent event received, adValue " + adValue.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdPayRevenueEvent event received, adValue revenue " + adValue.Revenue);
+        }
+    }
+
     private void ShowRewardedAdsV2(string adPlacement)
     {
         if (string.IsNullOrEmpty(adPlacement))
@@ -500,6 +598,7 @@ public class Yodo1AdsTest : MonoBehaviour
         // Add Events
         nativeAdView.OnAdLoadedEvent += OnNativeAdLoadedEvent;
         nativeAdView.OnAdFailedToLoadEvent += OnNativeAdFailedToLoadEvent;
+        nativeAdView.OnAdPayRevenueEvent += OnNativeAdPayRevenueEvent;
 
 
         // Clean up native before reusing
@@ -515,6 +614,7 @@ public class Yodo1AdsTest : MonoBehaviour
         // Add Events
         nativeAdView2.OnAdLoadedEvent += OnNativeAdLoadedEvent;
         nativeAdView2.OnAdFailedToLoadEvent += OnNativeAdFailedToLoadEvent;
+        nativeAdView2.OnAdPayRevenueEvent += OnNativeAdPayRevenueEvent;
     }
 
     public void ShowNativeAd(string adPlacement)
@@ -546,93 +646,25 @@ public class Yodo1AdsTest : MonoBehaviour
 
     private void OnNativeAdLoadedEvent(Yodo1U3dNativeAdView adView)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "Native ad loaded");
+        Debug.Log(Yodo1U3dMas.TAG + "OnNativeAdLoadedEvent event received");
     }
 
     private void OnNativeAdFailedToLoadEvent(Yodo1U3dNativeAdView adView, Yodo1U3dAdError adError)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "Native ad failed to load with error code: " + adError.ToString());
-    }
-    #endregion
-
-    #region RewardedInterstitial Ad Methods
-
-    private void InitializeRewardedInterstitialAds()
-    {
-        // Instantiate
-        Yodo1U3dRewardedInterstitialAd.GetInstance();
-
-        // Ad Events
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdLoadedEvent += OnRewardedInterstitialAdLoadedEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdLoadFailedEvent += OnRewardedInterstitialAdLoadFailedEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdOpeningEvent += OnRewardedInterstitialAdOpeningEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdOpenedEvent += OnRewardedInterstitialAdOpenedEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdOpenFailedEvent += OnRewardedInterstitialAdOpenFailedEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdClosedEvent += OnRewardedInterstitialAdClosedEvent;
-        Yodo1U3dRewardedInterstitialAd.GetInstance().OnAdEarnedEvent += OnRewardedInterstitialAdEarnedEvent;
+        Debug.Log(Yodo1U3dMas.TAG + "OnNativeAdFailedToLoadEvent event received, adError " + adError.ToString());
     }
 
-    public void LoadRewardedInterstitialAds()
+    private void OnNativeAdPayRevenueEvent(Yodo1U3dNativeAdView adView, Yodo1U3dAdValue adValue)
     {
-        Yodo1U3dRewardedInterstitialAd.GetInstance().LoadAd();
-    }
-
-    public void ShowRewardedInterstitialAds()
-    {
-        string adPlacement = string.Empty;
-        if (rewardInterstitialAdPlacement != null && !string.IsNullOrEmpty(rewardInterstitialAdPlacement.text))
+        if (adValue == null)
         {
-            adPlacement = rewardInterstitialAdPlacement.text;
+            Debug.Log(Yodo1U3dMas.TAG + "OnNativeAdPayRevenueEvent event received, adValue is null");
         }
-
-        ShowRewardedInterstitialAds(adPlacement);
-    }
-
-    private void ShowRewardedInterstitialAds(string adPlacement)
-    {
-        bool isLoaded = Yodo1U3dRewardedInterstitialAd.GetInstance().IsLoaded();
-
-        if (isLoaded) Yodo1U3dRewardedInterstitialAd.GetInstance().ShowAd(adPlacement);
-    }
-
-    private void OnRewardedInterstitialAdLoadedEvent(Yodo1U3dRewardedInterstitialAd ad)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdLoadedEvent event received");
-    }
-
-    private void OnRewardedInterstitialAdLoadFailedEvent(Yodo1U3dRewardedInterstitialAd ad, Yodo1U3dAdError adError)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdLoadFailedEvent event received with error: " + adError.ToString());
-    }
-
-    private void OnRewardedInterstitialAdOpeningEvent(Yodo1U3dRewardedInterstitialAd ad)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdOpeningEvent event received");
-    }
-
-    private void OnRewardedInterstitialAdOpenedEvent(Yodo1U3dRewardedInterstitialAd ad)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdOpenedEvent event received");
-    }
-
-    private void OnRewardedInterstitialAdOpenFailedEvent(Yodo1U3dRewardedInterstitialAd ad, Yodo1U3dAdError adError)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdOpenFailedEvent event received with error: " + adError.ToString());
-        // Load the next ad
-        this.LoadRewardedInterstitialAds();
-    }
-
-    private void OnRewardedInterstitialAdClosedEvent(Yodo1U3dRewardedInterstitialAd ad)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdClosedEvent event received");
-        // Load the next ad
-        this.LoadRewardedInterstitialAds();
-    }
-
-    private void OnRewardedInterstitialAdEarnedEvent(Yodo1U3dRewardedInterstitialAd ad)
-    {
-        Debug.Log("[Yodo1 Mas] OnRewardedInterstitialAdEarnedEvent event received");
-        // Add your reward code here
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnNativeAdPayRevenueEvent event received, adValue " + adValue.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnNativeAdPayRevenueEvent event received, adValue revenue " + adValue.Revenue);
+        }
     }
     #endregion
 
@@ -650,6 +682,9 @@ public class Yodo1AdsTest : MonoBehaviour
         Yodo1U3dAppOpenAd.GetInstance().OnAdOpenedEvent += OnAppOpenAdOpenedEvent;
         Yodo1U3dAppOpenAd.GetInstance().OnAdOpenFailedEvent += OnAppOpenAdOpenFailedEvent;
         Yodo1U3dAppOpenAd.GetInstance().OnAdClosedEvent += OnAppOpenAdClosedEvent;
+
+        Yodo1U3dAppOpenAd.GetInstance().OnAdPayRevenueEvent += OnAppOpenAdPayRevenueEvent;
+
         Yodo1U3dAppOpenAd.GetInstance().LoadAd();
     }
 
@@ -678,36 +713,49 @@ public class Yodo1AdsTest : MonoBehaviour
 
     private void OnAppOpenAdLoadedEvent(Yodo1U3dAppOpenAd ad)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdLoadedEvent event received");
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdLoadedEvent event received");
     }
 
     private void OnAppOpenAdLoadFailedEvent(Yodo1U3dAppOpenAd ad, Yodo1U3dAdError adError)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdLoadFailedEvent event received with error: " + adError.ToString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdLoadFailedEvent event received with error: " + adError.ToString());
     }
 
     private void OnAppOpenAdOpeningEvent(Yodo1U3dAppOpenAd ad)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdOpeningEvent event received");
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdOpeningEvent event received");
     }
 
     private void OnAppOpenAdOpenedEvent(Yodo1U3dAppOpenAd ad)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdOpenedEvent event received");
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdOpenedEvent event received");
     }
 
     private void OnAppOpenAdOpenFailedEvent(Yodo1U3dAppOpenAd ad, Yodo1U3dAdError adError)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdOpenFailedEvent event received with error: " + adError.ToString());
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdOpenFailedEvent event received with error: " + adError.ToString());
         // Load the next ad
         this.LoadAppOpenAds();
     }
 
     private void OnAppOpenAdClosedEvent(Yodo1U3dAppOpenAd ad)
     {
-        Debug.Log("[Yodo1 Mas] OnAppOpenAdClosedEvent event received");
+        Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdClosedEvent event received");
         // Load the next ad
         this.LoadAppOpenAds();
+    }
+
+    private void OnAppOpenAdPayRevenueEvent(Yodo1U3dAppOpenAd ad, Yodo1U3dAdValue adValue)
+    {
+        if (adValue == null)
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdPayRevenueEvent event received, adValue is null");
+        }
+        else
+        {
+            Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdPayRevenueEvent event received, adValue " + adValue.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnAppOpenAdPayRevenueEvent event received, adValue revenue " + adValue.Revenue);
+        }
     }
     #endregion
 }

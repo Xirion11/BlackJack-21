@@ -36,7 +36,7 @@ namespace Yodo1.MAS
                     UpdateIOSPlist(pathToBuiltProject, settings);
                     UpdateIOSProject(pathToBuiltProject);
                     UpdatePodfile(pathToBuiltProject);
-                    //if (Yodo1AdUtils.IsAppLovinValid())
+                    //if (Yodo1AdUtils.IsAppLovinValid(Yodo1PlatfromTarget.iOS))
                     //{
                     //    EnableAdReview(pathToBuiltProject);
                     //}
@@ -45,12 +45,12 @@ namespace Yodo1.MAS
             }
         }
 
-#region SkAdNetworksInfo
+        #region SkAdNetworksInfo
 
         private static Yodo1SkAdNetworkData GetSkAdNetworkData()
         {
             var uriBuilder = new UriBuilder("https://dash.applovin.com/docs/v1/unity_integration_manager/sk_ad_networks_info");
-            uriBuilder.Query += "adnetworks=AdColony,Amazon,BidMachine,ByteDance,CSJ,Facebook,Fyber,Google,GoogleAdManager,InMobi,IronSource,Mintegral,MyTarget,Tapjoy,TencentGDT,UnityAds,Vungle,Yandex";
+            uriBuilder.Query += "adnetworks=AdColony,Amazon,BidMachine,BigoAds,ByteDance,CSJ,Facebook,Fyber,Google,GoogleAdManager,InMobi,IronSource,Mintegral,Moloco,PubMatic,MyTarget,Tapjoy,TencentGDT,UnityAds,Vungle,Yandex,YSONetwork";
             var unityWebRequest = UnityWebRequest.Get(uriBuilder.ToString());
 
 #if UNITY_2017_2_OR_NEWER
@@ -88,9 +88,12 @@ namespace Yodo1.MAS
         {
             string[] applovinSkIDs = GetSkAdNetworksIDs("sk_ad_networks_info.plist");
             string[] bigoSkIDs = GetSkAdNetworksIDs("sk_ad_networks_info_bigo.plist");
+            string[] tobidSkIDs = GetSkAdNetworksIDs("sk_ad_networks_info_tobid.plist");
 
             string[] skIDs = applovinSkIDs.Union(bigoSkIDs).ToArray<string>(); //Merge arrays and remove duplicates
-            return skIDs;
+            string[] allSkIDs = skIDs.Union(tobidSkIDs).ToArray<string>();
+
+            return allSkIDs;
         }
 
         private static string[] GetSkAdNetworksIDs(string fileName)
@@ -117,7 +120,7 @@ namespace Yodo1.MAS
             return mSKAdNetworkIDs;
         }
 
-#endregion
+        #endregion
 
         private static void UpdateIOSPlist(string path, Yodo1AdSettings settings)
         {
@@ -151,7 +154,7 @@ namespace Yodo1.MAS
             }
 
             //Set AppLovinSdkKey
-            rootDict.SetString("AppLovinSdkKey", Yodo1AdEditorConstants.DEFAULT_APPLOVIN_SDK_KEY);
+            //rootDict.SetString("AppLovinSdkKey", Yodo1AdEditorConstants.DEFAULT_APPLOVIN_SDK_KEY);
 
             if (settings.iOSSettings.GlobalRegion)
             {
@@ -222,6 +225,7 @@ namespace Yodo1.MAS
             proj.SetBuildProperty(unityFrameworkTargetGuid, "ENABLE_BITCODE", "NO");
             proj.SetBuildProperty(unityFrameworkTargetGuid, "GCC_ENABLE_OBJC_EXCEPTIONS", "YES");
 
+#if UNITY_2019_4_OR_NEWER
             string MARKETING_VERSION = proj.GetBuildPropertyForConfig(unityMainTargetGuid, "MARKETING_VERSION");
             if (string.IsNullOrEmpty(MARKETING_VERSION))
             {
@@ -232,7 +236,7 @@ namespace Yodo1.MAS
             {
                 proj.SetBuildProperty(unityFrameworkTargetGuid, "MARKETING_VERSION", Application.version);
             }
-
+#endif
             /// <summary>
             /// For Swift 5+ code that uses the standard libraries, the Swift Standard Libraries MUST be embedded for iOS < 12.2
             /// Swift 5 introduced ABI stability, which allowed iOS to start bundling the standard libraries in the OS starting with iOS 12.2
@@ -461,29 +465,53 @@ namespace Yodo1.MAS
             {
                 var dynamicLibraryPathsToEmbed = new List<string>();
 
-                if (Yodo1AdUtils.IsAppLovinValid())
+                if (Yodo1AdUtils.IsAppLovinValid(Yodo1PlatfromTarget.iOS))
                 {
-                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "AppLovinSDK/applovin-ios-sdk-12.5.0/AppLovinSDK.xcframework"));
+                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "AppLovinSDK/applovin-ios-sdk-13.1.0/AppLovinSDK.xcframework"));
                     // Amazon
-                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "Yodo1MasMediationApplovin/Yodo1MasMediationApplovin/Lib/DTBiOSSDK.xcframework"));
+                    //dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "AmazonPublisherServicesSDK/APS_iOS_SDK-5.0.1/DTBiOSSDK.xcframework"));
                 }
 
                 // BidMachine
-                if (Yodo1AdUtils.IsValidWithNetwork("BidMachine"))
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "BidMachine"))
                 {
                     dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "OMSDK_Appodeal/OMSDK_Appodeal.xcframework"));
                 }
 
-                // Fyber
-                if (Yodo1AdUtils.IsValidWithNetwork("Fyber"))
-                {
-                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "Fyber_Marketplace_SDK/IASDKCore/IASDKCore.xcframework"));
-                }
+                // Fyber have changed it from dynamic to static, need not handle these lines
+                //if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "Fyber"))
+                //{
+                //    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "Fyber_Marketplace_SDK/IASDKCore/IASDKCore.xcframework"));
+                //}
 
                 // InMobi
-                if (Yodo1AdUtils.IsValidWithNetwork("InMobi"))
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "InMobi"))
                 {
                     dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "InMobiSDK/InMobiSDK.xcframework"));
+                }
+
+                // Moloco
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "Moloco"))
+                {
+                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "MolocoSDKiOS/MolocoSDK.xcframework"));
+                }
+
+                // Pubmatic
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "Pubmatic"))
+                {
+                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "OpenWrapSDK/OpenWrapSDK/OMSDK_Pubmatic.xcframework"));
+                }
+
+                // ToBid - KuaiShou
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "ToBid"))
+                {
+                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "ToBid-iOS/tobid-sdk-ios-cn/AdNetworks/kuaishou/KSAdSDK.xcframework"));
+                }
+
+                // YSONetwork
+                if (Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "YSONetwork") || Yodo1AdUtils.IsValidWithNetwork(Yodo1PlatfromTarget.iOS, "YSO"))
+                {
+                    dynamicLibraryPathsToEmbed.Add(Path.Combine("Pods/", "YsoNetworkSDK/YsoNetwork.xcframework"));
                 }
 
                 return dynamicLibraryPathsToEmbed;
@@ -513,20 +541,27 @@ namespace Yodo1.MAS
         private static void UpdatePodfile(string path)
         {
             string topTag = "target 'UnityFramework' do";
-            string installer = "post_install do |installer|\n" +
+            string installerTag = "post_install do |installer|";
+
+            string installer =
                 "\tinstaller.generated_projects.each do |project|\n" +
                 "\t\tproject.targets.each do |target|\n" +
                 "\t\t\ttarget.build_configurations.each do |config|\n" +
                 "\t\t\t\tconfig.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'\n" +
                 "\t\t\tend\n" +
                 "\t\tend\n" +
-                "\tend\n" +
-                "end\n";
-
-            //Debug.Log("=================== " + path + "/Podfile");
+                "\tend\n";
 
             Yodo1AdFileClass app = new Yodo1AdFileClass(path + "/Podfile");
-            app.WriteBelow(topTag, installer);
+            //Debug.Log("=================== " + path + "/Podfile");
+            if (app.IsHaveText(installerTag))
+            {
+                app.WriteBelow(installerTag, installer);
+            }
+            else
+            {
+                app.WriteBelow(topTag, installerTag + "\n" + installer + "end\n");
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ public class IntegrationManager : EditorWindow
     int platformTabSelected = 0;
     int prevPlatformTabSelected = 0;
     private const float editorWindowMinWidth = 600f;
-    private const float editorWindowMinLength = 800f;
+    private const float editorWindowMinLength = 900f;
     private const float networkFieldMinWidth = 100f;
     private const float versionFieldMinWidth = 190f;
     private const float actionFieldWidth = 60f;
@@ -26,8 +26,8 @@ public class IntegrationManager : EditorWindow
 
     Yodo1AdNetworkConfig adNetworkConfig;
 
-    List<Yodo1AdNetwork> androidStandard;
-    List<Yodo1AdNetwork> iosStandard;
+    Yodo1AdNetwork[] android;
+    Yodo1AdNetwork[] ios;
 
     Yodo1AdNetworkConfigCacheData androidCachedData;
     Yodo1AdNetworkConfigCacheData iosCachedData;
@@ -50,11 +50,21 @@ public class IntegrationManager : EditorWindow
                 return;
             }
 #endif
-            Yodo1AdNetworkManager.GetInstance().InitAdNetworkConfig();
-            Yodo1AdNetworkManager.GetInstance().CheckDependenciesFileByCachedAdNetworks();
-
+            UpdateAdNetworkAndDependencies();
             importPackageCompleted = true;
         }
+    }
+
+    public static void UpdateAdNetworkAndDependencies()
+    {
+#if UNITY_ANDROID
+        if (!Yodo1AdUtils.IsGooglePlayVersion())
+        {
+            return;
+        }
+#endif
+        Yodo1AdNetworkManager.GetInstance().InitAdNetworkConfig();
+        Yodo1AdNetworkManager.GetInstance().CheckDependenciesFileByCachedAdNetworks();
     }
 
     [MenuItem("Yodo1/MAS/Integration Manager", false, 100)]
@@ -118,9 +128,39 @@ public class IntegrationManager : EditorWindow
         Yodo1AdNetworkManager.GetInstance().InitAdNetworkConfig();
         adNetworkConfig = Yodo1AdNetworkManager.GetInstance().GetAdNetworkConfig();
 
+        if (adNetworkConfig.ios != null && adNetworkConfig.ios.Length > 0)
+        {
+            // Handle Amazon iOS
+            //Yodo1AdNetwork amazon_ios = new Yodo1AdNetwork();
+            //amazon_ios.name = "Amazon";
+            //amazon_ios.displayName = "Amazon Ad Marketplace";
+            //amazon_ios.version = "4.10.0";
+            List<Yodo1AdNetwork> networks_ios = new List<Yodo1AdNetwork>(adNetworkConfig.ios);
+            //networks_ios.Add(amazon_ios);
+            adNetworkConfig.ios = networks_ios.ToArray();
+
+            // Sort iOS config
+            adNetworkConfig.ios = adNetworkConfig.ios.OrderBy(o => o.displayName.FirstOrDefault()).ToArray();
+        }
+
+        if (adNetworkConfig.android != null && adNetworkConfig.android.Length > 0)
+        {
+            // Handle Amazon Android
+            //Yodo1AdNetwork amazon_android = new Yodo1AdNetwork();
+            //amazon_android.name = "Amazon";
+            //amazon_android.displayName = "Amazon Ad Marketplace";
+            //amazon_android.version = "9.10.2";
+            List<Yodo1AdNetwork> networks_android = new List<Yodo1AdNetwork>(adNetworkConfig.android);
+            //networks_android.Add(amazon_android);
+            adNetworkConfig.android = networks_android.ToArray();
+
+            // Sort Android config
+            adNetworkConfig.android = adNetworkConfig.android.OrderBy(o => o.displayName.FirstOrDefault()).ToArray();
+        }
+
         // get the dispalyed networks list
-        androidStandard = adNetworkConfig.androidStandard;
-        iosStandard = adNetworkConfig.iosStandard;
+        android = adNetworkConfig.android;
+        ios = adNetworkConfig.ios;
         // get the cached networks the developer selected before
 
         androidCachedData = Yodo1AdNetworkManager.GetInstance().GetCachedAndroidAdNetworksInfo();
@@ -189,7 +229,7 @@ public class IntegrationManager : EditorWindow
 #elif UNITY_2017_2_OR_NEWER
         if (webRequest.isNetworkError || webRequest.isHttpError)
 #else
-            if (webRequest.isError)
+        if (webRequest.isError)
 #endif
         {
             //Debug.LogError(webRequest.error);
@@ -222,7 +262,14 @@ public class IntegrationManager : EditorWindow
                 }
                 else
                 {
-                    returnVal = true;
+                    if (adNetwork.status == 1)
+                    {
+                        returnVal = false;
+                    }
+                    else
+                    {
+                        returnVal = true; // adnetwork in default full
+                    }
                 }
             }
         }
@@ -261,9 +308,9 @@ public class IntegrationManager : EditorWindow
             else
             {
                 List<string> installedList = new List<string>();
-                foreach (Yodo1AdNetwork network in androidStandard)
+                foreach (Yodo1AdNetwork network in android)
                 {
-                    if (!string.Equals(network.name, adNetwork.name))
+                    if (!string.Equals(network.name, adNetwork.name) && network.status != 1)
                     {
                         installedList.Add(network.name);
                     }
@@ -289,7 +336,7 @@ public class IntegrationManager : EditorWindow
             else
             {
                 List<string> installedList = new List<string>();
-                foreach (Yodo1AdNetwork network in iosStandard)
+                foreach (Yodo1AdNetwork network in ios)
                 {
                     if (!string.Equals(network.name, adNetwork.name))
                     {
@@ -313,9 +360,39 @@ public class IntegrationManager : EditorWindow
     {
         if (platformTabSelected == 0)
         {
-            androidCachedData.networks.Add(adNetwork.name);
-            Yodo1AdNetworkManager.GetInstance().UpdateAdNetworksInfo(androidCachedData);
-            androidCachedData = Yodo1AdNetworkManager.GetInstance().GetCachedAndroidAdNetworksInfo();
+            if (androidCachedData.networks.Count >= 1)
+            {
+                if (!androidCachedData.networks.Contains(adNetwork.name))
+                {
+                    androidCachedData.networks.Add(adNetwork.name);
+                }
+                Yodo1AdNetworkManager.GetInstance().UpdateAdNetworksInfo(androidCachedData);
+                androidCachedData = Yodo1AdNetworkManager.GetInstance().GetCachedAndroidAdNetworksInfo();
+            }
+            else
+            {
+                List<string> defaultInstalledList = new List<string>();
+                foreach (Yodo1AdNetwork network in android)
+                {
+                    if (network.status != 1)
+                    {
+                        defaultInstalledList.Add(network.name);
+                    }
+                }
+                if (!defaultInstalledList.Contains(adNetwork.name))
+                {
+                    defaultInstalledList.Add(adNetwork.name);
+                }
+
+                Yodo1AdNetworkConfigCacheData data = new Yodo1AdNetworkConfigCacheData();
+                data.sdkType = SDKGroupType.AndroidStandard;
+                data.sdkVersion = adNetworkConfig.sdkVersion;
+                data.latestSdkVersion = adNetworkConfig.latestSdkversion;
+                data.networks = defaultInstalledList;
+                Yodo1AdNetworkManager.GetInstance().UpdateAdNetworksInfo(data);
+                androidCachedData = Yodo1AdNetworkManager.GetInstance().GetCachedAndroidAdNetworksInfo();
+
+            }
         }
         else
         {
@@ -331,18 +408,18 @@ public class IntegrationManager : EditorWindow
         SDKSize = 0f;
         if (platformTabSelected == 0)
         {
-            if (androidStandard != null)
+            if (android != null)
             {
-                for (int i = 0; i < androidStandard.Count; i++)
+                for (int i = 0; i < android.Length; i++)
                 {
-                    if (CheckIfNetworkIsInstalled(androidStandard[i]))
+                    if (CheckIfNetworkIsInstalled(android[i]))
                     {
-                        SDKSize += androidStandard[i].size;
+                        SDKSize += android[i].size;
                     }
                 }
-                SDKSize += 0.3f;//Amazon Android SDK size
             }
         }
+        SDKSize = ((float)decimal.Round(decimal.Parse(SDKSize.ToString()), 2));
         return SDKSize;
     }
     void OnGUI()
@@ -389,10 +466,6 @@ public class IntegrationManager : EditorWindow
                         {
                             DrawNetworkDetailRow(adNetworkConfig.android[i]);
                         }
-                        Yodo1AdNetwork adNetwork = new Yodo1AdNetwork();
-                        adNetwork.name = "Amazon";
-                        adNetwork.version = "9.10.0";
-                        DrawNetworkDetailRow(adNetwork);
                     }
                 }
                 else
@@ -403,10 +476,6 @@ public class IntegrationManager : EditorWindow
                         {
                             DrawNetworkDetailRow(adNetworkConfig.ios[i]);
                         }
-                        Yodo1AdNetwork adNetwork = new Yodo1AdNetwork();
-                        adNetwork.name = "Amazon";
-                        adNetwork.version = "4.9.5";
-                        DrawNetworkDetailRow(adNetwork);
                     }
                 }
 

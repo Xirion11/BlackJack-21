@@ -3,12 +3,8 @@
     using UnityEngine;
     using UnityEditor;
     using System;
-    using System.IO;
-    using System.Net;
-    using System.Text;
     using System.Collections.Generic;
     using UnityEditor.Build;
-    using Google;
 
     [InitializeOnLoad]
     public class Yodo1AdAssetsImporter : AssetPostprocessor
@@ -112,9 +108,8 @@
 
         static Yodo1AdAssetsImporter()
         {
-            // Delay initialization until the build target is Android and the editor is not in play
-            // mode.
-            EditorInitializer.InitializeOnMainThread(condition: () =>
+            // Delay initialization until the editor is not in play mode.
+            Google.EditorInitializer.InitializeOnMainThread(condition: () =>
             {
                 return !EditorApplication.isPlayingOrWillChangePlaymode;
             }, initializer: Initialize, name: "Yodo1AdAssetsImporter", logger: null);
@@ -126,8 +121,8 @@
         /// </summary>
         private static bool Initialize()
         {
-            RunOnMainThread.OnUpdate -= PollBundleId;
-            RunOnMainThread.OnUpdate += PollBundleId;
+            Google.RunOnMainThread.OnUpdate -= PollBundleId;
+            Google.RunOnMainThread.OnUpdate += PollBundleId;
             return false;
         }
 
@@ -164,6 +159,13 @@
         static void OnProjectLoadedInEditor()
         {
             EditorApplication.update += UpdateAppInfo;
+            EditorApplication.update += UpdateAdNetworkAndDependencies;
+        }
+
+        static void UpdateAdNetworkAndDependencies()
+        {
+            EditorApplication.update -= UpdateAdNetworkAndDependencies;
+            IntegrationManager.UpdateAdNetworkAndDependencies();
         }
 
         public static void UpdateAppInfo()
@@ -178,11 +180,19 @@
             Yodo1AdSettings settings = Yodo1AdSettingsSave.Load();
 
             string bundleId = string.Empty;
+#if UNITY_2023_2_OR_NEWER
+            bundleId = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
+#else
             bundleId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
+#endif
             Dictionary<string, object> androidData = Yodo1Net.GetInstance().GetAppInfoByBundleID("android", bundleId);
             UpdateData(settings, androidData);
 
-            bundleId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
+#if UNITY_2023_2_OR_NEWER
+            bundleId = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
+#else
+            bundleId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
+#endif
             Dictionary<string, object> iosData = Yodo1Net.GetInstance().GetAppInfoByBundleID("iOS", bundleId);
             UpdateData(settings, iosData);
         }

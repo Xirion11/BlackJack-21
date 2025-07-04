@@ -43,6 +43,12 @@ MonoBehaviour:
     - vungle
     - yandex
     - unity
+    - bidmachine
+    - bigo
+    - maticoo
+    - moloco
+    - pubmatic
+    - taurusx
   iosDynamicNetworkSettings:
     sdkType: -1
     sdkVersion: 

@@ -58,7 +58,11 @@ public class YodoAdsManager : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_2023_2_OR_NEWER
+        if (FindObjectsByType<YodoAdsManager>(FindObjectsSortMode.None).Length > 1)
+#else
         if (FindObjectsOfType<YodoAdsManager>().Length > 1)
+#endif
         {
             Destroy(gameObject);
         }
@@ -72,7 +76,6 @@ public class YodoAdsManager : MonoBehaviour
     {
         Yodo1U3dMasCallback.OnSdkInitializedEvent += (success, error) =>
         {
-            Debug.Log(Yodo1U3dMas.TAG + "NoCode OnSdkInitializedEvent, success:" + success + ", error: " + error.ToString());
             if (success)
             {
                 Debug.Log(Yodo1U3dMas.TAG + "NoCode The initialization has succeeded");
@@ -82,7 +85,7 @@ public class YodoAdsManager : MonoBehaviour
             else
             {
                 OnSDKInitializationFailed.Invoke();
-                Debug.Log(Yodo1U3dMas.TAG + "NoCode The initialization has failed");
+                Debug.Log(Yodo1U3dMas.TAG + "NoCode The initialization has failed with error: " + error.ToString());
             }
         };
 
