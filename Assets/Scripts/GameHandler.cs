@@ -49,8 +49,9 @@ public class GameHandler : MonoBehaviour
     private const string shuffleTrigger = "Shuffle";
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "F2";
-
+#if ADS_ENABLED
     private Yodo1U3dBannerAdView mBannerAdView;
+#endif
 
     public static GameHandler Instance { get; private set; }
 
@@ -81,8 +82,17 @@ public class GameHandler : MonoBehaviour
 
 #if ADS_ENABLED
         //MAS built-in privacy compliance dialog, will show the dialog at start until information is received
-        Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
-        Yodo1U3dMas.SetAdBuildConfig(config);
+        // Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
+        // Yodo1U3dMas.SetAdBuildConfig(config);
+
+        // For users 13 and above
+        Yodo1U3dMas.SetCOPPA(false);
+
+        // For users who don't consent or are under 16
+        Yodo1U3dMas.SetGDPR(false);
+
+        // For users who opt out of data collection
+        Yodo1U3dMas.SetCCPA(true);
 
         // Initialize MAS SDK.
         Yodo1U3dMas.InitializeMasSdk();
