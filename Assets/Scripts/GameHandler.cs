@@ -49,8 +49,9 @@ public class GameHandler : MonoBehaviour
     private const string shuffleTrigger = "Shuffle";
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "F2";
-
+#if ADS_ENABLED
     private Yodo1U3dBannerAdView mBannerAdView;
+#endif
 
     public static GameHandler Instance { get; private set; }
 
