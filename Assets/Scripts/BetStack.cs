@@ -18,11 +18,27 @@ public class BetStack : MonoBehaviour
 
     private bool _isConvertedStack = false;
     
+    List<float> _chipSpacings = new List<float>();
     Dictionary<int, Sprite> _chipSpriteDictionary;
 
     private void Awake()
     {
         _oldActiveChips = _activeChips;
+        
+        _chipSpacings =  new List<float>()
+        {
+            -208f,
+            -208f,
+            -208f,
+            -188.8f,
+            -168.48f,
+            -137.6f,
+            -123.6f,
+            -109.6f,
+            -95.6f,
+            -81.6f,
+            -68f
+        };
 
         _chipSpriteDictionary = new Dictionary<int, Sprite>()
         {
@@ -209,14 +225,8 @@ public class BetStack : MonoBehaviour
     private void SetChipsSpacing(int totalChips)
     {
         totalChips = Mathf.Clamp(totalChips, 0, _maxStackShips);
-        
-        if (totalChips <= 2)
-        {
-            totalChips = 0;
-        }
-        
-        var chipsProgress = ((float)(totalChips) / (float)_chips.Length);
-        var spacing = (-1) * Mathf.Lerp(_minSpacing, _maxSpacing, chipsProgress);
+
+        var spacing = _chipSpacings[totalChips];
         
         _verticalLayoutGroup.spacing = spacing;
     }
