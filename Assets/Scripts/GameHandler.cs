@@ -37,6 +37,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
     [SerializeField] private BetStackContainer _betStack;
+    [SerializeField] private BetStackContainer _splitBetStack;
 
     private float m_currentBet = 0;
     private float m_currentSplitBet = 0;
@@ -190,7 +191,7 @@ public class GameHandler : MonoBehaviour
         m_playerBetContainer.SetActive(false);
         m_playerSplitBetContainer.SetActive(false);
         //m_playerBetDoubleContainer.SetActive(false);
-        m_playerSplitBetDoubleContainer.SetActive(false);
+        //m_playerSplitBetDoubleContainer.SetActive(false);
         m_splitWinContainer.SetActive(false);
         m_splitLoseContainer.SetActive(false);
         m_splitDrawContainer.SetActive(false);
@@ -337,7 +338,7 @@ public class GameHandler : MonoBehaviour
                     m_playerMoney -= m_currentSplitBet;
                     m_currentSplitBet += m_currentSplitBet;
                     lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-                    _betStack.SetValue((int)m_currentBet, true);
+                    _betStack.SetValue((int)m_currentSplitBet, true);
                     //m_playerBetDoubleContainer.SetActive(true);
                 }
                 else
@@ -345,7 +346,8 @@ public class GameHandler : MonoBehaviour
                     m_playerMoney -= m_currentBet;
                     m_currentBet += m_currentBet;
                     lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                    m_playerSplitBetDoubleContainer.SetActive(true);
+                    _splitBetStack.SetValue((int)m_currentBet, true);
+                    //m_playerSplitBetDoubleContainer.SetActive(true);
                 }
             }
 
@@ -407,6 +409,9 @@ public class GameHandler : MonoBehaviour
 
             //Make the bet split equals to current bet
             m_currentSplitBet = m_currentBet;
+            
+            //Set split bet stack
+            _splitBetStack.SetValue((int)m_currentSplitBet);
 
             //Hide player actions
             GUI_Handler.Instance.GUI_HidePlayerActions();
