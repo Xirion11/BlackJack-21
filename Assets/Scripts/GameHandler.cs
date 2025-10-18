@@ -39,6 +39,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private BetStackContainer _betStack;
     [SerializeField] private BetStackContainer _splitBetStack;
 
+    private float m_lastBet = 0;
     private float m_currentBet = 0;
     private float m_currentSplitBet = 0;
     private float m_playerMoney = 0;
@@ -148,12 +149,33 @@ public class GameHandler : MonoBehaviour
         return m_currentBet;
     }
 
+    public float RepeatBet()
+    {
+        if (m_lastBet > 0 && m_playerMoney >= m_lastBet)
+        {
+            m_currentBet = m_lastBet;
+            m_lastBet = 0;
+            
+            m_playerMoney -= m_currentBet;
+
+            //We don't need to save this change to PlayerPrefs because the player can still clear the bet.
+
+            //Update the labels
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
+            lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
+        }
+        
+        return m_currentBet;
+    }
+
     //Player set bet and match is starting
     public void OnBetsReady()
     {
         //Restore blackjack flag
         m_dealerBlackjack = false;
         InitializeElements();
+        
+        m_lastBet =  m_currentBet;
 
         //Play the sound of the bet being set on the table
         SFXHandler.Instance.PlayPlaceChipsSfx();

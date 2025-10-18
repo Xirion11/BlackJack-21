@@ -231,7 +231,12 @@ public class GUI_Handler : MonoBehaviour
 
     public void GUI_BetReady()
     {
-        float currentBet = GameHandler.Instance.GetCurrentBet();
+        var currentBet = GameHandler.Instance.GetCurrentBet();
+
+        if (currentBet == 0)
+        {
+            currentBet = GameHandler.Instance.RepeatBet();
+        }
 
         //If the current bet is valid
         if (currentBet >= Constants.MIN_BET && currentBet <= Constants.MAX_BET)
