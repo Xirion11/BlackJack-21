@@ -10,9 +10,6 @@ public class BetStack : MonoBehaviour
     
     [SerializeField] private int _activeChips = 1;
     
-    private float _minSpacing = 200f;
-    private float _maxSpacing = 68f;
-    
     private int _oldActiveChips;
     private readonly int _maxStackShips = 10;
 
