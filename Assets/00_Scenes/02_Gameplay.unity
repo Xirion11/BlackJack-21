@@ -16583,6 +16583,11 @@ PrefabInstance:
       objectReference: {fileID: 636533654}
     - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
         type: 3}
+      propertyPath: lbl_readyBetBtn
+      value: 
+      objectReference: {fileID: 455564145}
+    - target: {fileID: 9007448526192845319, guid: 58e1cb0431b788740ba68de77364dcc6,
+        type: 3}
       propertyPath: m_deckContainer
       value: 
       objectReference: {fileID: 1382668420}

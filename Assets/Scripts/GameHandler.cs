@@ -36,6 +36,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
+    [SerializeField] private TextMeshProUGUI lbl_readyBetBtn = null;
     [SerializeField] private BetStackContainer _betStack;
     [SerializeField] private BetStackContainer _splitBetStack;
 
@@ -52,6 +53,9 @@ public class GameHandler : MonoBehaviour
     private const string shuffleTrigger = "Shuffle";
     private const string rewardTemplate = "+${0}";
     private const string TwoDecimalsFormat = "N2";
+    private const string LabelReady = "READY";
+    private const string LabelRepeat = "SAME BET";
+    
 #if ADS_ENABLED
     private Yodo1U3dBannerAdView mBannerAdView;
 #endif
@@ -122,6 +126,8 @@ public class GameHandler : MonoBehaviour
     //Increasing a bet deducts it from the player money
     public void IncreaseCurrentBet(float increment)
     {
+        lbl_readyBetBtn.SetText(LabelReady);
+        
         m_currentBet += increment;
         m_playerMoney -= increment;
 
@@ -135,6 +141,8 @@ public class GameHandler : MonoBehaviour
     //The player gets its money back and clears the bet
     public void ClearCurrentBet()
     {
+        lbl_readyBetBtn.SetText(LabelReady);
+        
         m_playerMoney += m_currentBet;
         m_currentBet = 0f;
 
@@ -550,7 +558,12 @@ public class GameHandler : MonoBehaviour
         m_currentSplitBet = 0;
         
         //Clean bet station label
-        lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
+        var bet = 0f;
+        if (m_playerMoney >= m_lastBet)
+        {
+            bet = m_lastBet;
+        }
+        lbl_betStationBet.SetText(string.Format(placeBetTemplate, bet));
 
         //Start reward feedback animation
         StartCoroutine(GiveRewardCoroutine(reward));
@@ -706,6 +719,11 @@ public class GameHandler : MonoBehaviour
         //If player has more money than the minimum bet
         if (m_playerMoney >= Constants.MIN_BET)
         {
+            if (m_lastBet > 0 && m_playerMoney >= m_lastBet)
+            {
+                lbl_readyBetBtn.SetText(LabelRepeat);
+            }
+            
             //Let the player continue
             GUI_Handler.Instance.ShowBettingStation();
         }
