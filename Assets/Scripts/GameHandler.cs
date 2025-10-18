@@ -36,6 +36,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
+    [SerializeField] private BetStack _betStack;
 
     private float m_currentBet = 0;
     private float m_currentSplitBet = 0;
@@ -159,6 +160,7 @@ public class GameHandler : MonoBehaviour
         //Enable the bet chips
         m_playerBetContainer.SetActive(true);
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+        _betStack.SetValue((int)m_currentBet);
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
         GUI_Handler.Instance.HidePlayerBlackJack();
         GUI_Handler.Instance.HidePlayerBusted();
@@ -187,7 +189,7 @@ public class GameHandler : MonoBehaviour
         m_splitBustedContainer.SetActive(false);
         m_playerBetContainer.SetActive(false);
         m_playerSplitBetContainer.SetActive(false);
-        m_playerBetDoubleContainer.SetActive(false);
+        //m_playerBetDoubleContainer.SetActive(false);
         m_playerSplitBetDoubleContainer.SetActive(false);
         m_splitWinContainer.SetActive(false);
         m_splitLoseContainer.SetActive(false);
@@ -335,7 +337,8 @@ public class GameHandler : MonoBehaviour
                     m_playerMoney -= m_currentSplitBet;
                     m_currentSplitBet += m_currentSplitBet;
                     lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-                    m_playerBetDoubleContainer.SetActive(true);
+                    _betStack.SetValue((int)m_currentBet);
+                    //m_playerBetDoubleContainer.SetActive(true);
                 }
                 else
                 {
@@ -353,7 +356,8 @@ public class GameHandler : MonoBehaviour
                 m_playerMoney -= m_currentBet;
                 m_currentBet += m_currentBet;
                 lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                m_playerBetDoubleContainer.SetActive(true);
+                _betStack.SetValue((int)m_currentBet);
+                //m_playerBetDoubleContainer.SetActive(true);
             }
 
             //Update player money label
@@ -727,6 +731,7 @@ public class GameHandler : MonoBehaviour
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, 0));
+        _betStack.SetValue(0);
 
         //Prepare a new play deck
         m_deckHandler.PrepareNewDeck();
