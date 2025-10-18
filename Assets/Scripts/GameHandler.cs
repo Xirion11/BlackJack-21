@@ -36,7 +36,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
-    [SerializeField] private BetStack _betStack;
+    [SerializeField] private BetStackContainer _betStack;
 
     private float m_currentBet = 0;
     private float m_currentSplitBet = 0;

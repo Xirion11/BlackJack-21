@@ -15,6 +15,7 @@ public class BetStack : MonoBehaviour
     private float _maxSpacing = 68f;
     
     private int _oldActiveChips;
+    private readonly int _maxStackShips = 10;
 
     private bool _isConvertedStack = true;
     
@@ -56,8 +57,10 @@ public class BetStack : MonoBehaviour
         _isConvertedStack = isConverted;
     }
 
-    public void SetValue(int value, bool isDouble = false)
+    public int SetValue(int value, bool isDouble = false)
     {
+        var chipsValueLeft = 0;
+        
         var blackChips = 0;
         var whiteChips = 0;
         var redChips = 0;
@@ -107,52 +110,116 @@ public class BetStack : MonoBehaviour
             blueChips *= 2;
         }
 
+        //ResetStack();
+
+        var currentChip = 0;
+        var tmpBlackChips = blackChips;
+        var tmpWhiteChips = whiteChips;
+        var tmpRedChips = redChips;
+        var tmpGreenChips = greenChips;
+        var tmpBlueChips = blueChips;
+        
+        if(currentChip < _maxStackShips)
+        {
+            for (var i = 0; i < blackChips; i++)
+            {
+                _chips[currentChip].sprite = _chipSpriteDictionary[500];
+                _chips[currentChip].gameObject.SetActive(true);
+                currentChip++;
+                tmpBlackChips--;
+
+                if (currentChip >= _maxStackShips)
+                {
+                    break;
+                }
+            }
+        }
+        
+        if(currentChip < _maxStackShips)
+        {
+            for (var i = 0; i < whiteChips; i++)
+            {
+                _chips[currentChip].sprite = _chipSpriteDictionary[100];
+                _chips[currentChip].gameObject.SetActive(true);
+                currentChip++;
+                tmpWhiteChips--;
+
+                if (currentChip >= _maxStackShips)
+                {
+                    break;
+                }
+            }
+        }
+        
+        if(currentChip < _maxStackShips)
+        {
+            for (var i = 0; i < redChips; i++)
+            {
+                _chips[currentChip].sprite = _chipSpriteDictionary[50];
+                _chips[currentChip].gameObject.SetActive(true);
+                currentChip++;
+                tmpRedChips--;
+
+                if (currentChip >= _maxStackShips)
+                {
+                    break;
+                }
+            }
+        }
+        
+        if(currentChip < _maxStackShips)
+        {
+            for (var i = 0; i < greenChips; i++)
+            {
+                _chips[currentChip].sprite = _chipSpriteDictionary[10];
+                _chips[currentChip].gameObject.SetActive(true);
+                currentChip++;
+                tmpGreenChips--;
+
+                if (currentChip >= _maxStackShips)
+                {
+                    break;
+                }
+            }
+        }
+        
+        if(currentChip < _maxStackShips)
+        {
+            for (var i = 0; i < blueChips; i++)
+            {
+                _chips[currentChip].sprite = _chipSpriteDictionary[5];
+                _chips[currentChip].gameObject.SetActive(true);
+                currentChip++;
+                tmpBlueChips--;
+
+                if (currentChip >= _maxStackShips)
+                {
+                    break;
+                }
+            }
+        }
+
+        var totalChips = blackChips + whiteChips + redChips + greenChips + blueChips;
+        SetChipsSpacing(totalChips);
+        
+        chipsValueLeft = (tmpBlackChips * 500) +  (tmpWhiteChips * 100) + (tmpRedChips * 50) + (tmpGreenChips * 10) + (tmpBlueChips * 5);
+
+        return chipsValueLeft;
+    }
+
+    private void SetChipsSpacing(int totalChips)
+    {
+        var chipsProgress = ((float)(totalChips-2) / (float)_chips.Length);
+        var spacing = (-1) * Mathf.Lerp(_minSpacing, _maxSpacing, chipsProgress);
+        
+        _verticalLayoutGroup.spacing = spacing;
+    }
+
+    public void ResetStack()
+    {
         foreach (var obj in _chips)
         {
             obj.gameObject.SetActive(false);
         }
-
-        var currentChip = 0;
-        
-        for (var i = 0; i < blackChips; i++)
-        {
-            _chips[currentChip].sprite = _chipSpriteDictionary[500];
-            _chips[currentChip].gameObject.SetActive(true);
-            currentChip++;
-        }
-        
-        for (var i = 0; i < whiteChips; i++)
-        {
-            _chips[currentChip].sprite = _chipSpriteDictionary[100];
-            _chips[currentChip].gameObject.SetActive(true);
-            currentChip++;
-        }
-        
-        for (var i = 0; i < redChips; i++)
-        {
-            _chips[currentChip].sprite = _chipSpriteDictionary[50];
-            _chips[currentChip].gameObject.SetActive(true);
-            currentChip++;
-        }
-        
-        for (var i = 0; i < greenChips; i++)
-        {
-            _chips[currentChip].sprite = _chipSpriteDictionary[10];
-            _chips[currentChip].gameObject.SetActive(true);
-            currentChip++;
-        }
-        
-        for (var i = 0; i < blueChips; i++)
-        {
-            _chips[currentChip].sprite = _chipSpriteDictionary[5];
-            _chips[currentChip].gameObject.SetActive(true);
-            currentChip++;
-        }
-        
-        var activeChips = blackChips + whiteChips +  redChips + greenChips + blueChips;
-        var chipsProgress = ((float)(activeChips-2) / (float)_chips.Length);
-        var spacing = (-1) * Mathf.Lerp(_minSpacing, _maxSpacing, chipsProgress);
-        
-        _verticalLayoutGroup.spacing = spacing;
     }
 }
