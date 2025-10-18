@@ -66,36 +66,45 @@ public class BetStack : MonoBehaviour
 
         var remnant = 0;
         
-        var tmpValue = value;
+        var tmpValue = isDouble && !_isConvertedStack ? value / 2 : value;
 
-        if (value >= 500)
+        if (tmpValue >= 500)
         {
-            blackChips = value / 500;
+            blackChips = tmpValue / 500;
         }
 
-        if (value >= 100)
+        if (tmpValue >= 100)
         {
-            remnant = value - (blackChips * 500);
+            remnant = tmpValue - (blackChips * 500);
             
             whiteChips = remnant / 100;
         }
 
-        if (value >= 50)
+        if (tmpValue >= 50)
         {
-            remnant = value - (blackChips * 500) - (whiteChips * 100);
+            remnant = tmpValue - (blackChips * 500) - (whiteChips * 100);
             redChips = remnant / 50;
         }
 
-        if (value >= 10)
+        if (tmpValue >= 10)
         {
-            remnant = value - (blackChips * 500) - (whiteChips * 100) - (redChips * 50);
+            remnant = tmpValue - (blackChips * 500) - (whiteChips * 100) - (redChips * 50);
             greenChips = remnant / 10;
         }
 
-        if (value >= 5)
+        if (tmpValue >= 5)
         {
-            remnant = value - (blackChips * 500) - (whiteChips * 100) - (redChips * 50) - (greenChips * 10);
+            remnant = tmpValue - (blackChips * 500) - (whiteChips * 100) - (redChips * 50) - (greenChips * 10);
             blueChips = remnant / 5;
+        }
+
+        if (isDouble && !_isConvertedStack)
+        {
+            blackChips *= 2;
+            whiteChips *= 2;
+            redChips *= 2;
+            greenChips *= 2;
+            blueChips *= 2;
         }
 
         foreach (var obj in _chips)

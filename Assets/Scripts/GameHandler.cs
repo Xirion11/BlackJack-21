@@ -337,7 +337,7 @@ public class GameHandler : MonoBehaviour
                     m_playerMoney -= m_currentSplitBet;
                     m_currentSplitBet += m_currentSplitBet;
                     lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-                    _betStack.SetValue((int)m_currentBet);
+                    _betStack.SetValue((int)m_currentBet, true);
                     //m_playerBetDoubleContainer.SetActive(true);
                 }
                 else
@@ -356,7 +356,7 @@ public class GameHandler : MonoBehaviour
                 m_playerMoney -= m_currentBet;
                 m_currentBet += m_currentBet;
                 lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                _betStack.SetValue((int)m_currentBet);
+                _betStack.SetValue((int)m_currentBet, true);
                 //m_playerBetDoubleContainer.SetActive(true);
             }
 
