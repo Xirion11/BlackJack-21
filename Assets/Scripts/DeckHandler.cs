@@ -16,8 +16,8 @@ public class DeckHandler : MonoBehaviour
 
     private const int MAX_SUITS = 4;
     private const int MAX_VALUE = 13; //Number of cards per suit
-    private const int MIN_OFFSET = -5; //Offset of cards from the center of the deck
-    private const int MAX_OFFSET = 6;  //To accomodate the deck separator
+    private const int MIN_OFFSET = 78; //Offset of cards from the center of the deck
+    private const int MAX_OFFSET = 104;  //To accomodate the deck separator (2 decks from bottom max)
     private Vector3 SeparatorPosition; //Separator initial position
 
     public enum SUITS
@@ -74,6 +74,10 @@ public class DeckHandler : MonoBehaviour
         Deck.Clear();
         Deck.AddRange(DefaultDeck);
         Deck.AddRange(DefaultDeck);
+        Deck.AddRange(DefaultDeck);
+        Deck.AddRange(DefaultDeck);
+        Deck.AddRange(DefaultDeck);
+        Deck.AddRange(DefaultDeck);
     }
 
     private void ShuffleDeck()
@@ -83,7 +87,7 @@ public class DeckHandler : MonoBehaviour
 
         //We get a random position for the separator, close to the center but within the allowed offset
         int randomOffset = Random.Range(MIN_OFFSET, MAX_OFFSET);
-        separatorIndex = DefaultDeck.Length + randomOffset;
+        separatorIndex = Deck.Count - randomOffset;
     }
 
     //Get the top card on the deck and remove it
