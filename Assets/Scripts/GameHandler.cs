@@ -36,7 +36,11 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lbl_PlayerBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerSplitBet = null;
     [SerializeField] private TextMeshProUGUI lbl_PlayerReward = null;
+    [SerializeField] private TextMeshProUGUI lbl_readyBetBtn = null;
+    [SerializeField] private BetStackContainer _betStack;
+    [SerializeField] private BetStackContainer _splitBetStack;
 
+    private float m_lastBet = 0;
     private float m_currentBet = 0;
     private float m_currentSplitBet = 0;
     private float m_playerMoney = 0;
@@ -48,7 +52,10 @@ public class GameHandler : MonoBehaviour
     private const string blackJack = "BlackJack";
     private const string shuffleTrigger = "Shuffle";
     private const string rewardTemplate = "+${0}";
-    private const string TwoDecimalsFormat = "F2";
+    private const string TwoDecimalsFormat = "N2";
+    private const string LabelReady = "READY";
+    private const string LabelRepeat = "SAME BET";
+    
 #if ADS_ENABLED
     private Yodo1U3dBannerAdView mBannerAdView;
 #endif
@@ -119,6 +126,8 @@ public class GameHandler : MonoBehaviour
     //Increasing a bet deducts it from the player money
     public void IncreaseCurrentBet(float increment)
     {
+        lbl_readyBetBtn.SetText(LabelReady);
+        
         m_currentBet += increment;
         m_playerMoney -= increment;
 
@@ -132,6 +141,8 @@ public class GameHandler : MonoBehaviour
     //The player gets its money back and clears the bet
     public void ClearCurrentBet()
     {
+        lbl_readyBetBtn.SetText(LabelReady);
+        
         m_playerMoney += m_currentBet;
         m_currentBet = 0f;
 
@@ -146,12 +157,33 @@ public class GameHandler : MonoBehaviour
         return m_currentBet;
     }
 
+    public float RepeatBet()
+    {
+        if (m_lastBet > 0 && m_playerMoney >= m_lastBet)
+        {
+            m_currentBet = m_lastBet;
+            m_lastBet = 0;
+            
+            m_playerMoney -= m_currentBet;
+
+            //We don't need to save this change to PlayerPrefs because the player can still clear the bet.
+
+            //Update the labels
+            lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
+            lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
+        }
+        
+        return m_currentBet;
+    }
+
     //Player set bet and match is starting
     public void OnBetsReady()
     {
         //Restore blackjack flag
         m_dealerBlackjack = false;
         InitializeElements();
+        
+        m_lastBet =  m_currentBet;
 
         //Play the sound of the bet being set on the table
         SFXHandler.Instance.PlayPlaceChipsSfx();
@@ -159,6 +191,7 @@ public class GameHandler : MonoBehaviour
         //Enable the bet chips
         m_playerBetContainer.SetActive(true);
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
+        _betStack.SetValue((int)m_currentBet);
         PlayerPrefsManager.ReducePlayerMoney(m_currentBet);
         GUI_Handler.Instance.HidePlayerBlackJack();
         GUI_Handler.Instance.HidePlayerBusted();
@@ -187,8 +220,8 @@ public class GameHandler : MonoBehaviour
         m_splitBustedContainer.SetActive(false);
         m_playerBetContainer.SetActive(false);
         m_playerSplitBetContainer.SetActive(false);
-        m_playerBetDoubleContainer.SetActive(false);
-        m_playerSplitBetDoubleContainer.SetActive(false);
+        //m_playerBetDoubleContainer.SetActive(false);
+        //m_playerSplitBetDoubleContainer.SetActive(false);
         m_splitWinContainer.SetActive(false);
         m_splitLoseContainer.SetActive(false);
         m_splitDrawContainer.SetActive(false);
@@ -335,14 +368,16 @@ public class GameHandler : MonoBehaviour
                     m_playerMoney -= m_currentSplitBet;
                     m_currentSplitBet += m_currentSplitBet;
                     lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentSplitBet));
-                    m_playerBetDoubleContainer.SetActive(true);
+                    _betStack.SetValue((int)m_currentSplitBet, true);
+                    //m_playerBetDoubleContainer.SetActive(true);
                 }
                 else
                 {
                     m_playerMoney -= m_currentBet;
                     m_currentBet += m_currentBet;
                     lbl_PlayerSplitBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                    m_playerSplitBetDoubleContainer.SetActive(true);
+                    _splitBetStack.SetValue((int)m_currentBet, true);
+                    //m_playerSplitBetDoubleContainer.SetActive(true);
                 }
             }
 
@@ -353,7 +388,8 @@ public class GameHandler : MonoBehaviour
                 m_playerMoney -= m_currentBet;
                 m_currentBet += m_currentBet;
                 lbl_PlayerBet.SetText(string.Format(playerBetTemplate, m_currentBet));
-                m_playerBetDoubleContainer.SetActive(true);
+                _betStack.SetValue((int)m_currentBet, true);
+                //m_playerBetDoubleContainer.SetActive(true);
             }
 
             //Update player money label
@@ -403,6 +439,9 @@ public class GameHandler : MonoBehaviour
 
             //Make the bet split equals to current bet
             m_currentSplitBet = m_currentBet;
+            
+            //Set split bet stack
+            _splitBetStack.SetValue((int)m_currentSplitBet);
 
             //Hide player actions
             GUI_Handler.Instance.GUI_HidePlayerActions();
@@ -519,7 +558,12 @@ public class GameHandler : MonoBehaviour
         m_currentSplitBet = 0;
         
         //Clean bet station label
-        lbl_betStationBet.SetText(string.Format(placeBetTemplate, m_currentBet));
+        var bet = 0f;
+        if (m_playerMoney >= m_lastBet)
+        {
+            bet = m_lastBet;
+        }
+        lbl_betStationBet.SetText(string.Format(placeBetTemplate, bet));
 
         //Start reward feedback animation
         StartCoroutine(GiveRewardCoroutine(reward));
@@ -675,6 +719,11 @@ public class GameHandler : MonoBehaviour
         //If player has more money than the minimum bet
         if (m_playerMoney >= Constants.MIN_BET)
         {
+            if (m_lastBet > 0 && m_playerMoney >= m_lastBet)
+            {
+                lbl_readyBetBtn.SetText(LabelRepeat);
+            }
+            
             //Let the player continue
             GUI_Handler.Instance.ShowBettingStation();
         }
@@ -727,6 +776,7 @@ public class GameHandler : MonoBehaviour
         lbl_playerMoney.SetText(string.Format(moneyTemplate, m_playerMoney.ToString(TwoDecimalsFormat)));
         lbl_betStationBet.SetText(string.Format(placeBetTemplate, 0));
         lbl_PlayerBet.SetText(string.Format(playerBetTemplate, 0));
+        _betStack.SetValue(0);
 
         //Prepare a new play deck
         m_deckHandler.PrepareNewDeck();
