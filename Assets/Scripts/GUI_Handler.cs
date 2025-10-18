@@ -54,10 +54,10 @@ public class GUI_Handler : MonoBehaviour
     {
         Instance = this;
         initialBetLimitsPos = PlayerBetTransform.localPosition;
-#if UNITY_ANDROID
-        objQuitButton.SetActive(false);
-#else
+#if UNITY_IOS
         objQuitButton.SetActive(true);
+#else
+        objQuitButton.SetActive(false);
 #endif
     }
     

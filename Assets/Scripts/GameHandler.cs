@@ -48,7 +48,7 @@ public class GameHandler : MonoBehaviour
     private const string blackJack = "BlackJack";
     private const string shuffleTrigger = "Shuffle";
     private const string rewardTemplate = "+${0}";
-    private const string TwoDecimalsFormat = "F2";
+    private const string TwoDecimalsFormat = "N2";
 #if ADS_ENABLED
     private Yodo1U3dBannerAdView mBannerAdView;
 #endif
