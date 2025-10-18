@@ -16223,6 +16223,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetStacksContainer
       objectReference: {fileID: 0}
+    - target: {fileID: 1260016525732223504, guid: 888301908e32d32e8a763762fd21a1ca,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260016525732223504, guid: 888301908e32d32e8a763762fd21a1ca,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260016525732223504, guid: 888301908e32d32e8a763762fd21a1ca,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260016525732223504, guid: 888301908e32d32e8a763762fd21a1ca,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2856276564335473680, guid: 888301908e32d32e8a763762fd21a1ca,
         type: 3}
       propertyPath: m_AnchorMax.y

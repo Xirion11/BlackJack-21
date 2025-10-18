@@ -97,6 +97,7 @@ MonoBehaviour:
   _betStacks:
   - {fileID: 4209898963373809272}
   - {fileID: 5583427578366154368}
+  - {fileID: 915183936550170744}
 --- !u!1001 &4524302939484332183
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1239,7 +1240,7 @@ PrefabInstance:
     - target: {fileID: 3352888556383665101, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6131369991904446525, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
@@ -1319,7 +1320,7 @@ PrefabInstance:
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
@@ -1329,7 +1330,7 @@ PrefabInstance:
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
@@ -1379,12 +1380,12 @@ PrefabInstance:
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 345
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,
         type: 3}
@@ -1426,6 +1427,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7ea76641df175e428c0e3e2f72a3272, type: 3}
+--- !u!114 &915183936550170744 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8337812459588580887, guid: b7ea76641df175e428c0e3e2f72a3272,
+    type: 3}
+  m_PrefabInstance: {fileID: 9153212958546658927}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb97088819f5e2a298ab4e5ba0dfa771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1260016525732223504 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7960891800913779839, guid: b7ea76641df175e428c0e3e2f72a3272,

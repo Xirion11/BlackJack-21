@@ -10,14 +10,13 @@ public class BetStack : MonoBehaviour
     
     [SerializeField] private int _activeChips = 1;
     
-
     private float _minSpacing = 200f;
     private float _maxSpacing = 68f;
     
     private int _oldActiveChips;
     private readonly int _maxStackShips = 10;
 
-    private bool _isConvertedStack = true;
+    private bool _isConvertedStack = false;
     
     Dictionary<int, Sprite> _chipSpriteDictionary;
 
@@ -209,7 +208,14 @@ public class BetStack : MonoBehaviour
 
     private void SetChipsSpacing(int totalChips)
     {
-        var chipsProgress = ((float)(totalChips-2) / (float)_chips.Length);
+        totalChips = Mathf.Clamp(totalChips, 0, _maxStackShips);
+        
+        if (totalChips <= 2)
+        {
+            totalChips = 0;
+        }
+        
+        var chipsProgress = ((float)(totalChips) / (float)_chips.Length);
         var spacing = (-1) * Mathf.Lerp(_minSpacing, _maxSpacing, chipsProgress);
         
         _verticalLayoutGroup.spacing = spacing;
